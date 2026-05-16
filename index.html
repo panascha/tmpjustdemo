@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedQuiz 2026 - Document Checking</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        /* ซ่อน Scrollbar แต่ยังเลื่อนได้ */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .doc-container {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-800 text-white shadow-md z-20 flex-shrink-0">
+        <div class="px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="font-bold text-xl"><i class="fa-solid fa-microscope"></i> MedQuiz 2026</div>
+                <div class="hidden md:flex gap-3 text-xs bg-blue-900 px-3 py-1.5 rounded-full">
+                    <span class="flex items-center gap-1" title="Firebase Connected"><span
+                            class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Firebase: Ready</span>
+                    <span class="flex items-center gap-1" title="Google Apps Script Connected"><span
+                            class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> GAS: Ready</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <!-- Progress Bar งานของฉัน -->
+                <div class="hidden lg:block w-48">
+                    <div class="flex justify-between text-xs mb-1">
+                        <span>งานของคุณ (kkumail)</span>
+                        <span>15/20 (75%)</span>
+                    </div>
+                    <div class="w-full bg-blue-900 rounded-full h-2">
+                        <div class="bg-green-400 h-2 rounded-full" style="width: 75%"></div>
+                    </div>
+                </div>
+
+                <button onclick="showVersionModal()"
+                    class="text-sm bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded transition">
+                    <i class="fa-solid fa-rotate"></i> Force Refresh
+                </button>
+                <div class="flex items-center gap-2">
+                    <div
+                        class="w-8 h-8 rounded-full bg-blue-300 text-blue-900 flex items-center justify-center font-bold">
+                        ST</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex flex-1 overflow-hidden">
+
+        <!-- Sidebar: List View -->
+        <div class="w-full md:w-1/3 lg:w-1/4 bg-white border-r flex flex-col h-full flex-shrink-0 z-10" id="sidebar">
+
+            <!-- Tools & Search -->
+            <div class="p-4 border-b bg-gray-50">
+                <input type="text" id="searchInput" placeholder="ค้นหา Email, ชื่อทีม..."
+                    class="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3">
+
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <button class="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 font-medium">My
+                        Queue</button>
+                    <button class="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"><i
+                            class="fa-solid fa-bell"></i> Updated</button>
+                    <button class="px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"><i
+                            class="fa-solid fa-sort"></i> เก่าสุดก่อน</button>
+                </div>
+            </div>
+
+            <!-- List ทีม (Mockup) -->
+            <div class="flex-1 overflow-y-auto no-scrollbar p-2 space-y-2" id="teamList">
+                <!-- Cards จะถูก Render ด้วย JS -->
+            </div>
+        </div>
+
+        <!-- Main Detail View -->
+        <div class="hidden md:flex flex-1 flex-col bg-slate-50 h-full overflow-hidden relative" id="detailView">
+
+            <!-- กรณีไม่มีการเลือกทีม -->
+            <div id="emptyState"
+                class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 z-10 bg-slate-50">
+                <i class="fa-solid fa-file-signature text-6xl mb-4"></i>
+                <p class="text-lg">เลือกทีมจากรายชื่อด้านซ้ายเพื่อเริ่มตรวจสอบเอกสาร</p>
+            </div>
+
+            <!-- ข้อมูลทีม -->
+            <div class="p-4 border-b bg-white shadow-sm z-0">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <span class="text-xs font-bold px-2 py-1 rounded bg-blue-100 text-blue-800"
+                            id="dtCategory">โควตาทีมโรงเรียน</span>
+                        <h2 class="text-xl font-bold mt-1 text-gray-800" id="dtTeamName">โรงเรียนรักษ์เรียน</h2>
+                        <p class="text-sm text-gray-500" id="dtEmail">example@gmail.com</p>
+                    </div>
+                    <div id="occupancyBadge"
+                        class="hidden items-center gap-2 text-xs bg-orange-100 text-orange-700 px-3 py-1.5 rounded-full border border-orange-200 animate-pulse">
+                        <i class="fa-solid fa-eye"></i> สตาฟท่านอื่นกำลังดูทีมนี้
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 text-sm mt-3 bg-gray-50 p-2 rounded border">
+                    <div><span class="font-semibold">M1 (หัวหน้า):</span> <span id="dtM1">นาย สมชาย</span></div>
+                    <div><span class="font-semibold">M2:</span> <span id="dtM2">นางสาว สมหญิง</span></div>
+                    <div><span class="font-semibold">M3:</span> <span id="dtM3">นาย สมหมาย</span></div>
+                </div>
+            </div>
+
+            <!-- ส่วนตรวจเอกสาร (แยก 2 ฝั่ง: ซ้ายดูรูป ขวาปรับสถานะ) -->
+            <div class="flex flex-1 overflow-hidden flex-col lg:flex-row">
+
+                <!-- ซ้าย: Document Viewer -->
+                <div class="flex-1 flex flex-col border-r bg-gray-200 p-2 relative">
+                    <!-- Tabs -->
+                    <div class="flex gap-2 mb-2">
+                        <button onclick="switchDoc('cert')" id="tab-cert"
+                            class="flex-1 py-2 bg-white rounded shadow-sm text-sm font-semibold border-b-2 border-blue-600 text-blue-600">1.
+                            ใบรับรอง รร.</button>
+                        <button onclick="switchDoc('transcript')" id="tab-transcript"
+                            class="flex-1 py-2 bg-white rounded shadow-sm text-sm font-medium text-gray-500 hover:bg-gray-50">2.
+                            ปพ.7</button>
+                        <button onclick="switchDoc('slip')" id="tab-slip"
+                            class="flex-1 py-2 bg-white rounded shadow-sm text-sm font-medium text-gray-500 hover:bg-gray-50">3.
+                            สลิปโอนเงิน</button>
+                    </div>
+
+                    <!-- Toolbar -->
+                    <div class="flex justify-between items-center bg-gray-800 text-white p-2 rounded-t text-sm">
+                        <span><i class="fa-solid fa-magnifying-glass"></i> Preview</span>
+                        <div class="flex gap-3">
+                            <button onclick="zoomImg(0.2)" title="Zoom In" class="hover:text-blue-300"><i
+                                    class="fa-solid fa-magnifying-glass-plus"></i></button>
+                            <button onclick="zoomImg(-0.2)" title="Zoom Out" class="hover:text-blue-300"><i
+                                    class="fa-solid fa-magnifying-glass-minus"></i></button>
+                            <button onclick="rotateImg()" title="Rotate" class="hover:text-blue-300"><i
+                                    class="fa-solid fa-rotate-right"></i></button>
+                            <button onclick="window.open('https://picsum.photos/800/1200', '_blank')"
+                                title="เปิดแท็บใหม่" class="hover:text-blue-300"><i
+                                    class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Viewer Area -->
+                    <div
+                        class="flex-1 bg-gray-300 overflow-auto flex items-center justify-center rounded-b border shadow-inner overflow-hidden relative">
+                        <!-- Mockup Image แทน iframe (ของจริงใช้ iframe google drive) -->
+                        <img id="docPreview" src="https://picsum.photos/800/1200?random=1" alt="Document Preview"
+                            class="doc-container max-w-full max-h-full object-contain">
+                    </div>
+                </div>
+
+                <!-- ขวา: Status & Feedback Controls -->
+                <div class="w-full lg:w-1/3 bg-white flex flex-col p-4 overflow-y-auto">
+                    <h3 class="font-bold text-gray-700 mb-3 border-b pb-2"><i class="fa-solid fa-pen-to-square"></i>
+                        ปรับปรุงสถานะ</h3>
+
+                    <!-- Dropdowns -->
+                    <div class="space-y-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">สถานะ ใบรับรองโรงเรียน</label>
+                            <select id="statusCert"
+                                class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                onchange="autoFeedback('cert', this.value)">
+                                <option value="รอตรวจเอกสาร" selected>⏳ รอตรวจเอกสาร</option>
+                                <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
+                                <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
+                                <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
+                                <option value="ไม่ต้องส่ง">➖ ไม่ต้องส่ง (ทีมผสม)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">สถานะ ปพ.7</label>
+                            <select id="statusTranscript"
+                                class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                onchange="autoFeedback('transcript', this.value)">
+                                <option value="รอตรวจเอกสาร" selected>⏳ รอตรวจเอกสาร</option>
+                                <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
+                                <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
+                                <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">สถานะ สลิปโอนเงิน</label>
+                            <select id="statusSlip"
+                                class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                onchange="autoFeedback('slip', this.value)">
+                                <option value="รอตรวจเอกสาร" selected>⏳ รอตรวจเอกสาร</option>
+                                <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
+                                <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
+                                <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Area -->
+                    <div class="flex-1 flex flex-col mb-4">
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Feedback แจ้งผู้สมัคร (จะถูกส่งทาง
+                            Email)</label>
+                        <div class="flex flex-wrap gap-1 mb-2">
+                            <button onclick="addQuickFeedback('รูปไม่ชัดเจน ควรถ่ายใหม่')"
+                                class="text-xs bg-gray-100 hover:bg-gray-200 border px-2 py-1 rounded">+
+                                รูปไม่ชัด</button>
+                            <button onclick="addQuickFeedback('แนบไฟล์ผิดประเภท')"
+                                class="text-xs bg-gray-100 hover:bg-gray-200 border px-2 py-1 rounded">+
+                                ไฟล์ผิด</button>
+                            <button onclick="addQuickFeedback('สลิปไม่มีวันที่/เวลา')"
+                                class="text-xs bg-gray-100 hover:bg-gray-200 border px-2 py-1 rounded">+
+                                สลิปไม่มีวันที่</button>
+                            <button onclick="addQuickFeedback('ชื่อสมาชิกใน ปพ.7 ไม่ตรงกับที่สมัคร')"
+                                class="text-xs bg-gray-100 hover:bg-gray-200 border px-2 py-1 rounded">+
+                                ชื่อไม่ตรง</button>
+                        </div>
+                        <textarea id="feedbackText"
+                            class="w-full flex-1 border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                            placeholder="พิมพ์รายละเอียดสิ่งที่ต้องแก้ไข..."></textarea>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2 mt-auto">
+                        <button class="px-3 py-2 border rounded text-gray-600 hover:bg-gray-50 text-sm font-medium"
+                            onclick="alert('แสดง Modal Log History ของทีมนี้')"><i
+                                class="fa-solid fa-clock-rotate-left"></i> History</button>
+                        <button id="btnSave" onclick="saveData()"
+                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium shadow-sm transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูล
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+
+    <!-- 1. Modal: Conflict Check -->
+    <div id="modalConflict" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+            <div class="flex items-center text-red-600 mb-4 text-xl font-bold gap-3">
+                <i class="fa-solid fa-triangle-exclamation text-3xl"></i> ข้อมูลมีการเปลี่ยนแปลง!
+            </div>
+            <p class="text-gray-700 text-sm mb-2">
+                "ข้อมูลในฐานข้อมูลปัจจุบัน" ไม่ตรงกับข้อมูลที่คุณกำลังดูอยู่ (มีสตาฟท่านอื่น <b>พี่สมรักษ์ ทะเบียน</b>
+                ทำการแก้ไขไปเมื่อ 2 นาทีที่แล้ว)
+            </p>
+            <p class="text-gray-700 text-sm mb-6 bg-red-50 p-3 border border-red-100 rounded">
+                สถานะปัจจุบัน (ในระบบ): <br><b>สลิปโอนเงิน -> ✅ เอกสารเรียบร้อย</b>
+            </p>
+            <div class="flex gap-3 justify-end">
+                <button onclick="document.getElementById('modalConflict').classList.add('hidden')"
+                    class="px-4 py-2 border text-gray-600 rounded hover:bg-gray-50 font-medium">โหลดข้อมูลใหม่
+                    (ทิ้งที่แก้)</button>
+                <button onclick="forceSaveData()"
+                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-medium shadow-sm">ยืนยันเขียนทับ
+                    (Force Save)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Modal: Version Mismatch (Hard Refresh) -->
+    <div id="modalVersion" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-xl text-center">
+            <i class="fa-solid fa-cloud-arrow-down text-5xl text-blue-500 mb-4"></i>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">ฐานข้อมูลมีการอัปเดตเวอร์ชัน</h2>
+            <p class="text-gray-600 text-sm mb-6">ข้อมูลในเครื่องของคุณเก่ากว่าบนเซิร์ฟเวอร์
+                กรุณากดปุ่มด้านล่างเพื่อรีเซ็ต Cache และดึงข้อมูลใหม่</p>
+            <button onclick="location.reload()"
+                class="w-full py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow transition">Force
+                Hard Refresh</button>
+        </div>
+    </div>
+
+    <!-- Scripts (Mockup Logic) -->
+    <script>
+        // Mockup Data
+        const mockTeams = [
+            { id: "MQ001", name: "โรงเรียนรักษ์เรียน", email: "team1@gmail.com", category: "โควตาทีมโรงเรียน", status: "รอตรวจ", isUpdated: true, occupied: false, m1: "นาย เอ", m2: "นางสาว บี", m3: "นาย ซี" },
+            { id: "MQ002", name: "MixGenius", email: "team2@gmail.com", category: "โควตาทีมอิสระ (ทีมผสม)", status: "รอตรวจ", isUpdated: false, occupied: true, m1: "นาย ดี", m2: "นาย อี", m3: "นาง เอฟ" },
+            { id: "MQ003", name: "วิทย์สู้ตาย", email: "team3@gmail.com", category: "โควตาทีมโรงเรียน", status: "ผ่านแล้ว", isUpdated: false, occupied: false, m1: "นางสาว จี", m2: "นางสาว เอช", m3: "นาย ไอ" },
+            { id: "MQ004", name: "Indie Med", email: "team4@gmail.com", category: "โควตาทีมอิสระ (ทีมผสม)", status: "แก้ไข", isUpdated: true, occupied: false, m1: "นาย เจ", m2: "นาย เค", m3: "นาย แอล" },
+        ];
+
+        // 1. Render List
+        const listContainer = document.getElementById('teamList');
+        function renderList() {
+            listContainer.innerHTML = '';
+            mockTeams.forEach(team => {
+                let borderCol = team.status === 'ผ่านแล้ว' ? 'border-green-500' : (team.status === 'แก้ไข' ? 'border-red-500' : 'border-yellow-400');
+
+                let html = `
+                <div onclick="selectTeam('${team.id}')" class="bg-white p-3 rounded-lg border-l-4 ${borderCol} shadow-sm hover:shadow-md transition cursor-pointer relative">
+                    ${team.isUpdated ? '<span class="absolute top-2 right-2 flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-red-500" title="อัปเดตใหม่"></span></span>' : ''}
+                    
+                    <div class="text-[10px] text-gray-500 mb-1">${team.category}</div>
+                    <div class="font-bold text-gray-800 text-sm truncate pr-4">${team.name}</div>
+                    <div class="text-xs text-gray-500 truncate">${team.email}</div>
+                    
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${team.status === 'ผ่านแล้ว' ? 'bg-green-100 text-green-700' : (team.status === 'แก้ไข' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700')}">${team.status}</span>
+                        ${team.occupied ? '<span class="text-[10px] bg-orange-100 text-orange-600 px-1 rounded"><i class="fa-solid fa-eye"></i> กำลังตรวจ</span>' : ''}
+                    </div>
+                </div>`;
+                listContainer.innerHTML += html;
+            });
+        }
+
+        // 2. Select Team & Populate Detail View
+        function selectTeam(id) {
+            const team = mockTeams.find(t => t.id === id);
+            if (!team) return;
+
+            document.getElementById('emptyState').classList.add('hidden');
+
+            document.getElementById('dtTeamName').innerText = team.name;
+            document.getElementById('dtEmail').innerText = team.email;
+            document.getElementById('dtCategory').innerText = team.category;
+            document.getElementById('dtM1').innerText = team.m1;
+            document.getElementById('dtM2').innerText = team.m2;
+            document.getElementById('dtM3').innerText = team.m3;
+
+            // Occupancy Badge Logic
+            const badge = document.getElementById('occupancyBadge');
+            if (team.occupied) {
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+
+            // ถ้าเป็นทีมผสม ปิดตัวเลือกใบรับรองโรงเรียน
+            const certSelect = document.getElementById('statusCert');
+            if (team.category === "โควตาทีมอิสระ (ทีมผสม)") {
+                certSelect.value = "ไม่ต้องส่ง";
+                certSelect.disabled = true;
+            } else {
+                certSelect.value = "รอตรวจเอกสาร";
+                certSelect.disabled = false;
+            }
+
+            // Reset Viewer
+            switchDoc('cert');
+            document.getElementById('feedbackText').value = '';
+
+            // Mobile view handling (ซ่อนลิสต์ แสดงดีเทล)
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.add('hidden');
+                document.getElementById('detailView').classList.remove('hidden');
+                document.getElementById('detailView').classList.add('flex');
+            }
+        }
+
+        // 3. Document Viewer Controls (Mock)
+        let docScale = 1;
+        let docRotate = 0;
+
+        function switchDoc(type) {
+            // Reset Styles
+            ['cert', 'transcript', 'slip'].forEach(t => {
+                let btn = document.getElementById(`tab-${t}`);
+                btn.className = "flex-1 py-2 bg-white rounded shadow-sm text-sm font-medium text-gray-500 hover:bg-gray-50";
+            });
+
+            // Active Style
+            document.getElementById(`tab-${type}`).className = "flex-1 py-2 bg-white rounded shadow-sm text-sm font-semibold border-b-2 border-blue-600 text-blue-600";
+
+            // Reset Image Transforms
+            docScale = 1; docRotate = 0; applyTransform();
+
+            // Change Image (Mockup)
+            const imgEl = document.getElementById('docPreview');
+            if (type === 'cert') imgEl.src = "https://picsum.photos/800/1200?random=1";
+            if (type === 'transcript') imgEl.src = "https://picsum.photos/800/1200?random=2";
+            if (type === 'slip') imgEl.src = "https://picsum.photos/600/800?random=3";
+        }
+
+        function zoomImg(val) {
+            docScale += val;
+            if (docScale < 0.5) docScale = 0.5;
+            if (docScale > 3) docScale = 3;
+            applyTransform();
+        }
+
+        function rotateImg() {
+            docRotate = (docRotate + 90) % 360;
+            applyTransform();
+        }
+
+        function applyTransform() {
+            document.getElementById('docPreview').style.transform = `scale(${docScale}) rotate(${docRotate}deg)`;
+        }
+
+        // 4. Feedback Auto-gen
+        function autoFeedback(docType, status) {
+            const docName = docType === 'cert' ? "ใบรับรองรร." : (docType === 'transcript' ? "ปพ.7" : "สลิปโอนเงิน");
+            let text = "";
+
+            if (status === "เอกสารไม่เรียบร้อย") text = `\n- [${docName}] เอกสารไม่เรียบร้อย: `;
+            else if (status === "ยังไม่ได้รับเอกสาร") text = `\n- [${docName}] ❌ ยังไม่ได้รับเอกสาร`;
+            else if (status === "เอกสารเรียบร้อย") text = `\n- [${docName}] ✅ เรียบร้อย`;
+
+            if (text) {
+                const fb = document.getElementById('feedbackText');
+                if (!fb.value.includes(`[${docName}]`)) {
+                    fb.value += text;
+                }
+            }
+        }
+
+        function addQuickFeedback(text) {
+            document.getElementById('feedbackText').value += text + "\n";
+        }
+
+        // 5. Save Button & Conflict Logic
+        function saveData() {
+            const btn = document.getElementById('btnSave');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            // จำลอง API Call
+            setTimeout(() => {
+                // จำลองว่าเกิด Conflict (สุ่มเกิด)
+                const isConflict = Math.random() > 0.5;
+
+                if (isConflict) {
+                    document.getElementById('modalConflict').classList.remove('hidden');
+                    resetSaveBtn();
+                } else {
+                    alert('✅ บันทึกข้อมูลสำเร็จ (ข้อมูลอัปเดตลง Google Sheet และ Firebase แล้ว)');
+                    resetSaveBtn();
+                }
+            }, 1000);
+        }
+
+        function forceSaveData() {
+            document.getElementById('modalConflict').classList.add('hidden');
+            alert('✅ บังคับบันทึกทับสำเร็จ!');
+        }
+
+        function resetSaveBtn() {
+            const btn = document.getElementById('btnSave');
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูล';
+            btn.disabled = false;
+            btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
+
+        // 6. Hard Refresh Modal Trigger
+        function showVersionModal() {
+            document.getElementById('modalVersion').classList.remove('hidden');
+        }
+
+        // Init
+        renderList();
+
+    </script>
+</body>
+
+</html>
