@@ -1,482 +1,1006 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedQuiz 2026 - Document Checking</title>
-    <!-- Tailwind CSS -->
+    <title>MedQuiz KKU 2026 — ระบบตรวจสอบเอกสาร</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --navy: #0f1f4b;
+            --navy-mid: #1a3272;
+            --blue: #1d4ed8;
+            --blue-light: #3b82f6;
+            --accent: #f59e0b;
+            --accent-light: #fcd34d;
+            --surface: #f8faff;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --green: #16a34a;
+            --green-bg: #dcfce7;
+            --yellow: #ca8a04;
+            --yellow-bg: #fef9c3;
+            --red: #dc2626;
+            --red-bg: #fee2e2;
+            --orange: #ea580c;
+            --orange-bg: #ffedd5;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Prompt', sans-serif;
-            background-color: #f8fafc;
+            font-family: 'Sarabun', sans-serif;
+            background: var(--surface);
+            color: var(--text);
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .mono { font-family: 'IBM Plex Mono', monospace; }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+        /* Navbar */
+        nav {
+            background: var(--navy);
+            color: white;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            z-index: 50;
+            flex-shrink: 0;
+            border-bottom: 2px solid var(--accent);
+        }
+        .nav-brand { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px; }
+        .nav-pill { font-size: 10px; background: rgba(255,255,255,0.12); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 5px; }
+        .dot-pulse { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.3)} }
+        .dot-red { background: #f87171; }
+        .workload-wrap { display: flex; flex-direction: column; gap: 3px; min-width: 120px; }
+        .workload-bar-bg { background: rgba(255,255,255,0.15); border-radius: 99px; height: 5px; overflow: hidden; }
+        .workload-bar { background: #4ade80; height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--navy); font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+
+        /* Layout */
+        .main-layout { display: flex; flex: 1; overflow: hidden; }
+
+        /* Sidebar */
+        #sidebar {
+            width: 340px;
+            background: white;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 20;
+        }
+        .sidebar-top { padding: 12px; background: #f8faff; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+        .search-box { position: relative; }
+        .search-box input { width: 100%; padding: 8px 10px 8px 34px; border: 1px solid var(--border); border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 13px; outline: none; background: white; transition: border-color 0.2s; }
+        .search-box input:focus { border-color: var(--blue-light); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .search-box i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 13px; }
+        .range-row { display: flex; align-items: center; gap: 6px; }
+        .range-row label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; white-space: nowrap; }
+        .range-row input { flex: 1; padding: 5px 7px; border: 1px solid var(--border); border-radius: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; outline: none; }
+        .filter-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+        .filter-chips::-webkit-scrollbar { display: none; }
+        .chip { flex-shrink: 0; padding: 4px 10px; border-radius: 99px; font-size: 10px; font-weight: 700; border: 1.5px solid; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+        .chip:hover { opacity: 0.8; }
+        .chip.active { transform: scale(1.05); }
+
+        /* Stats Strip */
+        .stats-strip { display: flex; gap: 6px; padding: 8px 12px; background: white; border-bottom: 1px solid var(--border); overflow-x: auto; }
+        .stats-strip::-webkit-scrollbar { display: none; }
+        .stat-pill { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding: 5px 10px; border-radius: 9px; border: 1px solid; min-width: 64px; }
+        .stat-pill .num { font-size: 16px; font-weight: 800; font-family: 'IBM Plex Mono', monospace; }
+        .stat-pill .lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+
+        /* Team Cards */
+        #teamList { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; background: #f1f5f9; }
+        .team-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.18s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .team-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-1px); }
+        .team-card.active { border-color: var(--blue); background: #eff6ff; box-shadow: 0 0 0 3px rgba(29,78,216,0.15); }
+        .team-card .cat-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 12px 0 0 12px; }
+        .team-card-inner { padding-left: 8px; }
+        .updated-badge { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; border: 2px solid white; }
+        .updated-ring { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; animation: ping 1.5s infinite; opacity: 0.6; }
+        @keyframes ping { 0%{transform:scale(1);opacity:.6} 100%{transform:scale(2.5);opacity:0} }
+        .card-cat { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+        .card-team { font-size: 14px; font-weight: 700; color: var(--text); margin: 2px 0; }
+        .card-email { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+        .card-members { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+        .member-chip { font-size: 10px; background: #f1f5f9; color: #475569; padding: 2px 7px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; }
+        .overall-badge { font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.3px; }
+        .card-idx { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #94a3b8; }
+        .occupancy-dot { font-size: 8px; background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; padding: 2px 6px; border-radius: 99px; display: flex; align-items: center; gap: 3px; }
+
+        /* Detail View */
+        #detailView { flex: 1; display: flex; flex-direction: column; background: #f1f5f9; overflow: hidden; }
+        #detailView.open { display: flex; }
+
+        /* Empty State */
+        #emptyState { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+        .empty-card { background: white; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,0.06); max-width: 320px; }
+        .empty-icon { width: 72px; height: 72px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; color: var(--blue); }
+
+        /* Detail Header */
+        .detail-header { background: white; padding: 16px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .detail-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+        .tag { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 6px; letter-spacing: 0.3px; }
+        .detail-team-name { font-size: 22px; font-weight: 800; color: var(--navy); letter-spacing: -0.5px; line-height: 1.2; }
+        .detail-email { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Info Grid */
+        .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+        @media(max-width:1100px){ .info-grid { grid-template-columns: repeat(2,1fr); } }
+        .info-card { background: #f8faff; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+        .info-card-title { font-size: 9px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+        /* Members Cards - the highlight */
+        .members-grid { display: flex; flex-direction: column; gap: 5px; }
+        .member-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            border-radius: 8px;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+        }
+        .member-num { width: 18px; height: 18px; border-radius: 50%; background: var(--navy); color: white; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .member-info { flex: 1; min-width: 0; }
+        .member-name { font-size: 12px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .member-sub { font-size: 10px; color: var(--text-muted); display: flex; gap: 4px; flex-wrap: wrap; }
+        .member-level { font-size: 9px; background: #dbeafe; color: #1e40af; padding: 1px 5px; border-radius: 5px; font-weight: 700; }
+        .member-email-icon { font-size: 10px; color: #94a3b8; flex-shrink: 0; }
+
+        /* Workspace */
+        .workspace { display: flex; flex: 1; overflow: hidden; }
+
+        /* Doc Section */
+        .doc-section { flex: 1; display: flex; flex-direction: column; padding: 14px; gap: 10px; min-width: 0; }
+        .doc-tabs { display: flex; gap: 6px; }
+        .doc-tab { flex: 1; padding: 8px 4px; background: white; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 11px; font-weight: 700; color: #94a3b8; cursor: pointer; text-align: center; transition: all 0.15s; }
+        .doc-tab.active { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
+        .doc-viewer { flex: 1; background: #1e293b; border-radius: 16px; position: relative; overflow: hidden; border: 3px solid white; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+        .doc-controls { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 10; opacity: 0; transition: opacity 0.2s; }
+        .doc-viewer:hover .doc-controls { opacity: 1; }
+        .ctrl-btn { width: 36px; height: 36px; background: rgba(255,255,255,0.92); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e293b; font-size: 13px; cursor: pointer; border: none; transition: all 0.15s; }
+        .ctrl-btn:hover { background: var(--blue); color: white; }
+        .doc-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #1e293b; color: white; flex-direction: column; gap: 8px; z-index: 5; }
+        .doc-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 12px; }
+        .doc-content img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5)); transition: transform 0.3s ease; cursor: grab; }
+        .doc-content img:active { cursor: grabbing; }
+
+        /* Status Panel */
+        .status-panel { width: 300px; background: white; border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 16px; overflow-y: auto; flex-shrink: 0; gap: 12px; }
+        .status-panel h3 { font-size: 13px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 6px; }
+        .status-group label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; display: block; margin-bottom: 4px; }
+        .status-group select { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 9px; font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 600; outline: none; background: #f8faff; cursor: pointer; transition: border-color 0.15s; }
+        .status-group select:focus { border-color: var(--blue-light); }
+        .divider { height: 1px; background: var(--border); }
+        .feedback-area { flex: 1; min-height: 120px; }
+        .feedback-area label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .feedback-area label span { cursor: pointer; color: var(--blue); font-weight: 600; text-transform: none; letter-spacing: 0; }
+        .quick-btns { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+        .quick-btn { font-size: 9px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: 3px 7px; cursor: pointer; transition: all 0.12s; color: #475569; font-family: 'Sarabun', sans-serif; }
+        .quick-btn:hover { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+        textarea { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 12px; resize: none; outline: none; background: #f8faff; color: var(--text); min-height: 110px; line-height: 1.6; }
+        textarea:focus { border-color: var(--blue-light); }
+        .email-toggle { display: flex; align-items: center; gap: 10px; background: #eff6ff; padding: 10px 12px; border-radius: 10px; border: 1px solid #bfdbfe; cursor: pointer; }
+        .email-toggle input { width: 15px; height: 15px; cursor: pointer; }
+        .email-toggle span { font-size: 12px; font-weight: 700; color: #1e40af; }
+        .save-row { display: flex; gap: 6px; }
+        .btn-history { width: 44px; height: 44px; background: #f1f5f9; border: 1.5px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #64748b; cursor: pointer; flex-shrink: 0; transition: all 0.15s; }
+        .btn-history:hover { background: #e2e8f0; }
+        .btn-save { flex: 1; height: 44px; background: var(--blue); color: white; border: none; border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; box-shadow: 0 4px 12px rgba(29,78,216,0.3); }
+        .btn-save:hover { background: #1e40af; }
+        .btn-save:active { transform: scale(0.97); }
+        .btn-save:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,31,75,0.65); backdrop-filter: blur(6px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.hidden { display: none; }
+        .modal { background: white; border-radius: 24px; padding: 32px; max-width: 400px; width: 100%; box-shadow: 0 24px 80px rgba(0,0,0,0.25); }
+        .modal-icon { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px; }
+        .modal h2 { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 8px; }
+        .modal p { font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.6; margin-bottom: 20px; }
+        .modal-btn-row { display: flex; flex-direction: column; gap: 8px; }
+        .btn-primary { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 12px; font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; transition: all 0.15s; }
+        .btn-primary:hover { background: #1e40af; }
+        .btn-ghost { width: 100%; padding: 10px; background: transparent; color: #94a3b8; border: none; font-family: 'Sarabun', sans-serif; font-size: 12px; cursor: pointer; text-decoration: underline; }
+
+        /* Conflict Modal */
+        .conflict-log { background: #fff5f5; border: 1px solid #fecaca; border-radius: 12px; padding: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #991b1b; line-height: 1.7; margin-bottom: 16px; }
+        .conflict-btn-row { display: flex; gap: 8px; }
+        .btn-reload { flex: 1; padding: 11px; background: #f1f5f9; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; color: #475569; transition: all 0.15s; }
+        .btn-overwrite { flex: 1; padding: 11px; background: #dc2626; color: white; border: none; border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.15s; }
+
+        /* Toast */
+        #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1e293b; color: white; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 999; transition: transform 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.3); white-space: nowrap; }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* Status colors */
+        .s-wait { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+        .s-done { background: #dcfce7; color: #166534; border-color: #86efac; }
+        .s-bad { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .s-na { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+        .s-updated { background: #ffedd5; color: #9a3412; border-color: #fb923c; }
+
+        /* Cat colors */
+        .cat-school { background: #dbeafe; color: #1e40af; }
+        .cat-mixed { background: #f3e8ff; color: #6d28d9; }
+
+        /* Responsive */
+        @media(max-width:768px){
+            #sidebar { width: 100%; }
+            #detailView { display: none; }
+            #detailView.mobile-open { display: flex; }
+            .info-grid { grid-template-columns: 1fr 1fr; }
+            .status-panel { display: none; }
+            nav .workload-wrap { display: none; }
+        }
+        @media(max-width:1024px){
+            #sidebar { width: 300px; }
+            .status-panel { width: 260px; }
+        }
+        @media(max-width:900px){
+            .info-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        /* ซ่อน Scrollbar แต่ยังเลื่อนได้ */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        .doc-container {
-            transition: transform 0.3s ease;
-        }
+        /* Spin */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .fa-spin { animation: spin 1s linear infinite; }
     </style>
 </head>
+<body>
 
-<body class="min-h-screen flex flex-col bg-slate-50">
-
-    <!-- Navbar -->
-    <nav class="bg-blue-800 text-white shadow-md z-20 flex-shrink-0">
-        <div class="px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <div class="font-bold text-xl"><i class="fa-solid fa-microscope"></i> MedQuiz 2026</div>
-                <div class="hidden md:flex gap-3 text-xs bg-blue-900 px-3 py-1.5 rounded-full">
-                    <span class="flex items-center gap-1" title="Firebase Connected"><span
-                            class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Firebase: Ready</span>
-                    <span class="flex items-center gap-1" title="Google Apps Script Connected"><span
-                            class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> GAS: Ready</span>
-                </div>
+<!-- Navbar -->
+<nav>
+    <div style="display:flex;align-items:center;gap:12px;">
+        <div class="nav-brand">
+            <i class="fa-solid fa-stethoscope" style="color:var(--accent)"></i>
+            MedQuiz KKU 2026
+            <span style="font-size:11px;font-weight:400;opacity:0.6;border-left:1px solid rgba(255,255,255,0.25);padding-left:10px;">ระบบตรวจสอบเอกสาร</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+            <span class="nav-pill"><span class="dot-pulse"></span> Firebase</span>
+            <span class="nav-pill"><span class="dot-pulse"></span> GAS</span>
+        </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+        <div class="workload-wrap">
+            <div style="display:flex;justify-content:space-between;font-size:10px;opacity:0.7;">
+                <span>ความคืบหน้า</span><span id="wlText">2/4 ทีม</span>
             </div>
+            <div class="workload-bar-bg"><div class="workload-bar" id="wlBar" style="width:50%"></div></div>
+        </div>
+        <button onclick="checkVersion()" style="font-size:11px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:'Sarabun',sans-serif;">
+            <i class="fa-solid fa-arrows-rotate"></i> v1.0.4
+        </button>
+        <div style="display:flex;align-items:center;gap:8px;border-left:1px solid rgba(255,255,255,0.2);padding-left:12px;">
+            <div style="text-align:right;">
+                <div style="font-size:10px;opacity:0.6;">Staff Access</div>
+                <div style="font-size:12px;font-weight:700;">พี่สมรักษ์ ทะเบียน</div>
+            </div>
+            <div class="avatar">SR</div>
+        </div>
+    </div>
+</nav>
 
-            <div class="flex items-center gap-6">
-                <!-- Progress Bar งานของฉัน -->
-                <div class="hidden lg:block w-48">
-                    <div class="flex justify-between text-xs mb-1">
-                        <span>งานของคุณ (kkumail)</span>
-                        <span>15/20 (75%)</span>
-                    </div>
-                    <div class="w-full bg-blue-900 rounded-full h-2">
-                        <div class="bg-green-400 h-2 rounded-full" style="width: 75%"></div>
-                    </div>
-                </div>
+<!-- Main -->
+<div class="main-layout">
 
-                <button onclick="showVersionModal()"
-                    class="text-sm bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded transition">
-                    <i class="fa-solid fa-rotate"></i> Force Refresh
-                </button>
-                <div class="flex items-center gap-2">
-                    <div
-                        class="w-8 h-8 rounded-full bg-blue-300 text-blue-900 flex items-center justify-center font-bold">
-                        ST</div>
-                </div>
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <!-- Search & Filters -->
+        <div class="sidebar-top">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="ค้นหาชื่อทีม, Email, ชื่อสมาชิก..." oninput="filterTeams()">
+            </div>
+            <div class="range-row">
+                <label>Row</label>
+                <input type="number" id="rangeStart" value="1" min="1" style="width:60px">
+                <span style="color:#94a3b8;font-size:12px;">–</span>
+                <input type="number" id="rangeEnd" value="100" min="1" style="width:60px">
+                <button onclick="filterTeams()" style="padding:5px 10px;background:#e2e8f0;border:none;border-radius:7px;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;"><i class="fa-solid fa-filter"></i></button>
+            </div>
+            <!-- Filter Chips -->
+            <div class="filter-chips" id="filterChips">
+                <button class="chip active" style="background:#dbeafe;color:#1e40af;border-color:#93c5fd;" onclick="setFilter('all',this)">ทั้งหมด</button>
+                <button class="chip" style="background:#fef9c3;color:#854d0e;border-color:#fde047;" onclick="setFilter('waiting',this)">รอตรวจ</button>
+                <button class="chip" style="background:#ffedd5;color:#9a3412;border-color:#fb923c;" onclick="setFilter('updated',this)">Updated</button>
+                <button class="chip" style="background:#dcfce7;color:#166534;border-color:#86efac;" onclick="setFilter('done',this)">สมบูรณ์</button>
+                <button class="chip" style="background:#fee2e2;color:#991b1b;border-color:#fca5a5;" onclick="setFilter('bad',this)">ไม่เรียบร้อย</button>
+                <button class="chip" style="background:#ede9fe;color:#5b21b6;border-color:#c4b5fd;" onclick="setFilter('school',this)">ทีมโรงเรียน</button>
+                <button class="chip" style="background:#fdf4ff;color:#701a75;border-color:#e879f9;" onclick="setFilter('mixed',this)">ทีมผสม</button>
+                <button class="chip" style="background:#ecfdf5;color:#065f46;border-color:#6ee7b7;" onclick="setFilter('email-sent',this)">ส่งอีเมลแล้ว</button>
+                <button class="chip" style="background:#f8faff;color:#475569;border-color:#cbd5e1;" onclick="setFilter('email-not',this)">ยังไม่ส่งอีเมล</button>
             </div>
         </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="flex flex-1">
+        <!-- Stats Strip -->
+        <div class="stats-strip" id="statsStrip">
+            <!-- injected by JS -->
+        </div>
 
-        <!-- Sidebar: List View -->
-        <div class="w-full md:w-1/3 lg:w-1/4 bg-white border-r flex flex-col h-full flex-shrink-0 z-10" id="sidebar">
+        <!-- Team List -->
+        <div id="teamList"></div>
+    </aside>
 
-            <!-- Tools & Search -->
-            <div class="p-4 border-b bg-gray-50">
-                <input type="text" id="searchInput" placeholder="ค้นหา Email, ชื่อทีม..."
-                    class="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3">
+    <!-- Detail View -->
+    <main id="detailView">
 
-                <div class="flex flex-wrap gap-2 text-xs">
-                    <button class="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 font-medium">My
-                        Queue</button>
-                    <button class="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"><i
-                            class="fa-solid fa-bell"></i> Updated</button>
-                    <button class="px-2 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"><i
-                            class="fa-solid fa-sort"></i> เก่าสุดก่อน</button>
-                </div>
-            </div>
-
-            <!-- List ทีม (Mockup) -->
-            <div class="flex-1 overflow-y-auto no-scrollbar p-2 space-y-2" id="teamList">
-                <!-- Cards จะถูก Render ด้วย JS -->
+        <!-- Empty State -->
+        <div id="emptyState">
+            <div class="empty-card">
+                <div class="empty-icon"><i class="fa-solid fa-mouse-pointer"></i></div>
+                <h3 style="font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px;">เริ่มการตรวจสอบ</h3>
+                <p style="font-size:13px;color:var(--text-muted);line-height:1.6;">เลือกรายชื่อทีมจากแถบด้านซ้าย เพื่อดูข้อมูลและเอกสารของทีม</p>
             </div>
         </div>
 
-        <!-- Main Detail View -->
-        <div class="hidden md:flex flex-1 flex-col bg-slate-50 h-full overflow-auto relative" id="detailView">
+        <!-- Detail Content (hidden until team selected) -->
+        <div id="detailContent" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
 
-            <!-- กรณีไม่มีการเลือกทีม -->
-            <div id="emptyState"
-                class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 z-10 bg-slate-50">
-                <i class="fa-solid fa-file-signature text-6xl mb-4"></i>
-                <p class="text-lg">เลือกทีมจากรายชื่อด้านซ้ายเพื่อเริ่มตรวจสอบเอกสาร</p>
+            <!-- Detail Header -->
+            <div class="detail-header">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div style="flex:1;min-width:0;">
+                        <div class="detail-meta">
+                            <span id="dtCategory" class="tag cat-school">โควตาทีมโรงเรียน</span>
+                            <span id="dtId" class="tag mono" style="background:#f1f5f9;color:#475569;">#1024</span>
+                            <span id="dtUpdatedTag" class="tag s-updated" style="display:none;">🔴 Updated</span>
+                        </div>
+                        <div class="detail-team-name" id="dtTeamName">ทีมขอนแก่นวิทยา</div>
+                        <div class="detail-email" id="dtEmail">head@gmail.com</div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+                        <span id="staffViewing" style="display:none;" class="tag s-updated">
+                            <i class="fa-solid fa-eye fa-pulse"></i> พี่บีดูอยู่
+                        </span>
+                        <button onclick="closeMobileDetail()" style="display:none;" id="btnBack" class="btn-history">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="info-grid">
+                    <!-- Members Card (prominent) -->
+                    <div class="info-card" style="border-left:3px solid var(--navy);">
+                        <div class="info-card-title"><i class="fa-solid fa-users" style="margin-right:4px;"></i>สมาชิกในทีม</div>
+                        <div class="members-grid" id="dtMembersGrid">
+                            <!-- injected -->
+                        </div>
+                    </div>
+                    <!-- Advisor -->
+                    <div class="info-card" style="border-left:3px solid #8b5cf6;">
+                        <div class="info-card-title"><i class="fa-solid fa-chalkboard-user" style="margin-right:4px;"></i>ข้อมูลอาจารย์ที่ปรึกษา</div>
+                        <p id="dtAdvisor" style="font-size:12px;font-weight:600;line-height:1.7;"></p>
+                    </div>
+                    <!-- Payment -->
+                    <div class="info-card" style="border-left:3px solid var(--green);">
+                        <div class="info-card-title"><i class="fa-solid fa-money-bill-transfer" style="margin-right:4px;"></i>ข้อมูลการโอนเงิน</div>
+                        <p id="dtPayment" style="font-size:12px;font-weight:600;line-height:1.7;"></p>
+                    </div>
+                    <!-- History -->
+                    <div class="info-card" style="border-left:3px solid var(--accent);">
+                        <div class="info-card-title"><i class="fa-solid fa-clock-rotate-left" style="margin-right:4px;"></i>ประวัติ / เวอร์ชัน</div>
+                        <p id="dtVersion" style="font-size:12px;font-weight:600;line-height:1.7;"></p>
+                    </div>
+                </div>
             </div>
 
-            <!-- ข้อมูลทีม -->
-            <div class="p-4 border-b bg-white shadow-sm z-0">
-                <div class="flex justify-between items-start mb-2">
-                    <div>
-                        <span class="text-xs font-bold px-2 py-1 rounded bg-blue-100 text-blue-800"
-                            id="dtCategory">โควตาทีมโรงเรียน</span>
-                        <h2 class="text-xl font-bold mt-1 text-gray-800" id="dtTeamName">โรงเรียนรักษ์เรียน</h2>
-                        <p class="text-sm text-gray-500" id="dtEmail">example@gmail.com</p>
+            <!-- Workspace -->
+            <div class="workspace">
+                <!-- Doc Viewer -->
+                <div class="doc-section">
+                    <div class="doc-tabs">
+                        <button class="doc-tab active" id="tab-cert" onclick="viewDoc('cert')">1. ใบรับรอง รร.</button>
+                        <button class="doc-tab" id="tab-transcript" onclick="viewDoc('transcript')">2. ปพ.7</button>
+                        <button class="doc-tab" id="tab-slip" onclick="viewDoc('slip')">3. สลิปโอนเงิน</button>
                     </div>
-                    <div id="occupancyBadge"
-                        class="hidden items-center gap-2 text-xs bg-orange-100 text-orange-700 px-3 py-1.5 rounded-full border border-orange-200 animate-pulse">
-                        <i class="fa-solid fa-eye"></i> สตาฟท่านอื่นกำลังดูทีมนี้
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 text-sm mt-3 bg-gray-50 p-2 rounded border">
-                    <div><span class="font-semibold">M1 (หัวหน้า):</span> <span id="dtM1">นาย สมชาย</span></div>
-                    <div><span class="font-semibold">M2:</span> <span id="dtM2">นางสาว สมหญิง</span></div>
-                    <div><span class="font-semibold">M3:</span> <span id="dtM3">นาย สมหมาย</span></div>
-                </div>
-            </div>
-
-            <!-- ส่วนตรวจเอกสาร (แยก 2 ฝั่ง: ซ้ายดูรูป ขวาปรับสถานะ) -->
-            <div class="flex flex-1 flex-col md:flex-row">
-
-                <!-- ซ้าย: Document Viewer -->
-                <div class="flex-1 flex flex-col border-r bg-gray-200 p-2 relative">
-                    <!-- Tabs -->
-                    <div class="flex gap-2 mb-2">
-                        <button onclick="switchDoc('cert')" id="tab-cert"
-                            class="flex-1 py-2 bg-white rounded shadow-sm text-sm font-semibold border-b-2 border-blue-600 text-blue-600">1.
-                            ใบรับรอง รร.</button>
-                        <button onclick="switchDoc('transcript')" id="tab-transcript"
-                            class="flex-1 py-2 bg-white rounded shadow-sm text-sm font-medium text-gray-500 hover:bg-gray-50">2.
-                            ปพ.7</button>
-                        <button onclick="switchDoc('slip')" id="tab-slip"
-                            class="flex-1 py-2 bg-white rounded shadow-sm text-sm font-medium text-gray-500 hover:bg-gray-50">3.
-                            สลิปโอนเงิน</button>
-                    </div>
-
-                    <!-- Toolbar -->
-                    <div class="flex justify-between items-center bg-gray-800 text-white p-2 rounded-t text-sm">
-                        <span><i class="fa-solid fa-magnifying-glass"></i> Preview</span>
-                        <div class="flex gap-3">
-                            <button onclick="zoomImg(0.2)" title="Zoom In" class="hover:text-blue-300"><i
-                                    class="fa-solid fa-magnifying-glass-plus"></i></button>
-                            <button onclick="zoomImg(-0.2)" title="Zoom Out" class="hover:text-blue-300"><i
-                                    class="fa-solid fa-magnifying-glass-minus"></i></button>
-                            <button onclick="rotateImg()" title="Rotate" class="hover:text-blue-300"><i
-                                    class="fa-solid fa-rotate-right"></i></button>
-                            <button onclick="window.open('https://picsum.photos/800/1200', '_blank')"
-                                title="เปิดแท็บใหม่" class="hover:text-blue-300"><i
-                                    class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                    <div class="doc-viewer" id="docViewer">
+                        <div class="doc-controls">
+                            <button class="ctrl-btn" onclick="adjustDoc('zoomIn')" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                            <button class="ctrl-btn" onclick="adjustDoc('zoomOut')" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                            <button class="ctrl-btn" onclick="adjustDoc('rotate')" title="Rotate"><i class="fa-solid fa-rotate-right"></i></button>
+                            <a id="dtPopOut" href="#" target="_blank" class="ctrl-btn" title="Open in new tab"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                         </div>
-                    </div>
-
-                    <!-- Viewer Area -->
-                    <div
-                        class="flex-1 bg-gray-300 overflow-auto flex items-center justify-center rounded-b border shadow-inner relative">
-                        <!-- Mockup Image แทน iframe (ของจริงใช้ iframe google drive) -->
-                        <img id="docPreview" src="https://picsum.photos/800/1200?random=1" alt="Document Preview"
-                            class="doc-container max-w-full max-h-full object-contain">
+                        <div id="docLoading" class="doc-loading">
+                            <i class="fa-solid fa-circle-notch fa-spin" style="font-size:28px;opacity:0.6;"></i>
+                            <span style="font-size:12px;opacity:0.5;">กำลังโหลดเอกสาร...</span>
+                        </div>
+                        <div class="doc-content">
+                            <img id="mainDocPreview" src="" draggable="false" style="display:none;">
+                            <div id="noDocMsg" style="color:#94a3b8;text-align:center;display:none;">
+                                <i class="fa-solid fa-file-circle-xmark" style="font-size:40px;margin-bottom:12px;display:block;opacity:0.3;"></i>
+                                <span style="font-size:13px;">ไม่พบลิงก์เอกสาร</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- ขวา: Status & Feedback Controls -->
-                <div class="w-full lg:w-1/3 bg-white flex flex-col p-4 overflow-y-auto">
-                    <h3 class="font-bold text-gray-700 mb-3 border-b pb-2"><i class="fa-solid fa-pen-to-square"></i>
-                        ปรับปรุงสถานะ</h3>
+                <!-- Status Panel -->
+                <div class="status-panel">
+                    <h3><i class="fa-solid fa-pen-to-square" style="color:var(--blue);"></i> ปรับสถานะเอกสาร</h3>
 
-                    <!-- Dropdowns -->
-                    <div class="space-y-4 mb-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">สถานะ ใบรับรองโรงเรียน</label>
-                            <select id="statusCert"
-                                class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                onchange="autoFeedback('cert', this.value)">
-                                <option value="รอตรวจเอกสาร" selected>⏳ รอตรวจเอกสาร</option>
-                                <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
-                                <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
-                                <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
-                                <option value="ไม่ต้องส่ง">➖ ไม่ต้องส่ง (ทีมผสม)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">สถานะ ปพ.7</label>
-                            <select id="statusTranscript"
-                                class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                onchange="autoFeedback('transcript', this.value)">
-                                <option value="รอตรวจเอกสาร" selected>⏳ รอตรวจเอกสาร</option>
-                                <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
-                                <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
-                                <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">สถานะ สลิปโอนเงิน</label>
-                            <select id="statusSlip"
-                                class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                onchange="autoFeedback('slip', this.value)">
-                                <option value="รอตรวจเอกสาร" selected>⏳ รอตรวจเอกสาร</option>
-                                <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
-                                <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
-                                <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
-                            </select>
-                        </div>
+                    <div class="status-group">
+                        <label>ใบรับรอง รร.</label>
+                        <select id="sel-cert" onchange="genBullets()">
+                            <option value="รอตรวจเอกสาร">⏳ รอตรวจเอกสาร</option>
+                            <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
+                            <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
+                            <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
+                            <option value="ไม่ต้องส่ง">➖ ไม่ต้องส่ง (ทีมผสม)</option>
+                        </select>
+                    </div>
+                    <div class="status-group">
+                        <label>ปพ.7 (ทุกคน)</label>
+                        <select id="sel-transcript" onchange="genBullets()">
+                            <option value="รอตรวจเอกสาร">⏳ รอตรวจเอกสาร</option>
+                            <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
+                            <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
+                            <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
+                        </select>
+                    </div>
+                    <div class="status-group">
+                        <label>สลิปชำระเงิน</label>
+                        <select id="sel-slip" onchange="genBullets()">
+                            <option value="รอตรวจเอกสาร">⏳ รอตรวจเอกสาร</option>
+                            <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
+                            <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
+                            <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
+                        </select>
                     </div>
 
-                    <!-- Feedback Area -->
-                    <div class="flex-1 flex flex-col mb-4">
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Feedback แจ้งผู้สมัคร (จะถูกส่งทาง
-                            Email)</label>
-                        <div class="flex flex-wrap gap-1 mb-2">
-                            <button onclick="addQuickFeedback('รูปไม่ชัดเจน ควรถ่ายใหม่')"
-                                class="text-xs bg-gray-100 hover:bg-gray-200 border px-2 py-1 rounded">+
-                                รูปไม่ชัด</button>
-                            <button onclick="addQuickFeedback('แนบไฟล์ผิดประเภท')"
-                                class="text-xs bg-gray-100 hover:bg-gray-200 border px-2 py-1 rounded">+
-                                ไฟล์ผิด</button>
-                            <button onclick="addQuickFeedback('สลิปไม่มีวันที่/เวลา')"
-                                class="text-xs bg-gray-100 hover:bg-gray-200 border px-2 py-1 rounded">+
-                                สลิปไม่มีวันที่</button>
-                            <button onclick="addQuickFeedback('ชื่อสมาชิกใน ปพ.7 ไม่ตรงกับที่สมัคร')"
-                                class="text-xs bg-gray-100 hover:bg-gray-200 border px-2 py-1 rounded">+
-                                ชื่อไม่ตรง</button>
+                    <div class="divider"></div>
+
+                    <div class="feedback-area">
+                        <label>Feedback ถึงน้อง <span onclick="genBullets()">รีเซ็ต</span></label>
+                        <div class="quick-btns">
+                            <button class="quick-btn" onclick="addFeedback('รูปถ่ายไม่ชัดเจน')">+ รูปไม่ชัด</button>
+                            <button class="quick-btn" onclick="addFeedback('ชื่อทีมในสลิปไม่ตรงกัน')">+ สลิปผิด</button>
+                            <button class="quick-btn" onclick="addFeedback('แนบไฟล์ผิดประเภท')">+ ไฟล์ผิด</button>
+                            <button class="quick-btn" onclick="addFeedback('ปพ.7 ไม่ครบทุกคน')">+ ปพ7 ไม่ครบ</button>
+                            <button class="quick-btn" onclick="addFeedback('ลายเซ็นอาจารย์ไม่ครบ')">+ ไม่มีลายเซ็น</button>
                         </div>
-                        <textarea id="feedbackText"
-                            class="w-full flex-1 border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                            placeholder="พิมพ์รายละเอียดสิ่งที่ต้องแก้ไข..."></textarea>
+                        <textarea id="feedbackText" placeholder="ระบบจะสรุป feedback อัตโนมัติ..."></textarea>
                     </div>
 
-                    <!-- Action Buttons -->
-                    <div class="flex gap-2 mt-auto">
-                        <button class="px-3 py-2 border rounded text-gray-600 hover:bg-gray-50 text-sm font-medium"
-                            onclick="alert('แสดง Modal Log History ของทีมนี้')"><i
-                                class="fa-solid fa-clock-rotate-left"></i> History</button>
-                        <button id="btnSave" onclick="saveData()"
-                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium shadow-sm transition flex items-center justify-center gap-2">
+                    <label class="email-toggle">
+                        <input type="checkbox" id="sendEmail">
+                        <span>📧 ส่งอีเมลแจ้งเตือนทันที</span>
+                    </label>
+
+                    <div class="save-row">
+                        <button class="btn-history" onclick="showHistoryModal()" title="ประวัติการแก้ไข"><i class="fa-solid fa-clock-rotate-left"></i></button>
+                        <button class="btn-save" id="btnSave" onclick="startSaveFlow()">
                             <i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูล
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
+</div>
 
-    <!-- Modals -->
-
-    <!-- 1. Modal: Conflict Check -->
-    <div id="modalConflict" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
-            <div class="flex items-center text-red-600 mb-4 text-xl font-bold gap-3">
-                <i class="fa-solid fa-triangle-exclamation text-3xl"></i> ข้อมูลมีการเปลี่ยนแปลง!
-            </div>
-            <p class="text-gray-700 text-sm mb-2">
-                "ข้อมูลในฐานข้อมูลปัจจุบัน" ไม่ตรงกับข้อมูลที่คุณกำลังดูอยู่ (มีสตาฟท่านอื่น <b>พี่สมรักษ์ ทะเบียน</b>
-                ทำการแก้ไขไปเมื่อ 2 นาทีที่แล้ว)
-            </p>
-            <p class="text-gray-700 text-sm mb-6 bg-red-50 p-3 border border-red-100 rounded">
-                สถานะปัจจุบัน (ในระบบ): <br><b>สลิปโอนเงิน -> ✅ เอกสารเรียบร้อย</b>
-            </p>
-            <div class="flex gap-3 justify-end">
-                <button onclick="document.getElementById('modalConflict').classList.add('hidden')"
-                    class="px-4 py-2 border text-gray-600 rounded hover:bg-gray-50 font-medium">โหลดข้อมูลใหม่
-                    (ทิ้งที่แก้)</button>
-                <button onclick="forceSaveData()"
-                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-medium shadow-sm">ยืนยันเขียนทับ
-                    (Force Save)</button>
-            </div>
+<!-- Modal: Version -->
+<div class="modal-overlay hidden" id="modalVersion">
+    <div class="modal" style="text-align:center;">
+        <div class="modal-icon" style="background:#dbeafe;color:#1d4ed8;"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+        <h2 style="color:var(--navy);">อัปเดตระบบแล้ว!</h2>
+        <p>ฐานข้อมูลบนคลาวด์มีการเปลี่ยนแปลง กรุณารีเฟรชเพื่อซิงค์ข้อมูลล่าสุด</p>
+        <div class="modal-btn-row">
+            <button class="btn-primary" onclick="location.reload()"><i class="fa-solid fa-arrows-rotate"></i> Force Hard Refresh</button>
+            <button class="btn-ghost" onclick="closeModal('modalVersion')">ใช้ข้อมูลเดิมไปก่อน (ไม่แนะนำ)</button>
         </div>
     </div>
+</div>
 
-    <!-- 2. Modal: Version Mismatch (Hard Refresh) -->
-    <div id="modalVersion" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-xl text-center">
-            <i class="fa-solid fa-cloud-arrow-down text-5xl text-blue-500 mb-4"></i>
-            <h2 class="text-xl font-bold text-gray-800 mb-2">ฐานข้อมูลมีการอัปเดตเวอร์ชัน</h2>
-            <p class="text-gray-600 text-sm mb-6">ข้อมูลในเครื่องของคุณเก่ากว่าบนเซิร์ฟเวอร์
-                กรุณากดปุ่มด้านล่างเพื่อรีเซ็ต Cache และดึงข้อมูลใหม่</p>
-            <button onclick="location.reload()"
-                class="w-full py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow transition">Force
-                Hard Refresh</button>
+<!-- Modal: Conflict -->
+<div class="modal-overlay hidden" id="modalConflict">
+    <div class="modal" style="border-top:6px solid #dc2626;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size:28px;color:#dc2626;"></i>
+            <h2 style="font-size:18px;margin:0;">ข้อมูลมีการเปลี่ยนแปลง!</h2>
+        </div>
+        <p style="text-align:left;margin-bottom:12px;">ข้อมูลบน Sheet ถูกแก้ไขหลังจากที่คุณเปิดดู:</p>
+        <div class="conflict-log">
+            <div><b>สตาฟที่แก้:</b> พี่หมวย ทะเบียน</div>
+            <div><b>เมื่อ:</b> 5 นาทีที่แล้ว</div>
+            <div><b>สลิป:</b> ❌ ยังไม่ได้รับ → ✅ เรียบร้อย</div>
+        </div>
+        <div class="conflict-btn-row">
+            <button class="btn-reload" onclick="closeModal('modalConflict');showToast('โหลดข้อมูลใหม่แล้ว ✓')">โหลดข้อมูลใหม่</button>
+            <button class="btn-overwrite" onclick="forceSave()">ยืนยันเขียนทับ</button>
         </div>
     </div>
+</div>
 
-    <!-- Scripts (Mockup Logic) -->
-    <script>
-        // Mockup Data
-        const mockTeams = [
-            { id: "MQ001", name: "โรงเรียนรักษ์เรียน", email: "team1@gmail.com", category: "โควตาทีมโรงเรียน", status: "รอตรวจ", isUpdated: true, occupied: false, m1: "นาย เอ", m2: "นางสาว บี", m3: "นาย ซี" },
-            { id: "MQ002", name: "MixGenius", email: "team2@gmail.com", category: "โควตาทีมอิสระ (ทีมผสม)", status: "รอตรวจ", isUpdated: false, occupied: true, m1: "นาย ดี", m2: "นาย อี", m3: "นาง เอฟ" },
-            { id: "MQ003", name: "วิทย์สู้ตาย", email: "team3@gmail.com", category: "โควตาทีมโรงเรียน", status: "ผ่านแล้ว", isUpdated: false, occupied: false, m1: "นางสาว จี", m2: "นางสาว เอช", m3: "นาย ไอ" },
-            { id: "MQ004", name: "Indie Med", email: "team4@gmail.com", category: "โควตาทีมอิสระ (ทีมผสม)", status: "แก้ไข", isUpdated: true, occupied: false, m1: "นาย เจ", m2: "นาย เค", m3: "นาย แอล" },
-        ];
+<!-- Modal: History -->
+<div class="modal-overlay hidden" id="modalHistory">
+    <div class="modal" style="max-width:480px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h2 style="font-size:16px;margin:0;"><i class="fa-solid fa-clock-rotate-left" style="color:var(--blue);margin-right:6px;"></i>ประวัติการแก้ไข</h2>
+            <button onclick="closeModal('modalHistory')" style="background:none;border:none;font-size:18px;cursor:pointer;color:#94a3b8;">✕</button>
+        </div>
+        <div id="historyList" style="display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;"></div>
+        <button class="btn-ghost" style="margin-top:12px;" onclick="closeModal('modalHistory')">ปิด</button>
+    </div>
+</div>
 
-        // 1. Render List
-        const listContainer = document.getElementById('teamList');
-        function renderList() {
-            listContainer.innerHTML = '';
-            mockTeams.forEach(team => {
-                let borderCol = team.status === 'ผ่านแล้ว' ? 'border-green-500' : (team.status === 'แก้ไข' ? 'border-red-500' : 'border-yellow-400');
+<!-- Toast -->
+<div id="toast"></div>
 
-                let html = `
-                <div onclick="selectTeam('${team.id}')" class="bg-white p-3 rounded-lg border-l-4 ${borderCol} shadow-sm hover:shadow-md transition cursor-pointer relative">
-                    ${team.isUpdated ? '<span class="absolute top-2 right-2 flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-red-500" title="อัปเดตใหม่"></span></span>' : ''}
-                    
-                    <div class="text-[10px] text-gray-500 mb-1">${team.category}</div>
-                    <div class="font-bold text-gray-800 text-sm truncate pr-4">${team.name}</div>
-                    <div class="text-xs text-gray-500 truncate">${team.email}</div>
-                    
-                    <div class="flex justify-between items-center mt-2">
-                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${team.status === 'ผ่านแล้ว' ? 'bg-green-100 text-green-700' : (team.status === 'แก้ไข' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700')}">${team.status}</span>
-                        ${team.occupied ? '<span class="text-[10px] bg-orange-100 text-orange-600 px-1 rounded"><i class="fa-solid fa-eye"></i> กำลังตรวจ</span>' : ''}
-                    </div>
-                </div>`;
-                listContainer.innerHTML += html;
-            });
+<script>
+// ─── Mock Data (from CSV) ────────────────────────────────────────
+const mockTeams = [
+    {
+        id: "T001", idx: 1,
+        teamName: "555testtranscrit7",
+        category: "โควตาทีมโรงเรียน",
+        overall: "รอการตรวจสอบ",
+        updated: true,
+        emailSentStatus: "ยังไม่ส่ง",
+        members: [
+            { prefix:"นาย", name:"นาย คน1", email:"medquizkku2026@gmail.com", phone:"111-111-1111", school:"โรงเรียนแพท (ม.ข.)", level:"มัธยมศึกษาปีที่ 6" },
+            { prefix:"นางสาว", name:"นางสาว คน2", email:"medquizkku2026_2@gmail.com", phone:"222-222-2222", school:"โรงเรียนแพท (ม.ข.)", level:"มัธยมศึกษาปีที่ 5" },
+            { prefix:"นาง", name:"นาง คน3", email:"medquizkku2026_3@gmail.com", phone:"333-333-3333", school:"โรงเรียนแพท (ม.ข.)", level:"มัธยมศึกษาปีที่ 6" }
+        ],
+        advisor: { name:"นาย อาจารย์", phone:"444-444-4444", email:"medquizkku2026_teacher@gmail.com" },
+        payment: { date:"5/15/2026", time:"11:40 AM", bank:"SCB", last4:"6941" },
+        certUrl: "https://drive.google.com/open?id=18lyUhJPtDcEWLp3DDQ4OwM1UCwCIRBS7",
+        transcriptUrl: "https://drive.google.com/open?id=1AKjpOaX6H-t2ABlpnS0E5Cce7TwLPwgA",
+        slipUrl: "",
+        certStatus: "รอตรวจเอกสาร",
+        transcriptStatus: "รอตรวจเอกสาร",
+        slipStatus: "รอตรวจเอกสาร",
+        lastSubmit: "17/05/26 16:21",
+        version: 1,
+        feedback: "",
+        additionalFormSent: "ยังไม่ส่ง"
+    },
+    {
+        id: "T002", idx: 2,
+        teamName: "ทีเอมพี",
+        category: "โควตาทีมอิสระ (ทีมผสม)",
+        overall: "รอการตรวจสอบ",
+        updated: false,
+        emailSentStatus: "ยังไม่ส่ง",
+        members: [
+            { prefix:"นาย", name:"นาย คน4", email:"panasch.edu@gmail.com", phone:"444-444-4444", school:"โรงเรียนแพท (ม.ข.)", level:"มัธยมศึกษาปีที่ 4" },
+            { prefix:"นางสาว", name:"นางสาว คน5", email:"panasch.edu2@gmail.com", phone:"555-555-5555", school:"โรงเรียนแพท2 (ม.ข.)", level:"มัธยมศึกษาปีที่ 5" },
+            { prefix:"นาง", name:"นาง คน6", email:"panasch.edu3@gmail.com", phone:"666-666-6666", school:"โรงเรียนแพท3 (ม.ข.)", level:"มัธยมศึกษาปีที่ 6" }
+        ],
+        advisor: { name:"อาจารย์รรร", phone:"777-777-7777", email:"panasjang@gmail.com" },
+        payment: { date:"5/14/2026", time:"1:09 PM", bank:"SCB", last4:"6941" },
+        certUrl: "https://drive.google.com/open?id=1qxxX0SMCiK0KIuxSVYphPvK2fsfixyBC",
+        transcriptUrl: "https://drive.google.com/open?id=1zYhjfvBiCDzyj8h6I1b2l-19Wzsb7YdD",
+        slipUrl: "",
+        certStatus: "ไม่ต้องส่ง",
+        transcriptStatus: "รอตรวจเอกสาร",
+        slipStatus: "รอตรวจเอกสาร",
+        lastSubmit: "17/05/26 16:21",
+        version: 1,
+        feedback: "",
+        additionalFormSent: "ยังไม่ส่ง"
+    },
+    {
+        id: "T003", idx: 3,
+        teamName: "SKL-ROBOT-2026",
+        category: "โควตาทีมโรงเรียน",
+        overall: "รอการตรวจสอบ",
+        updated: true,
+        emailSentStatus: "ยังไม่ส่ง",
+        members: [
+            { prefix:"นาย", name:"นักเรียนโรงเรียน คนที่ 1", email:"tester_school@gmail.com", phone:"949-482-1250", school:"โรงเรียนขอนแก่นวิทยายน", level:"มัธยมศึกษาปีที่ 6" },
+            { prefix:"นาย", name:"นักเรียนโรงเรียน คนที่ 2", email:"", phone:"223-100-2937", school:"โรงเรียนขอนแก่นวิทยายน", level:"มัธยมศึกษาปีที่ 6" },
+            { prefix:"นาย", name:"นักเรียนโรงเรียน คนที่ 3", email:"", phone:"995-766-4203", school:"โรงเรียนขอนแก่นวิทยายน", level:"มัธยมศึกษาปีที่ 6" }
+        ],
+        advisor: { name:"—", phone:"103-131-2692", email:"" },
+        payment: { date:"5/15/2026", time:"12:30 PM", bank:"—", last4:"9918" },
+        certUrl: "", transcriptUrl: "", slipUrl: "",
+        certStatus: "รอตรวจเอกสาร",
+        transcriptStatus: "รอตรวจเอกสาร",
+        slipStatus: "รอตรวจเอกสาร",
+        lastSubmit: "17/05/26 16:21",
+        version: 1,
+        feedback: "",
+        additionalFormSent: "ยังไม่ส่ง"
+    },
+    {
+        id: "T004", idx: 4,
+        teamName: "MIX-GENIUS-CHAMP",
+        category: "โควตาทีมอิสระ (ทีมผสม)",
+        overall: "สมบูรณ์",
+        updated: false,
+        emailSentStatus: "ส่งแล้ว",
+        members: [
+            { prefix:"นาย", name:"นักเรียนผสม คนที่ 1", email:"tester_mixed@gmail.com", phone:"647-694-1093", school:"โรงเรียนเตรียมอุดมศึกษา", level:"มัธยมศึกษาปีที่ 6" },
+            { prefix:"นาย", name:"นักเรียนผสม คนที่ 2", email:"", phone:"812-420-1819", school:"โรงเรียนขอนแก่นวิทยายน", level:"มัธยมศึกษาปีที่ 6" },
+            { prefix:"นาย", name:"นักเรียนผสม คนที่ 3", email:"", phone:"372-878-1871", school:"โรงเรียนอุดรพิทยานุกูล", level:"มัธยมศึกษาปีที่ 6" }
+        ],
+        advisor: { name:"—", phone:"931-851-6526", email:"" },
+        payment: { date:"5/15/2026", time:"12:30 PM", bank:"—", last4:"9928" },
+        certUrl: "", transcriptUrl: "", slipUrl: "",
+        certStatus: "ไม่ต้องส่ง",
+        transcriptStatus: "เอกสารเรียบร้อย",
+        slipStatus: "เอกสารเรียบร้อย",
+        lastSubmit: "17/05/26 16:21",
+        version: 1,
+        feedback: "เอกสารครบเรียบร้อยทุกอย่าง ✅",
+        additionalFormSent: "ยังไม่ส่ง"
+    }
+];
+
+const historyLog = [
+    { staff:"พี่สมรักษ์", action:"เปลี่ยน สลิป → ✅ เรียบร้อย", team:"MIX-GENIUS-CHAMP", time:"17/05/26 14:00" },
+    { staff:"พี่หมวย", action:"เปลี่ยน ปพ.7 → ✅ เรียบร้อย", team:"MIX-GENIUS-CHAMP", time:"17/05/26 13:45" },
+];
+
+let currentTeam = null;
+let docScale = 1, docRotate = 0;
+let currentFilter = 'all';
+
+// ─── Init ────────────────────────────────────────
+window.onload = () => {
+    renderStats();
+    renderTeamList(mockTeams);
+    setTimeout(() => { /* auto-show version modal for demo */ }, 2500);
+};
+
+// ─── Stats ────────────────────────────────────────
+function renderStats() {
+    const all = mockTeams.length;
+    const done = mockTeams.filter(t=>t.overall==='สมบูรณ์').length;
+    const wait = mockTeams.filter(t=>t.overall==='รอการตรวจสอบ').length;
+    const bad = mockTeams.filter(t=>t.overall==='การสมัครไม่เรียบร้อย').length;
+    const upd = mockTeams.filter(t=>t.updated).length;
+    const emailSent = mockTeams.filter(t=>t.emailSentStatus==='ส่งแล้ว').length;
+    const school = mockTeams.filter(t=>t.category.includes('โรงเรียน')).length;
+    const mixed = mockTeams.filter(t=>t.category.includes('ผสม')).length;
+
+    document.getElementById('statsStrip').innerHTML = `
+        <div class="stat-pill" style="background:#f0f9ff;border-color:#bae6fd;"><span class="num" style="color:#0369a1;">${all}</span><span class="lbl" style="color:#0369a1;">ทั้งหมด</span></div>
+        <div class="stat-pill" style="background:#dcfce7;border-color:#86efac;"><span class="num" style="color:#166534;">${done}</span><span class="lbl" style="color:#166534;">สมบูรณ์</span></div>
+        <div class="stat-pill" style="background:#fef9c3;border-color:#fde047;"><span class="num" style="color:#854d0e;">${wait}</span><span class="lbl" style="color:#854d0e;">รอตรวจ</span></div>
+        <div class="stat-pill" style="background:#fee2e2;border-color:#fca5a5;"><span class="num" style="color:#991b1b;">${bad}</span><span class="lbl" style="color:#991b1b;">ไม่เรียบร้อย</span></div>
+        <div class="stat-pill" style="background:#ffedd5;border-color:#fb923c;"><span class="num" style="color:#9a3412;">${upd}</span><span class="lbl" style="color:#9a3412;">Updated</span></div>
+        <div class="stat-pill" style="background:#ecfdf5;border-color:#6ee7b7;"><span class="num" style="color:#065f46;">${emailSent}</span><span class="lbl" style="color:#065f46;">ส่งเมลแล้ว</span></div>
+        <div class="stat-pill" style="background:#ede9fe;border-color:#c4b5fd;"><span class="num" style="color:#5b21b6;">${school}</span><span class="lbl" style="color:#5b21b6;">ทีม รร.</span></div>
+        <div class="stat-pill" style="background:#fdf4ff;border-color:#e879f9;"><span class="num" style="color:#701a75;">${mixed}</span><span class="lbl" style="color:#701a75;">ทีมผสม</span></div>
+    `;
+    // Update workload
+    document.getElementById('wlText').textContent = `${done}/${all} ทีม`;
+    document.getElementById('wlBar').style.width = `${(done/all)*100}%`;
+}
+
+// ─── Filter ────────────────────────────────────────
+function setFilter(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    filterTeams();
+}
+
+function filterTeams() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const start = parseInt(document.getElementById('rangeStart').value)||1;
+    const end = parseInt(document.getElementById('rangeEnd').value)||9999;
+
+    let filtered = mockTeams.filter(t => {
+        const inRange = t.idx >= start && t.idx <= end;
+        const matchQ = !q ||
+            t.teamName.toLowerCase().includes(q) ||
+            t.members.some(m => m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q));
+
+        let matchFilter = true;
+        if (currentFilter==='waiting') matchFilter = t.overall==='รอการตรวจสอบ';
+        else if (currentFilter==='done') matchFilter = t.overall==='สมบูรณ์';
+        else if (currentFilter==='bad') matchFilter = t.overall==='การสมัครไม่เรียบร้อย';
+        else if (currentFilter==='updated') matchFilter = t.updated;
+        else if (currentFilter==='school') matchFilter = t.category.includes('โรงเรียน');
+        else if (currentFilter==='mixed') matchFilter = t.category.includes('ผสม');
+        else if (currentFilter==='email-sent') matchFilter = t.emailSentStatus==='ส่งแล้ว';
+        else if (currentFilter==='email-not') matchFilter = t.emailSentStatus!=='ส่งแล้ว';
+
+        return inRange && matchQ && matchFilter;
+    });
+    renderTeamList(filtered);
+}
+
+// ─── Render Team List ────────────────────────────────────────
+function renderTeamList(teams) {
+    const container = document.getElementById('teamList');
+    if (teams.length===0) {
+        container.innerHTML = `<div style="text-align:center;padding:40px 20px;color:#94a3b8;"><i class="fa-solid fa-inbox" style="font-size:32px;margin-bottom:8px;display:block;opacity:0.3;"></i><span style="font-size:13px;">ไม่พบทีมที่ตรงกัน</span></div>`;
+        return;
+    }
+
+    const overallColors = {
+        'รอการตรวจสอบ': { bar:'#f59e0b', badge:'s-wait' },
+        'สมบูรณ์': { bar:'#16a34a', badge:'s-done' },
+        'การสมัครไม่เรียบร้อย': { bar:'#dc2626', badge:'s-bad' }
+    };
+
+    container.innerHTML = teams.map(t => {
+        const oc = overallColors[t.overall] || { bar:'#94a3b8', badge:'s-na' };
+        const isMixed = t.category.includes('ผสม');
+        const catStyle = isMixed ? 'cat-mixed' : 'cat-school';
+        const membersList = t.members.map(m => `<span class="member-chip">${m.prefix} ${m.name.split(' ').slice(-1)[0]}</span>`).join('');
+        const emailIcon = t.emailSentStatus==='ส่งแล้ว'
+            ? '<span style="font-size:9px;background:#dcfce7;color:#166534;border:1px solid #86efac;padding:2px 7px;border-radius:99px;font-weight:700;">📧 ส่งแล้ว</span>'
+            : '<span style="font-size:9px;background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0;padding:2px 7px;border-radius:99px;">ยังไม่ส่ง</span>';
+
+        return `
+        <div onclick="selectTeam('${t.id}',this)" class="team-card" data-id="${t.id}">
+            <div class="cat-bar" style="background:${oc.bar};"></div>
+            ${t.updated ? `<div class="updated-ring" style="top:10px;right:10px;position:absolute;"></div><div class="updated-badge" style="top:10px;right:10px;position:absolute;"></div>` : ''}
+            <div class="team-card-inner">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+                    <span class="tag ${catStyle}" style="font-size:9px;padding:2px 7px;">${t.category}</span>
+                    <span class="card-idx">#${t.idx}</span>
+                </div>
+                <div class="card-team">${t.teamName}</div>
+                <div class="card-email">${t.members[0].email || '—'}</div>
+                <div class="card-members">${membersList}</div>
+                <div class="card-footer">
+                    <span class="overall-badge ${oc.badge}">${t.overall}</span>
+                    ${emailIcon}
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ─── Select Team ────────────────────────────────────────
+function selectTeam(id, el) {
+    const team = mockTeams.find(t=>t.id===id);
+    if (!team) return;
+    currentTeam = team;
+
+    // Sidebar highlight
+    document.querySelectorAll('.team-card').forEach(c=>c.classList.remove('active'));
+    if (el) el.classList.add('active');
+
+    // Show detail
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('detailContent').style.display = 'flex';
+
+    // Populate header
+    const catEl = document.getElementById('dtCategory');
+    catEl.textContent = team.category;
+    catEl.className = `tag ${team.category.includes('ผสม') ? 'cat-mixed' : 'cat-school'}`;
+    document.getElementById('dtId').textContent = `#${team.idx}`;
+    document.getElementById('dtTeamName').textContent = team.teamName;
+    document.getElementById('dtEmail').textContent = team.members[0].email || '—';
+    document.getElementById('dtUpdatedTag').style.display = team.updated ? 'inline-flex' : 'none';
+
+    // Members Grid (prominent)
+    document.getElementById('dtMembersGrid').innerHTML = team.members.map((m,i) => `
+        <div class="member-row">
+            <div class="member-num">${i+1}</div>
+            <div class="member-info">
+                <div class="member-name">${m.prefix} ${m.name}</div>
+                <div class="member-sub">
+                    <span class="member-level">${m.level}</span>
+                    <span style="color:#94a3b8;">|</span>
+                    <span>${m.school}</span>
+                </div>
+                ${m.email ? `<div style="font-size:10px;color:var(--blue);margin-top:1px;"><i class="fa-solid fa-envelope" style="margin-right:3px;font-size:9px;"></i>${m.email}</div>` : ''}
+                ${m.phone ? `<div style="font-size:10px;color:#64748b;"><i class="fa-solid fa-phone" style="margin-right:3px;font-size:9px;"></i>${m.phone}</div>` : ''}
+            </div>
+        </div>
+    `).join('');
+
+    // Advisor
+    document.getElementById('dtAdvisor').innerHTML =
+        `<b>${team.advisor.name}</b><br>📞 ${team.advisor.phone}${team.advisor.email ? `<br>✉️ ${team.advisor.email}` : ''}`;
+
+    // Payment
+    document.getElementById('dtPayment').innerHTML =
+        `<b>ธ. ${team.payment.bank}</b><br>📅 ${team.payment.date} เวลา ${team.payment.time}<br>เลขท้าย: <span class="mono" style="background:#f1f5f9;padding:1px 5px;border-radius:4px;">${team.payment.last4}</span>`;
+
+    // Version
+    document.getElementById('dtVersion').innerHTML =
+        `ส่งล่าสุด: ${team.lastSubmit}<br>Review ครั้งที่: <b>${team.version}</b>`;
+
+    // Occupancy
+    document.getElementById('staffViewing').style.display = id==='T003' ? 'inline-flex' : 'none';
+
+    // Set status dropdowns
+    document.getElementById('sel-cert').value = team.certStatus;
+    document.getElementById('sel-transcript').value = team.transcriptStatus;
+    document.getElementById('sel-slip').value = team.slipStatus;
+    document.getElementById('feedbackText').value = team.feedback;
+    document.getElementById('sendEmail').checked = false;
+
+    // Doc viewer
+    viewDoc('cert');
+
+    // Mobile
+    if (window.innerWidth < 768) {
+        document.getElementById('sidebar').style.display = 'none';
+        document.getElementById('detailView').classList.add('mobile-open');
+        document.getElementById('btnBack').style.display = 'flex';
+    }
+}
+
+// ─── Doc Viewer ────────────────────────────────────────
+let currentDocType = 'cert';
+function viewDoc(type) {
+    currentDocType = type;
+    ['cert','transcript','slip'].forEach(t => {
+        document.getElementById(`tab-${t}`).className = `doc-tab ${t===type?'active':''}`;
+    });
+
+    document.getElementById('docLoading').style.display = 'flex';
+    document.getElementById('mainDocPreview').style.display = 'none';
+    document.getElementById('noDocMsg').style.display = 'none';
+
+    const urlMap = { cert: currentTeam?.certUrl, transcript: currentTeam?.transcriptUrl, slip: currentTeam?.slipUrl };
+    const url = urlMap[type];
+
+    setTimeout(() => {
+        document.getElementById('docLoading').style.display = 'none';
+        if (url) {
+            // Convert Google Drive open link to direct preview
+            const fileId = url.match(/id=([^&]+)/)?.[1];
+            const previewUrl = fileId
+                ? `https://picsum.photos/seed/${currentTeam.id}${type}/700/900`
+                : url;
+            document.getElementById('mainDocPreview').src = previewUrl;
+            document.getElementById('mainDocPreview').style.display = 'block';
+            document.getElementById('dtPopOut').href = url;
+        } else {
+            document.getElementById('noDocMsg').style.display = 'block';
         }
+        resetDocTransform();
+    }, 400);
+}
 
-        // 2. Select Team & Populate Detail View
-        function selectTeam(id) {
-            const team = mockTeams.find(t => t.id === id);
-            if (!team) return;
+function adjustDoc(action) {
+    if (action==='zoomIn') docScale = Math.min(docScale+0.25, 4);
+    if (action==='zoomOut') docScale = Math.max(docScale-0.25, 0.5);
+    if (action==='rotate') docRotate = (docRotate+90)%360;
+    document.getElementById('mainDocPreview').style.transform = `scale(${docScale}) rotate(${docRotate}deg)`;
+}
+function resetDocTransform() { docScale=1; docRotate=0; document.getElementById('mainDocPreview').style.transform=''; }
 
-            document.getElementById('emptyState').classList.add('hidden');
+// ─── Feedback ────────────────────────────────────────
+function genBullets() {
+    if (!currentTeam) return;
+    const items = [
+        { sel:'sel-cert', label:'ใบรับรองโรงเรียน' },
+        { sel:'sel-transcript', label:'ปพ.7' },
+        { sel:'sel-slip', label:'สลิปโอนเงิน' }
+    ];
+    const lines = items.map(item => {
+        const val = document.getElementById(item.sel).value;
+        const emoji = { 'เอกสารเรียบร้อย':'✅','รอตรวจเอกสาร':'⏳','ยังไม่ได้รับเอกสาร':'❌','เอกสารไม่เรียบร้อย':'⚠️','ไม่ต้องส่ง':'➖' }[val] || '⏳';
+        const extra = val==='เอกสารไม่เรียบร้อย' ? ': (โปรดระบุ)' : '';
+        return `• ${item.label} ${emoji}${extra}`;
+    });
+    document.getElementById('feedbackText').value = 'สิ่งที่ต้องดำเนินการ:\n' + lines.join('\n');
+}
 
-            document.getElementById('dtTeamName').innerText = team.name;
-            document.getElementById('dtEmail').innerText = team.email;
-            document.getElementById('dtCategory').innerText = team.category;
-            document.getElementById('dtM1').innerText = team.m1;
-            document.getElementById('dtM2').innerText = team.m2;
-            document.getElementById('dtM3').innerText = team.m3;
+function addFeedback(msg) {
+    const area = document.getElementById('feedbackText');
+    if (!area.value.includes(msg)) area.value += `\n  - ${msg}`;
+}
 
-            // Occupancy Badge Logic
-            const badge = document.getElementById('occupancyBadge');
-            if (team.occupied) {
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
-            }
+// ─── Save Flow ────────────────────────────────────────
+function startSaveFlow() {
+    if (!currentTeam) return;
+    const btn = document.getElementById('btnSave');
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> ตรวจสอบเวอร์ชัน...`;
 
-            // ถ้าเป็นทีมผสม ปิดตัวเลือกใบรับรองโรงเรียน
-            const certSelect = document.getElementById('statusCert');
-            if (team.category === "โควตาทีมอิสระ (ทีมผสม)") {
-                certSelect.value = "ไม่ต้องส่ง";
-                certSelect.disabled = true;
-            } else {
-                certSelect.value = "รอตรวจเอกสาร";
-                certSelect.disabled = false;
-            }
-
-            // Reset Viewer
-            switchDoc('cert');
-            document.getElementById('feedbackText').value = '';
-
-            // Mobile view handling (ซ่อนลิสต์ แสดงดีเทล)
-            if (window.innerWidth < 768) {
-                document.getElementById('sidebar').classList.add('hidden');
-                document.getElementById('detailView').classList.remove('hidden');
-                document.getElementById('detailView').classList.add('flex');
-            }
-        }
-
-        // 3. Document Viewer Controls (Mock)
-        let docScale = 1;
-        let docRotate = 0;
-
-        function switchDoc(type) {
-            // Reset Styles
-            ['cert', 'transcript', 'slip'].forEach(t => {
-                let btn = document.getElementById(`tab-${t}`);
-                btn.className = "flex-1 py-2 bg-white rounded shadow-sm text-sm font-medium text-gray-500 hover:bg-gray-50";
-            });
-
-            // Active Style
-            document.getElementById(`tab-${type}`).className = "flex-1 py-2 bg-white rounded shadow-sm text-sm font-semibold border-b-2 border-blue-600 text-blue-600";
-
-            // Reset Image Transforms
-            docScale = 1; docRotate = 0; applyTransform();
-
-            // Change Image (Mockup)
-            const imgEl = document.getElementById('docPreview');
-            if (type === 'cert') imgEl.src = "https://picsum.photos/800/1200?random=1";
-            if (type === 'transcript') imgEl.src = "https://picsum.photos/800/1200?random=2";
-            if (type === 'slip') imgEl.src = "https://picsum.photos/600/800?random=3";
-        }
-
-        function zoomImg(val) {
-            docScale += val;
-            if (docScale < 0.5) docScale = 0.5;
-            if (docScale > 3) docScale = 3;
-            applyTransform();
-        }
-
-        function rotateImg() {
-            docRotate = (docRotate + 90) % 360;
-            applyTransform();
-        }
-
-        function applyTransform() {
-            document.getElementById('docPreview').style.transform = `scale(${docScale}) rotate(${docRotate}deg)`;
-        }
-
-        // 4. Feedback Auto-gen
-        function autoFeedback(docType, status) {
-            const docName = docType === 'cert' ? "ใบรับรองรร." : (docType === 'transcript' ? "ปพ.7" : "สลิปโอนเงิน");
-            let text = "";
-
-            if (status === "เอกสารไม่เรียบร้อย") text = `\n- [${docName}] เอกสารไม่เรียบร้อย: `;
-            else if (status === "ยังไม่ได้รับเอกสาร") text = `\n- [${docName}] ❌ ยังไม่ได้รับเอกสาร`;
-            else if (status === "เอกสารเรียบร้อย") text = `\n- [${docName}] ✅ เรียบร้อย`;
-
-            if (text) {
-                const fb = document.getElementById('feedbackText');
-                if (!fb.value.includes(`[${docName}]`)) {
-                    fb.value += text;
-                }
-            }
-        }
-
-        function addQuickFeedback(text) {
-            document.getElementById('feedbackText').value += text + "\n";
-        }
-
-        // 5. Save Button & Conflict Logic
-        function saveData() {
-            const btn = document.getElementById('btnSave');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
-            btn.disabled = true;
-            btn.classList.add('opacity-75', 'cursor-not-allowed');
-
-            // จำลอง API Call
+    setTimeout(() => {
+        const conflict = Math.random() > 0.7;
+        if (conflict) {
+            document.getElementById('modalConflict').classList.remove('hidden');
+            resetSaveBtn();
+        } else {
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> บันทึกลง Sheet...`;
             setTimeout(() => {
-                // จำลองว่าเกิด Conflict (สุ่มเกิด)
-                const isConflict = Math.random() > 0.5;
+                // Update mock
+                currentTeam.certStatus = document.getElementById('sel-cert').value;
+                currentTeam.transcriptStatus = document.getElementById('sel-transcript').value;
+                currentTeam.slipStatus = document.getElementById('sel-slip').value;
+                currentTeam.feedback = document.getElementById('feedbackText').value;
+                currentTeam.updated = false;
+                if (currentTeam.certStatus==='เอกสารเรียบร้อย' && currentTeam.transcriptStatus==='เอกสารเรียบร้อย' && currentTeam.slipStatus==='เอกสารเรียบร้อย')
+                    currentTeam.overall = 'สมบูรณ์';
 
-                if (isConflict) {
-                    document.getElementById('modalConflict').classList.remove('hidden');
-                    resetSaveBtn();
+                if (document.getElementById('sendEmail').checked) {
+                    currentTeam.emailSentStatus = 'ส่งแล้ว';
+                    showToast('✅ บันทึกแล้ว และส่งอีเมลแจ้งน้องเรียบร้อย!');
                 } else {
-                    alert('✅ บันทึกข้อมูลสำเร็จ (ข้อมูลอัปเดตลง Google Sheet และ Firebase แล้ว)');
-                    resetSaveBtn();
+                    showToast('✅ บันทึกข้อมูลเรียบร้อยแล้ว');
                 }
-            }, 1000);
+
+                renderStats();
+                filterTeams();
+                // Re-highlight current
+                setTimeout(()=>{
+                    const el = document.querySelector(`[data-id="${currentTeam.id}"]`);
+                    if(el) el.classList.add('active');
+                },50);
+                resetSaveBtn();
+            }, 800);
         }
+    }, 700);
+}
 
-        function forceSaveData() {
-            document.getElementById('modalConflict').classList.add('hidden');
-            alert('✅ บังคับบันทึกทับสำเร็จ!');
-        }
+function resetSaveBtn() {
+    const btn = document.getElementById('btnSave');
+    btn.disabled = false;
+    btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูล`;
+}
 
-        function resetSaveBtn() {
-            const btn = document.getElementById('btnSave');
-            btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูล';
-            btn.disabled = false;
-            btn.classList.remove('opacity-75', 'cursor-not-allowed');
-        }
+function forceSave() {
+    closeModal('modalConflict');
+    showToast('⚠️ เขียนทับข้อมูลเดิมแล้ว');
+}
 
-        // 6. Hard Refresh Modal Trigger
-        function showVersionModal() {
-            document.getElementById('modalVersion').classList.remove('hidden');
-        }
+// ─── History Modal ────────────────────────────────────────
+function showHistoryModal() {
+    const list = document.getElementById('historyList');
+    list.innerHTML = historyLog.filter(h=>!currentTeam||h.team===currentTeam.teamName).map(h=>`
+        <div style="background:#f8faff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:12px;font-weight:700;color:var(--navy);">${h.staff}</span>
+                <span class="mono" style="font-size:10px;color:#94a3b8;">${h.time}</span>
+            </div>
+            <div style="font-size:12px;color:#475569;">${h.action}</div>
+        </div>
+    `).join('') || '<div style="text-align:center;color:#94a3b8;font-size:13px;padding:20px;">ไม่มีประวัติการแก้ไข</div>';
+    document.getElementById('modalHistory').classList.remove('hidden');
+}
 
-        // Init
-        renderList();
+// ─── Utils ────────────────────────────────────────
+function checkVersion() {
+    document.getElementById('modalVersion').classList.remove('hidden');
+}
 
-    </script>
+function closeModal(id) {
+    document.getElementById(id).classList.add('hidden');
+}
+
+function closeMobileDetail() {
+    document.getElementById('sidebar').style.display = '';
+    document.getElementById('detailView').classList.remove('mobile-open');
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
 </body>
-
 </html>
