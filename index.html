@@ -1,1006 +1,774 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedQuiz KKU 2026 — ระบบตรวจสอบเอกสาร</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --navy: #0f1f4b;
-            --navy-mid: #1a3272;
-            --blue: #1d4ed8;
-            --blue-light: #3b82f6;
-            --accent: #f59e0b;
-            --accent-light: #fcd34d;
-            --surface: #f8faff;
-            --card: #ffffff;
-            --border: #e2e8f0;
-            --text: #1e293b;
-            --text-muted: #64748b;
-            --green: #16a34a;
-            --green-bg: #dcfce7;
-            --yellow: #ca8a04;
-            --yellow-bg: #fef9c3;
-            --red: #dc2626;
-            --red-bg: #fee2e2;
-            --orange: #ea580c;
-            --orange-bg: #ffedd5;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background: var(--surface);
-            color: var(--text);
-            height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .mono { font-family: 'IBM Plex Mono', monospace; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedQuiz KKU 2026: Resurrection — คำสาปพิภพทราย</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#c9a227;--gold-l:#e8c547;--gold-d:#7a5a0a;
+  --sand:#f5e6c8;--sand-d:#e8d4a0;--parch:#fdf3dc;
+  --dark:#1a0f08;--brown:#3d2314;
+  --lad-bg:#d4edda;--lad-br:#28a745;
+  --snk-bg:#ffe8e8;--snk-br:#dc3545;
+  --crd-bg:#ede0f5;--crd-br:#7b2d8b;
+  --chk-bg:#e0f0ff;--chk-br:#0d6efd;
+}
+body{font-family:'Sarabun',sans-serif;background:#1a0f08;color:var(--dark);min-height:100vh;padding:12px;
+  background-image:radial-gradient(ellipse at 15% 50%,rgba(201,162,39,.07) 0%,transparent 55%),
+                   radial-gradient(ellipse at 85% 20%,rgba(201,162,39,.05) 0%,transparent 50%)}
+h1,h2,h3{font-family:'Cinzel',serif}
 
-        /* Scrollbars */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+.title-bar{text-align:center;padding:12px 20px;background:linear-gradient(135deg,#1a0f08,#3d2314,#1a0f08);
+  border:2px solid var(--gold);border-radius:8px;margin-bottom:12px}
+.title-bar h1{font-size:clamp(18px,3vw,30px);font-weight:900;color:var(--gold-l);letter-spacing:3px}
+.title-bar h2{font-size:12px;font-weight:400;color:#c4a45a;letter-spacing:2px;margin-top:3px}
 
-        /* Navbar */
-        nav {
-            background: var(--navy);
-            color: white;
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            z-index: 50;
-            flex-shrink: 0;
-            border-bottom: 2px solid var(--accent);
-        }
-        .nav-brand { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px; }
-        .nav-pill { font-size: 10px; background: rgba(255,255,255,0.12); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 5px; }
-        .dot-pulse { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.3)} }
-        .dot-red { background: #f87171; }
-        .workload-wrap { display: flex; flex-direction: column; gap: 3px; min-width: 120px; }
-        .workload-bar-bg { background: rgba(255,255,255,0.15); border-radius: 99px; height: 5px; overflow: hidden; }
-        .workload-bar { background: #4ade80; height: 100%; border-radius: 99px; transition: width 0.6s ease; }
-        .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--navy); font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.game-wrap{display:grid;grid-template-columns:200px 1fr 210px;gap:10px;max-width:1180px;margin:0 auto}
 
-        /* Layout */
-        .main-layout { display: flex; flex: 1; overflow: hidden; }
+.panel{background:var(--parch);border:2px solid var(--gold-d);border-radius:8px;padding:10px}
+.panel-title{font-size:11px;font-weight:700;color:var(--gold-d);letter-spacing:1px;text-transform:uppercase;
+  text-align:center;padding-bottom:6px;border-bottom:1px solid var(--gold-d);margin-bottom:8px}
 
-        /* Sidebar */
-        #sidebar {
-            width: 340px;
-            background: white;
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            z-index: 20;
-        }
-        .sidebar-top { padding: 12px; background: #f8faff; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
-        .search-box { position: relative; }
-        .search-box input { width: 100%; padding: 8px 10px 8px 34px; border: 1px solid var(--border); border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 13px; outline: none; background: white; transition: border-color 0.2s; }
-        .search-box input:focus { border-color: var(--blue-light); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
-        .search-box i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 13px; }
-        .range-row { display: flex; align-items: center; gap: 6px; }
-        .range-row label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; white-space: nowrap; }
-        .range-row input { flex: 1; padding: 5px 7px; border: 1px solid var(--border); border-radius: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; outline: none; }
-        .filter-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
-        .filter-chips::-webkit-scrollbar { display: none; }
-        .chip { flex-shrink: 0; padding: 4px 10px; border-radius: 99px; font-size: 10px; font-weight: 700; border: 1.5px solid; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-        .chip:hover { opacity: 0.8; }
-        .chip.active { transform: scale(1.05); }
+/* Team cards */
+.team-card{background:var(--sand);border:1.5px solid var(--gold-d);border-radius:6px;padding:8px;margin-bottom:8px;transition:.25s}
+.team-card.active{background:#fff9e0;border-color:var(--gold);box-shadow:0 0 14px rgba(201,162,39,.35)}
+.team-name{font-family:'Cinzel',serif;font-size:14px;font-weight:700;margin-bottom:5px}
+.team-a .team-name{color:#1565c0} .team-b .team-name{color:#c62828}
+.stat-row{display:flex;justify-content:space-between;font-size:11px;padding:1px 0;color:var(--brown)}
+.stat-val{font-weight:700;color:var(--dark)}
+.perk-tag{margin-top:5px;font-size:10px;background:var(--gold-d);color:#fff;padding:2px 6px;border-radius:3px;text-align:center;word-break:break-word}
+.hand-label{font-size:10px;color:var(--brown);margin-top:6px;font-weight:600}
+.hand-cards{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+.hcard{background:var(--crd-br);color:#fff;font-size:9px;padding:2px 5px;border-radius:3px;cursor:pointer;border:none;transition:.15s;font-family:'Sarabun',sans-serif}
+.hcard:hover{opacity:.85;transform:scale(1.05)}
 
-        /* Stats Strip */
-        .stats-strip { display: flex; gap: 6px; padding: 8px 12px; background: white; border-bottom: 1px solid var(--border); overflow-x: auto; }
-        .stats-strip::-webkit-scrollbar { display: none; }
-        .stat-pill { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding: 5px 10px; border-radius: 9px; border: 1px solid; min-width: 64px; }
-        .stat-pill .num { font-size: 16px; font-weight: 800; font-family: 'IBM Plex Mono', monospace; }
-        .stat-pill .lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+/* Board */
+.board-area{position:relative;background:var(--sand-d);border:3px solid var(--gold-d);border-radius:10px;padding:7px}
+.board-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+.cell{aspect-ratio:1;background:#fff;border:1px solid #d4c095;border-radius:3px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;position:relative;font-size:10px;font-weight:700;
+  color:var(--brown);cursor:default;transition:.15s;overflow:hidden}
+.cell:hover{transform:scale(1.06);z-index:5}
+.cell.ladder{background:var(--lad-bg);border-color:var(--lad-br);color:#155724}
+.cell.snake{background:var(--snk-bg);border-color:var(--snk-br);color:#721c24}
+.cell.card-cell{background:var(--crd-bg);border-color:var(--crd-br);color:#4a1060}
+.cell.checkpoint{background:var(--chk-bg);border-color:var(--chk-br);color:#084298}
+.cell.cell-1{background:#f0fff0;border-color:#28a745;border-width:2px}
+.cell.cell-50{background:linear-gradient(135deg,#ffd700,#ff8c00);border-color:#b8860b;border-width:2px;color:#fff}
+.cell-num{font-size:10px;font-weight:700;line-height:1}
+.cell-icon{font-size:12px;line-height:1}
+.tokens{position:absolute;bottom:2px;left:0;right:0;display:flex;justify-content:center;gap:2px;z-index:3}
+.tok{width:13px;height:13px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4);transition:all .4s}
+.tok-a{background:#1565c0} .tok-b{background:#c62828}
 
-        /* Team Cards */
-        #teamList { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; background: #f1f5f9; }
-        .team-card {
-            background: white;
-            border-radius: 12px;
-            padding: 12px;
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.18s;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-        }
-        .team-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-1px); }
-        .team-card.active { border-color: var(--blue); background: #eff6ff; box-shadow: 0 0 0 3px rgba(29,78,216,0.15); }
-        .team-card .cat-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 12px 0 0 12px; }
-        .team-card-inner { padding-left: 8px; }
-        .updated-badge { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; border: 2px solid white; }
-        .updated-ring { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; animation: ping 1.5s infinite; opacity: 0.6; }
-        @keyframes ping { 0%{transform:scale(1);opacity:.6} 100%{transform:scale(2.5);opacity:0} }
-        .card-cat { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
-        .card-team { font-size: 14px; font-weight: 700; color: var(--text); margin: 2px 0; }
-        .card-email { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
-        .card-members { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
-        .member-chip { font-size: 10px; background: #f1f5f9; color: #475569; padding: 2px 7px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .card-footer { display: flex; justify-content: space-between; align-items: center; }
-        .overall-badge { font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.3px; }
-        .card-idx { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #94a3b8; }
-        .occupancy-dot { font-size: 8px; background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; padding: 2px 6px; border-radius: 99px; display: flex; align-items: center; gap: 3px; }
+/* SVG connector overlay */
+.board-svg{position:absolute;top:7px;left:7px;right:7px;bottom:7px;pointer-events:none;z-index:2}
 
-        /* Detail View */
-        #detailView { flex: 1; display: flex; flex-direction: column; background: #f1f5f9; overflow: hidden; }
-        #detailView.open { display: flex; }
+/* Controls */
+.ctrl-col{display:flex;flex-direction:column;gap:10px}
+.turn-panel{text-align:center;background:var(--parch);border:2px solid var(--gold-d);border-radius:8px;padding:12px}
+.turn-lbl{font-size:10px;letter-spacing:1px;color:var(--gold-d);text-transform:uppercase;font-family:'Cinzel',serif}
+.turn-name{font-size:18px;font-weight:700;margin:4px 0}
+.dice{font-size:50px;margin:6px 0;display:inline-block;user-select:none;transition:.1s}
+.dice.rolling{animation:spin .5s steps(6) infinite}
+@keyframes spin{0%{transform:rotate(0)scale(1.1)}16%{transform:rotate(60deg)scale(.9)}33%{transform:rotate(120deg)scale(1.1)}
+  50%{transform:rotate(180deg)scale(.9)}67%{transform:rotate(240deg)scale(1.1)}83%{transform:rotate(300deg)scale(.9)}100%{transform:rotate(360deg)scale(1.1)}}
+.roll-btn{background:var(--gold-d);color:#fff;border:2px solid var(--gold);padding:10px;font-family:'Cinzel',serif;
+  font-size:13px;font-weight:700;letter-spacing:1px;border-radius:6px;cursor:pointer;width:100%;text-transform:uppercase;transition:.2s}
+.roll-btn:hover:not(:disabled){background:var(--gold);transform:translateY(-1px)}
+.roll-btn:disabled{background:#aaa;border-color:#999;cursor:not-allowed;transform:none}
 
-        /* Empty State */
-        #emptyState { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
-        .empty-card { background: white; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,0.06); max-width: 320px; }
-        .empty-icon { width: 72px; height: 72px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; color: var(--blue); }
+.log-box{background:#fff;border:1px solid #d4c095;border-radius:4px;padding:6px;height:210px;overflow-y:auto;font-size:11px;line-height:1.6}
+.log-e{padding:1px 0;border-bottom:1px solid #f0e8d0}
+.log-e.ok{color:#155724} .log-e.bad{color:#721c24} .log-e.mv{color:#084298;font-weight:600} .log-e.sp{color:#4a1060;font-weight:600}
 
-        /* Detail Header */
-        .detail-header { background: white; padding: 16px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-        .detail-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
-        .tag { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 6px; letter-spacing: 0.3px; }
-        .detail-team-name { font-size: 22px; font-weight: 800; color: var(--navy); letter-spacing: -0.5px; line-height: 1.2; }
-        .detail-email { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.legend{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.leg{display:flex;align-items:center;gap:3px;font-size:9px;color:var(--brown)}
+.legdot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
 
-        /* Info Grid */
-        .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
-        @media(max-width:1100px){ .info-grid { grid-template-columns: repeat(2,1fr); } }
-        .info-card { background: #f8faff; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
-        .info-card-title { font-size: 9px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+/* Modals */
+.overlay{position:fixed;inset:0;background:rgba(26,15,8,.88);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px)}
+.overlay.hidden{display:none}
+.mbox{background:var(--parch);border:3px solid var(--gold);border-radius:12px;padding:24px;max-width:460px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+.mtitle{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--gold-d);text-align:center;margin-bottom:4px}
+.msub{text-align:center;font-size:12px;color:var(--brown);margin-bottom:16px}
+.subj-badge{display:inline-block;background:var(--gold-d);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;letter-spacing:1px;margin-bottom:12px}
+.q-text{font-size:14px;line-height:1.75;margin-bottom:16px;color:var(--dark)}
+.timer-wrap{background:#ddd;border-radius:3px;height:5px;overflow:hidden;margin-bottom:12px}
+.timer-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .1s linear}
+.choice{display:block;width:100%;background:var(--sand);border:1.5px solid var(--gold-d);color:var(--dark);padding:9px 12px;
+  text-align:left;border-radius:5px;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:13px;margin-bottom:7px;transition:.15s}
+.choice:hover:not(:disabled){background:var(--gold-l);border-color:var(--gold);transform:translateX(4px)}
+.choice.right{background:#d4edda;border-color:#28a745;color:#155724}
+.choice.wrong{background:#ffe8e8;border-color:#dc3545;color:#721c24}
+.choice:disabled{cursor:default}
+.hint-btn{display:block;margin-top:8px;background:transparent;border:1px dashed var(--gold-d);color:var(--gold-d);
+  padding:5px;width:100%;border-radius:4px;cursor:pointer;font-size:11px;font-family:'Sarabun',sans-serif}
+.hint-btn:hover{background:#fff9e0}
+.hint-btn:disabled{opacity:.4;cursor:not-allowed}
+.hint-text{font-size:11px;color:var(--gold-d);font-style:italic;margin-top:5px;padding:5px;background:#fff9e0;border-radius:3px}
 
-        /* Members Cards - the highlight */
-        .members-grid { display: flex; flex-direction: column; gap: 5px; }
-        .member-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: white;
-            border-radius: 8px;
-            padding: 6px 10px;
-            border: 1px solid var(--border);
-        }
-        .member-num { width: 18px; height: 18px; border-radius: 50%; background: var(--navy); color: white; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .member-info { flex: 1; min-width: 0; }
-        .member-name { font-size: 12px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .member-sub { font-size: 10px; color: var(--text-muted); display: flex; gap: 4px; flex-wrap: wrap; }
-        .member-level { font-size: 9px; background: #dbeafe; color: #1e40af; padding: 1px 5px; border-radius: 5px; font-weight: 700; }
-        .member-email-icon { font-size: 10px; color: #94a3b8; flex-shrink: 0; }
+.perk-opt{display:block;width:100%;background:var(--sand);border:2px solid var(--gold-d);color:var(--dark);
+  padding:11px 13px;text-align:left;border-radius:7px;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:13px;margin-bottom:9px;transition:.2s}
+.perk-opt:hover{background:var(--gold-l);border-color:var(--gold);transform:scale(1.01)}
+.perk-opt strong{display:block;font-size:14px;color:var(--gold-d);font-family:'Cinzel',serif;margin-bottom:3px}
 
-        /* Workspace */
-        .workspace { display: flex; flex: 1; overflow: hidden; }
+.mkt-row{background:var(--sand);border:1.5px solid var(--gold-d);border-radius:6px;padding:9px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mkt-info .mkt-name{font-weight:700;font-size:13px;color:var(--crd-br)} .mkt-info .mkt-desc{font-size:10px;color:var(--brown);margin-top:2px}
+.mkt-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.price-tag{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--gold-d);white-space:nowrap}
+.buy-btn{background:var(--gold-d);color:#fff;border:none;padding:4px 9px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700}
+.buy-btn:hover{background:var(--gold)} .buy-btn:disabled{background:#ccc;cursor:not-allowed}
+.close-mkt{background:transparent;border:1.5px solid var(--gold-d);color:var(--gold-d);padding:7px 20px;border-radius:5px;
+  cursor:pointer;font-family:'Cinzel',serif;font-size:12px;font-weight:700;width:100%;margin-top:10px;letter-spacing:1px}
+.close-mkt:hover{background:var(--sand)}
 
-        /* Doc Section */
-        .doc-section { flex: 1; display: flex; flex-direction: column; padding: 14px; gap: 10px; min-width: 0; }
-        .doc-tabs { display: flex; gap: 6px; }
-        .doc-tab { flex: 1; padding: 8px 4px; background: white; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 11px; font-weight: 700; color: #94a3b8; cursor: pointer; text-align: center; transition: all 0.15s; }
-        .doc-tab.active { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
-        .doc-viewer { flex: 1; background: #1e293b; border-radius: 16px; position: relative; overflow: hidden; border: 3px solid white; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-        .doc-controls { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 10; opacity: 0; transition: opacity 0.2s; }
-        .doc-viewer:hover .doc-controls { opacity: 1; }
-        .ctrl-btn { width: 36px; height: 36px; background: rgba(255,255,255,0.92); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1e293b; font-size: 13px; cursor: pointer; border: none; transition: all 0.15s; }
-        .ctrl-btn:hover { background: var(--blue); color: white; }
-        .doc-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #1e293b; color: white; flex-direction: column; gap: 8px; z-index: 5; }
-        .doc-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 12px; }
-        .doc-content img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5)); transition: transform 0.3s ease; cursor: grab; }
-        .doc-content img:active { cursor: grabbing; }
+.win-box{text-align:center}
+.win-trophy{font-size:60px;margin:8px 0}
+.win-title{font-family:'Cinzel',serif;font-size:32px;font-weight:900;color:var(--gold);margin-bottom:6px}
+.win-sub{font-size:14px;color:var(--brown);margin-bottom:20px}
+.score-summary{background:var(--sand);border-radius:8px;padding:12px;margin-bottom:16px;text-align:left}
+.score-row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;font-weight:600}
+.restart-btn{background:var(--gold-d);color:#fff;border:2px solid var(--gold);padding:11px 28px;font-family:'Cinzel',serif;font-size:14px;font-weight:700;border-radius:7px;cursor:pointer}
+.restart-btn:hover{background:var(--gold)}
 
-        /* Status Panel */
-        .status-panel { width: 300px; background: white; border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 16px; overflow-y: auto; flex-shrink: 0; gap: 12px; }
-        .status-panel h3 { font-size: 13px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 6px; }
-        .status-group label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; display: block; margin-bottom: 4px; }
-        .status-group select { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 9px; font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 600; outline: none; background: #f8faff; cursor: pointer; transition: border-color 0.15s; }
-        .status-group select:focus { border-color: var(--blue-light); }
-        .divider { height: 1px; background: var(--border); }
-        .feedback-area { flex: 1; min-height: 120px; }
-        .feedback-area label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .feedback-area label span { cursor: pointer; color: var(--blue); font-weight: 600; text-transform: none; letter-spacing: 0; }
-        .quick-btns { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
-        .quick-btn { font-size: 9px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: 3px 7px; cursor: pointer; transition: all 0.12s; color: #475569; font-family: 'Sarabun', sans-serif; }
-        .quick-btn:hover { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
-        textarea { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 12px; resize: none; outline: none; background: #f8faff; color: var(--text); min-height: 110px; line-height: 1.6; }
-        textarea:focus { border-color: var(--blue-light); }
-        .email-toggle { display: flex; align-items: center; gap: 10px; background: #eff6ff; padding: 10px 12px; border-radius: 10px; border: 1px solid #bfdbfe; cursor: pointer; }
-        .email-toggle input { width: 15px; height: 15px; cursor: pointer; }
-        .email-toggle span { font-size: 12px; font-weight: 700; color: #1e40af; }
-        .save-row { display: flex; gap: 6px; }
-        .btn-history { width: 44px; height: 44px; background: #f1f5f9; border: 1.5px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #64748b; cursor: pointer; flex-shrink: 0; transition: all 0.15s; }
-        .btn-history:hover { background: #e2e8f0; }
-        .btn-save { flex: 1; height: 44px; background: var(--blue); color: white; border: none; border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; box-shadow: 0 4px 12px rgba(29,78,216,0.3); }
-        .btn-save:hover { background: #1e40af; }
-        .btn-save:active { transform: scale(0.97); }
-        .btn-save:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
-
-        /* Modals */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15,31,75,0.65); backdrop-filter: blur(6px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .modal-overlay.hidden { display: none; }
-        .modal { background: white; border-radius: 24px; padding: 32px; max-width: 400px; width: 100%; box-shadow: 0 24px 80px rgba(0,0,0,0.25); }
-        .modal-icon { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px; }
-        .modal h2 { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 8px; }
-        .modal p { font-size: 13px; color: var(--text-muted); text-align: center; line-height: 1.6; margin-bottom: 20px; }
-        .modal-btn-row { display: flex; flex-direction: column; gap: 8px; }
-        .btn-primary { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 12px; font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; transition: all 0.15s; }
-        .btn-primary:hover { background: #1e40af; }
-        .btn-ghost { width: 100%; padding: 10px; background: transparent; color: #94a3b8; border: none; font-family: 'Sarabun', sans-serif; font-size: 12px; cursor: pointer; text-decoration: underline; }
-
-        /* Conflict Modal */
-        .conflict-log { background: #fff5f5; border: 1px solid #fecaca; border-radius: 12px; padding: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #991b1b; line-height: 1.7; margin-bottom: 16px; }
-        .conflict-btn-row { display: flex; gap: 8px; }
-        .btn-reload { flex: 1; padding: 11px; background: #f1f5f9; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; color: #475569; transition: all 0.15s; }
-        .btn-overwrite { flex: 1; padding: 11px; background: #dc2626; color: white; border: none; border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.15s; }
-
-        /* Toast */
-        #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1e293b; color: white; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 999; transition: transform 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.3); white-space: nowrap; }
-        #toast.show { transform: translateX(-50%) translateY(0); }
-
-        /* Status colors */
-        .s-wait { background: #fef9c3; color: #854d0e; border-color: #fde047; }
-        .s-done { background: #dcfce7; color: #166534; border-color: #86efac; }
-        .s-bad { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
-        .s-na { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
-        .s-updated { background: #ffedd5; color: #9a3412; border-color: #fb923c; }
-
-        /* Cat colors */
-        .cat-school { background: #dbeafe; color: #1e40af; }
-        .cat-mixed { background: #f3e8ff; color: #6d28d9; }
-
-        /* Responsive */
-        @media(max-width:768px){
-            #sidebar { width: 100%; }
-            #detailView { display: none; }
-            #detailView.mobile-open { display: flex; }
-            .info-grid { grid-template-columns: 1fr 1fr; }
-            .status-panel { display: none; }
-            nav .workload-wrap { display: none; }
-        }
-        @media(max-width:1024px){
-            #sidebar { width: 300px; }
-            .status-panel { width: 260px; }
-        }
-        @media(max-width:900px){
-            .info-grid { grid-template-columns: 1fr 1fr; }
-        }
-
-        /* Spin */
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .fa-spin { animation: spin 1s linear infinite; }
-    </style>
+.card-desc{font-size:11px;color:var(--brown);margin-top:4px;line-height:1.5}
+</style>
 </head>
 <body>
 
-<!-- Navbar -->
-<nav>
-    <div style="display:flex;align-items:center;gap:12px;">
-        <div class="nav-brand">
-            <i class="fa-solid fa-stethoscope" style="color:var(--accent)"></i>
-            MedQuiz KKU 2026
-            <span style="font-size:11px;font-weight:400;opacity:0.6;border-left:1px solid rgba(255,255,255,0.25);padding-left:10px;">ระบบตรวจสอบเอกสาร</span>
-        </div>
-        <div style="display:flex;gap:6px;">
-            <span class="nav-pill"><span class="dot-pulse"></span> Firebase</span>
-            <span class="nav-pill"><span class="dot-pulse"></span> GAS</span>
-        </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;">
-        <div class="workload-wrap">
-            <div style="display:flex;justify-content:space-between;font-size:10px;opacity:0.7;">
-                <span>ความคืบหน้า</span><span id="wlText">2/4 ทีม</span>
-            </div>
-            <div class="workload-bar-bg"><div class="workload-bar" id="wlBar" style="width:50%"></div></div>
-        </div>
-        <button onclick="checkVersion()" style="font-size:11px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:white;padding:6px 12px;border-radius:8px;cursor:pointer;transition:all 0.15s;font-family:'Sarabun',sans-serif;">
-            <i class="fa-solid fa-arrows-rotate"></i> v1.0.4
-        </button>
-        <div style="display:flex;align-items:center;gap:8px;border-left:1px solid rgba(255,255,255,0.2);padding-left:12px;">
-            <div style="text-align:right;">
-                <div style="font-size:10px;opacity:0.6;">Staff Access</div>
-                <div style="font-size:12px;font-weight:700;">พี่สมรักษ์ ทะเบียน</div>
-            </div>
-            <div class="avatar">SR</div>
-        </div>
-    </div>
-</nav>
-
-<!-- Main -->
-<div class="main-layout">
-
-    <!-- Sidebar -->
-    <aside id="sidebar">
-        <!-- Search & Filters -->
-        <div class="sidebar-top">
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" placeholder="ค้นหาชื่อทีม, Email, ชื่อสมาชิก..." oninput="filterTeams()">
-            </div>
-            <div class="range-row">
-                <label>Row</label>
-                <input type="number" id="rangeStart" value="1" min="1" style="width:60px">
-                <span style="color:#94a3b8;font-size:12px;">–</span>
-                <input type="number" id="rangeEnd" value="100" min="1" style="width:60px">
-                <button onclick="filterTeams()" style="padding:5px 10px;background:#e2e8f0;border:none;border-radius:7px;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;"><i class="fa-solid fa-filter"></i></button>
-            </div>
-            <!-- Filter Chips -->
-            <div class="filter-chips" id="filterChips">
-                <button class="chip active" style="background:#dbeafe;color:#1e40af;border-color:#93c5fd;" onclick="setFilter('all',this)">ทั้งหมด</button>
-                <button class="chip" style="background:#fef9c3;color:#854d0e;border-color:#fde047;" onclick="setFilter('waiting',this)">รอตรวจ</button>
-                <button class="chip" style="background:#ffedd5;color:#9a3412;border-color:#fb923c;" onclick="setFilter('updated',this)">Updated</button>
-                <button class="chip" style="background:#dcfce7;color:#166534;border-color:#86efac;" onclick="setFilter('done',this)">สมบูรณ์</button>
-                <button class="chip" style="background:#fee2e2;color:#991b1b;border-color:#fca5a5;" onclick="setFilter('bad',this)">ไม่เรียบร้อย</button>
-                <button class="chip" style="background:#ede9fe;color:#5b21b6;border-color:#c4b5fd;" onclick="setFilter('school',this)">ทีมโรงเรียน</button>
-                <button class="chip" style="background:#fdf4ff;color:#701a75;border-color:#e879f9;" onclick="setFilter('mixed',this)">ทีมผสม</button>
-                <button class="chip" style="background:#ecfdf5;color:#065f46;border-color:#6ee7b7;" onclick="setFilter('email-sent',this)">ส่งอีเมลแล้ว</button>
-                <button class="chip" style="background:#f8faff;color:#475569;border-color:#cbd5e1;" onclick="setFilter('email-not',this)">ยังไม่ส่งอีเมล</button>
-            </div>
-        </div>
-
-        <!-- Stats Strip -->
-        <div class="stats-strip" id="statsStrip">
-            <!-- injected by JS -->
-        </div>
-
-        <!-- Team List -->
-        <div id="teamList"></div>
-    </aside>
-
-    <!-- Detail View -->
-    <main id="detailView">
-
-        <!-- Empty State -->
-        <div id="emptyState">
-            <div class="empty-card">
-                <div class="empty-icon"><i class="fa-solid fa-mouse-pointer"></i></div>
-                <h3 style="font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px;">เริ่มการตรวจสอบ</h3>
-                <p style="font-size:13px;color:var(--text-muted);line-height:1.6;">เลือกรายชื่อทีมจากแถบด้านซ้าย เพื่อดูข้อมูลและเอกสารของทีม</p>
-            </div>
-        </div>
-
-        <!-- Detail Content (hidden until team selected) -->
-        <div id="detailContent" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-
-            <!-- Detail Header -->
-            <div class="detail-header">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                    <div style="flex:1;min-width:0;">
-                        <div class="detail-meta">
-                            <span id="dtCategory" class="tag cat-school">โควตาทีมโรงเรียน</span>
-                            <span id="dtId" class="tag mono" style="background:#f1f5f9;color:#475569;">#1024</span>
-                            <span id="dtUpdatedTag" class="tag s-updated" style="display:none;">🔴 Updated</span>
-                        </div>
-                        <div class="detail-team-name" id="dtTeamName">ทีมขอนแก่นวิทยา</div>
-                        <div class="detail-email" id="dtEmail">head@gmail.com</div>
-                    </div>
-                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-                        <span id="staffViewing" style="display:none;" class="tag s-updated">
-                            <i class="fa-solid fa-eye fa-pulse"></i> พี่บีดูอยู่
-                        </span>
-                        <button onclick="closeMobileDetail()" style="display:none;" id="btnBack" class="btn-history">
-                            <i class="fa-solid fa-arrow-left"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Info Grid -->
-                <div class="info-grid">
-                    <!-- Members Card (prominent) -->
-                    <div class="info-card" style="border-left:3px solid var(--navy);">
-                        <div class="info-card-title"><i class="fa-solid fa-users" style="margin-right:4px;"></i>สมาชิกในทีม</div>
-                        <div class="members-grid" id="dtMembersGrid">
-                            <!-- injected -->
-                        </div>
-                    </div>
-                    <!-- Advisor -->
-                    <div class="info-card" style="border-left:3px solid #8b5cf6;">
-                        <div class="info-card-title"><i class="fa-solid fa-chalkboard-user" style="margin-right:4px;"></i>ข้อมูลอาจารย์ที่ปรึกษา</div>
-                        <p id="dtAdvisor" style="font-size:12px;font-weight:600;line-height:1.7;"></p>
-                    </div>
-                    <!-- Payment -->
-                    <div class="info-card" style="border-left:3px solid var(--green);">
-                        <div class="info-card-title"><i class="fa-solid fa-money-bill-transfer" style="margin-right:4px;"></i>ข้อมูลการโอนเงิน</div>
-                        <p id="dtPayment" style="font-size:12px;font-weight:600;line-height:1.7;"></p>
-                    </div>
-                    <!-- History -->
-                    <div class="info-card" style="border-left:3px solid var(--accent);">
-                        <div class="info-card-title"><i class="fa-solid fa-clock-rotate-left" style="margin-right:4px;"></i>ประวัติ / เวอร์ชัน</div>
-                        <p id="dtVersion" style="font-size:12px;font-weight:600;line-height:1.7;"></p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Workspace -->
-            <div class="workspace">
-                <!-- Doc Viewer -->
-                <div class="doc-section">
-                    <div class="doc-tabs">
-                        <button class="doc-tab active" id="tab-cert" onclick="viewDoc('cert')">1. ใบรับรอง รร.</button>
-                        <button class="doc-tab" id="tab-transcript" onclick="viewDoc('transcript')">2. ปพ.7</button>
-                        <button class="doc-tab" id="tab-slip" onclick="viewDoc('slip')">3. สลิปโอนเงิน</button>
-                    </div>
-                    <div class="doc-viewer" id="docViewer">
-                        <div class="doc-controls">
-                            <button class="ctrl-btn" onclick="adjustDoc('zoomIn')" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-                            <button class="ctrl-btn" onclick="adjustDoc('zoomOut')" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-                            <button class="ctrl-btn" onclick="adjustDoc('rotate')" title="Rotate"><i class="fa-solid fa-rotate-right"></i></button>
-                            <a id="dtPopOut" href="#" target="_blank" class="ctrl-btn" title="Open in new tab"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-                        </div>
-                        <div id="docLoading" class="doc-loading">
-                            <i class="fa-solid fa-circle-notch fa-spin" style="font-size:28px;opacity:0.6;"></i>
-                            <span style="font-size:12px;opacity:0.5;">กำลังโหลดเอกสาร...</span>
-                        </div>
-                        <div class="doc-content">
-                            <img id="mainDocPreview" src="" draggable="false" style="display:none;">
-                            <div id="noDocMsg" style="color:#94a3b8;text-align:center;display:none;">
-                                <i class="fa-solid fa-file-circle-xmark" style="font-size:40px;margin-bottom:12px;display:block;opacity:0.3;"></i>
-                                <span style="font-size:13px;">ไม่พบลิงก์เอกสาร</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Status Panel -->
-                <div class="status-panel">
-                    <h3><i class="fa-solid fa-pen-to-square" style="color:var(--blue);"></i> ปรับสถานะเอกสาร</h3>
-
-                    <div class="status-group">
-                        <label>ใบรับรอง รร.</label>
-                        <select id="sel-cert" onchange="genBullets()">
-                            <option value="รอตรวจเอกสาร">⏳ รอตรวจเอกสาร</option>
-                            <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
-                            <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
-                            <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
-                            <option value="ไม่ต้องส่ง">➖ ไม่ต้องส่ง (ทีมผสม)</option>
-                        </select>
-                    </div>
-                    <div class="status-group">
-                        <label>ปพ.7 (ทุกคน)</label>
-                        <select id="sel-transcript" onchange="genBullets()">
-                            <option value="รอตรวจเอกสาร">⏳ รอตรวจเอกสาร</option>
-                            <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
-                            <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
-                            <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
-                        </select>
-                    </div>
-                    <div class="status-group">
-                        <label>สลิปชำระเงิน</label>
-                        <select id="sel-slip" onchange="genBullets()">
-                            <option value="รอตรวจเอกสาร">⏳ รอตรวจเอกสาร</option>
-                            <option value="เอกสารเรียบร้อย">✅ เอกสารเรียบร้อย</option>
-                            <option value="เอกสารไม่เรียบร้อย">⚠️ เอกสารไม่เรียบร้อย</option>
-                            <option value="ยังไม่ได้รับเอกสาร">❌ ยังไม่ได้รับเอกสาร</option>
-                        </select>
-                    </div>
-
-                    <div class="divider"></div>
-
-                    <div class="feedback-area">
-                        <label>Feedback ถึงน้อง <span onclick="genBullets()">รีเซ็ต</span></label>
-                        <div class="quick-btns">
-                            <button class="quick-btn" onclick="addFeedback('รูปถ่ายไม่ชัดเจน')">+ รูปไม่ชัด</button>
-                            <button class="quick-btn" onclick="addFeedback('ชื่อทีมในสลิปไม่ตรงกัน')">+ สลิปผิด</button>
-                            <button class="quick-btn" onclick="addFeedback('แนบไฟล์ผิดประเภท')">+ ไฟล์ผิด</button>
-                            <button class="quick-btn" onclick="addFeedback('ปพ.7 ไม่ครบทุกคน')">+ ปพ7 ไม่ครบ</button>
-                            <button class="quick-btn" onclick="addFeedback('ลายเซ็นอาจารย์ไม่ครบ')">+ ไม่มีลายเซ็น</button>
-                        </div>
-                        <textarea id="feedbackText" placeholder="ระบบจะสรุป feedback อัตโนมัติ..."></textarea>
-                    </div>
-
-                    <label class="email-toggle">
-                        <input type="checkbox" id="sendEmail">
-                        <span>📧 ส่งอีเมลแจ้งเตือนทันที</span>
-                    </label>
-
-                    <div class="save-row">
-                        <button class="btn-history" onclick="showHistoryModal()" title="ประวัติการแก้ไข"><i class="fa-solid fa-clock-rotate-left"></i></button>
-                        <button class="btn-save" id="btnSave" onclick="startSaveFlow()">
-                            <i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูล
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+<div class="title-bar">
+  <h1>☥ The Explorer's Path ☥</h1>
+  <h2>MedQuiz KKU 2026: Resurrection — คำสาปพิภพทราย</h2>
 </div>
 
-<!-- Modal: Version -->
-<div class="modal-overlay hidden" id="modalVersion">
-    <div class="modal" style="text-align:center;">
-        <div class="modal-icon" style="background:#dbeafe;color:#1d4ed8;"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-        <h2 style="color:var(--navy);">อัปเดตระบบแล้ว!</h2>
-        <p>ฐานข้อมูลบนคลาวด์มีการเปลี่ยนแปลง กรุณารีเฟรชเพื่อซิงค์ข้อมูลล่าสุด</p>
-        <div class="modal-btn-row">
-            <button class="btn-primary" onclick="location.reload()"><i class="fa-solid fa-arrows-rotate"></i> Force Hard Refresh</button>
-            <button class="btn-ghost" onclick="closeModal('modalVersion')">ใช้ข้อมูลเดิมไปก่อน (ไม่แนะนำ)</button>
-        </div>
+<div class="game-wrap">
+  <!-- LEFT: Team stats -->
+  <div class="panel">
+    <div class="panel-title">นักสำรวจ</div>
+    <div class="team-card team-a active" id="card-a">
+      <div class="team-name">🔵 Team A</div>
+      <div class="stat-row"><span>ช่อง</span><span class="stat-val" id="pos-a">1</span></div>
+      <div class="stat-row"><span>คะแนน</span><span class="stat-val" id="score-a">0</span></div>
+      <div class="stat-row"><span>☥ Ankh</span><span class="stat-val" id="coin-a">0</span></div>
+      <div class="stat-row"><span>Hint เหลือ</span><span class="stat-val" id="hint-a">0</span></div>
+      <div class="perk-tag" id="perk-a">—</div>
+      <div class="hand-label">การ์ดในมือ:</div>
+      <div class="hand-cards" id="hand-a"></div>
     </div>
+    <div class="team-card team-b" id="card-b">
+      <div class="team-name">🔴 Team B</div>
+      <div class="stat-row"><span>ช่อง</span><span class="stat-val" id="pos-b">1</span></div>
+      <div class="stat-row"><span>คะแนน</span><span class="stat-val" id="score-b">0</span></div>
+      <div class="stat-row"><span>☥ Ankh</span><span class="stat-val" id="coin-b">0</span></div>
+      <div class="stat-row"><span>Hint เหลือ</span><span class="stat-val" id="hint-b">0</span></div>
+      <div class="perk-tag" id="perk-b">—</div>
+      <div class="hand-label">การ์ดในมือ:</div>
+      <div class="hand-cards" id="hand-b"></div>
+    </div>
+    <div class="panel-title" style="margin-top:8px">ตำนาน</div>
+    <div class="legend">
+      <div class="leg"><div class="legdot" style="background:#28a745"></div>บันได 🪜</div>
+      <div class="leg"><div class="legdot" style="background:#dc3545"></div>งู 🐍</div>
+      <div class="leg"><div class="legdot" style="background:#7b2d8b"></div>การ์ด 📜</div>
+      <div class="leg"><div class="legdot" style="background:#0d6efd"></div>Checkpoint 🏛️</div>
+      <div class="leg"><div class="legdot" style="background:linear-gradient(135deg,#ffd700,#ff8c00)"></div>เส้นชัย 👑</div>
+    </div>
+  </div>
+
+  <!-- CENTER: Board -->
+  <div class="board-area">
+    <div class="board-grid" id="board"></div>
+    <svg class="board-svg" id="connector-svg" viewBox="0 0 100 50" preserveAspectRatio="none"></svg>
+  </div>
+
+  <!-- RIGHT: Controls -->
+  <div class="ctrl-col">
+    <div class="turn-panel">
+      <div class="turn-lbl">ตาของ</div>
+      <div class="turn-name" id="turn-name">🔵 Team A</div>
+      <div style="text-align:center"><span class="dice" id="dice">🎲</span></div>
+      <button class="roll-btn" id="roll-btn" onclick="rollDice()">ทอยลูกเต๋า</button>
+    </div>
+    <div class="panel">
+      <div class="panel-title">บันทึกการสำรวจ</div>
+      <div class="log-box" id="log"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">ช่องพิเศษ</div>
+      <div style="font-size:10px;color:var(--brown);line-height:1.7">
+        🪜 บันได: 5→16, 20→32, 37→48<br>
+        🐍 งู: 13→3, 28→17, 44→34<br>
+        📜 การ์ด: ช่อง 8, 24, 39<br>
+        🏛️ Checkpoint: 15, 30, 45
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Modal: Conflict -->
-<div class="modal-overlay hidden" id="modalConflict">
-    <div class="modal" style="border-top:6px solid #dc2626;">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-            <i class="fa-solid fa-triangle-exclamation" style="font-size:28px;color:#dc2626;"></i>
-            <h2 style="font-size:18px;margin:0;">ข้อมูลมีการเปลี่ยนแปลง!</h2>
-        </div>
-        <p style="text-align:left;margin-bottom:12px;">ข้อมูลบน Sheet ถูกแก้ไขหลังจากที่คุณเปิดดู:</p>
-        <div class="conflict-log">
-            <div><b>สตาฟที่แก้:</b> พี่หมวย ทะเบียน</div>
-            <div><b>เมื่อ:</b> 5 นาทีที่แล้ว</div>
-            <div><b>สลิป:</b> ❌ ยังไม่ได้รับ → ✅ เรียบร้อย</div>
-        </div>
-        <div class="conflict-btn-row">
-            <button class="btn-reload" onclick="closeModal('modalConflict');showToast('โหลดข้อมูลใหม่แล้ว ✓')">โหลดข้อมูลใหม่</button>
-            <button class="btn-overwrite" onclick="forceSave()">ยืนยันเขียนทับ</button>
-        </div>
-    </div>
+<!-- === MODALS === -->
+<!-- Perk Selection -->
+<div class="overlay" id="perk-overlay">
+  <div class="mbox">
+    <div class="mtitle">☥ เลือก Perk พิเศษ</div>
+    <div class="msub" id="perk-team-label">Team A — เลือกความเชี่ยวชาญ</div>
+    <button class="perk-opt" onclick="selectPerk('Pathologist\'s Eye')">
+      <strong>👁️ Pathologist's Eye</strong>
+      เมื่อตกช่องกับดัก (งู) จะถอยหลังน้อยลง 2 ช่อง — ลดผลกระทบของ Ancient Curse
+    </button>
+    <button class="perk-opt" onclick="selectPerk('Gen Z Spirit')">
+      <strong>⚡ Gen Z Spirit</strong>
+      เมื่อตอบคำถามช่องธรรมดาถูก จะได้เดินเพิ่ม 1 ช่องโบนัส
+    </button>
+    <button class="perk-opt" onclick="selectPerk('Scientific Method')">
+      <strong>🔬 Scientific Method</strong>
+      ได้รับ Hint 2 ครั้งตลอดเกม — ตัดตัวเลือกผิดออก 1 ตัว
+    </button>
+  </div>
 </div>
 
-<!-- Modal: History -->
-<div class="modal-overlay hidden" id="modalHistory">
-    <div class="modal" style="max-width:480px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <h2 style="font-size:16px;margin:0;"><i class="fa-solid fa-clock-rotate-left" style="color:var(--blue);margin-right:6px;"></i>ประวัติการแก้ไข</h2>
-            <button onclick="closeModal('modalHistory')" style="background:none;border:none;font-size:18px;cursor:pointer;color:#94a3b8;">✕</button>
-        </div>
-        <div id="historyList" style="display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;"></div>
-        <button class="btn-ghost" style="margin-top:12px;" onclick="closeModal('modalHistory')">ปิด</button>
-    </div>
+<!-- Question Modal -->
+<div class="overlay hidden" id="q-overlay">
+  <div class="mbox">
+    <div class="mtitle" id="q-event-label">คำถาม</div>
+    <div class="msub" id="q-event-desc"></div>
+    <span class="subj-badge" id="q-subj">Subject</span>
+    <div class="timer-wrap"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
+    <div class="q-text" id="q-text">Loading...</div>
+    <div id="q-choices"></div>
+    <button class="hint-btn" id="hint-btn" onclick="useHint()">💡 ใช้ Hint (เหลือ <span id="hint-left">0</span>)</button>
+    <div class="hint-text hidden" id="hint-text"></div>
+  </div>
 </div>
 
-<!-- Toast -->
-<div id="toast"></div>
+<!-- Market / Checkpoint -->
+<div class="overlay hidden" id="mkt-overlay">
+  <div class="mbox">
+    <div class="mtitle">🏛️ ตลาดมืดแห่งไคโร</div>
+    <div class="msub" id="mkt-team-label">ประมูลคัมภีร์ด้วย Ankh Coins</div>
+    <div id="mkt-items"></div>
+    <button class="close-mkt" onclick="closeMarket()">☥ ออกจากตลาด</button>
+  </div>
+</div>
+
+<!-- Card Used Modal -->
+<div class="overlay hidden" id="card-use-overlay">
+  <div class="mbox" style="text-align:center">
+    <div class="mtitle" id="card-use-title">ใช้คัมภีร์</div>
+    <div style="font-size:40px;margin:10px 0" id="card-use-icon">📜</div>
+    <div class="q-text" id="card-use-desc"></div>
+    <button class="close-mkt" onclick="closeCardUse()">ตกลง</button>
+  </div>
+</div>
+
+<!-- Win Modal -->
+<div class="overlay hidden" id="win-overlay">
+  <div class="mbox win-box">
+    <div class="win-trophy">👑</div>
+    <div class="win-title" id="win-name">Team A ชนะ!</div>
+    <div class="win-sub">พิสูจน์แล้วว่าโรคระบาดมาจากวิทยาศาสตร์ ไม่ใช่คำสาป!</div>
+    <div class="score-summary" id="win-scores"></div>
+    <button class="restart-btn" onclick="location.reload()">☥ เริ่มการสำรวจใหม่</button>
+  </div>
+</div>
 
 <script>
-// ─── Mock Data (from CSV) ────────────────────────────────────────
-const mockTeams = [
-    {
-        id: "T001", idx: 1,
-        teamName: "555testtranscrit7",
-        category: "โควตาทีมโรงเรียน",
-        overall: "รอการตรวจสอบ",
-        updated: true,
-        emailSentStatus: "ยังไม่ส่ง",
-        members: [
-            { prefix:"นาย", name:"นาย คน1", email:"medquizkku2026@gmail.com", phone:"111-111-1111", school:"โรงเรียนแพท (ม.ข.)", level:"มัธยมศึกษาปีที่ 6" },
-            { prefix:"นางสาว", name:"นางสาว คน2", email:"medquizkku2026_2@gmail.com", phone:"222-222-2222", school:"โรงเรียนแพท (ม.ข.)", level:"มัธยมศึกษาปีที่ 5" },
-            { prefix:"นาง", name:"นาง คน3", email:"medquizkku2026_3@gmail.com", phone:"333-333-3333", school:"โรงเรียนแพท (ม.ข.)", level:"มัธยมศึกษาปีที่ 6" }
-        ],
-        advisor: { name:"นาย อาจารย์", phone:"444-444-4444", email:"medquizkku2026_teacher@gmail.com" },
-        payment: { date:"5/15/2026", time:"11:40 AM", bank:"SCB", last4:"6941" },
-        certUrl: "https://drive.google.com/open?id=18lyUhJPtDcEWLp3DDQ4OwM1UCwCIRBS7",
-        transcriptUrl: "https://drive.google.com/open?id=1AKjpOaX6H-t2ABlpnS0E5Cce7TwLPwgA",
-        slipUrl: "",
-        certStatus: "รอตรวจเอกสาร",
-        transcriptStatus: "รอตรวจเอกสาร",
-        slipStatus: "รอตรวจเอกสาร",
-        lastSubmit: "17/05/26 16:21",
-        version: 1,
-        feedback: "",
-        additionalFormSent: "ยังไม่ส่ง"
-    },
-    {
-        id: "T002", idx: 2,
-        teamName: "ทีเอมพี",
-        category: "โควตาทีมอิสระ (ทีมผสม)",
-        overall: "รอการตรวจสอบ",
-        updated: false,
-        emailSentStatus: "ยังไม่ส่ง",
-        members: [
-            { prefix:"นาย", name:"นาย คน4", email:"panasch.edu@gmail.com", phone:"444-444-4444", school:"โรงเรียนแพท (ม.ข.)", level:"มัธยมศึกษาปีที่ 4" },
-            { prefix:"นางสาว", name:"นางสาว คน5", email:"panasch.edu2@gmail.com", phone:"555-555-5555", school:"โรงเรียนแพท2 (ม.ข.)", level:"มัธยมศึกษาปีที่ 5" },
-            { prefix:"นาง", name:"นาง คน6", email:"panasch.edu3@gmail.com", phone:"666-666-6666", school:"โรงเรียนแพท3 (ม.ข.)", level:"มัธยมศึกษาปีที่ 6" }
-        ],
-        advisor: { name:"อาจารย์รรร", phone:"777-777-7777", email:"panasjang@gmail.com" },
-        payment: { date:"5/14/2026", time:"1:09 PM", bank:"SCB", last4:"6941" },
-        certUrl: "https://drive.google.com/open?id=1qxxX0SMCiK0KIuxSVYphPvK2fsfixyBC",
-        transcriptUrl: "https://drive.google.com/open?id=1zYhjfvBiCDzyj8h6I1b2l-19Wzsb7YdD",
-        slipUrl: "",
-        certStatus: "ไม่ต้องส่ง",
-        transcriptStatus: "รอตรวจเอกสาร",
-        slipStatus: "รอตรวจเอกสาร",
-        lastSubmit: "17/05/26 16:21",
-        version: 1,
-        feedback: "",
-        additionalFormSent: "ยังไม่ส่ง"
-    },
-    {
-        id: "T003", idx: 3,
-        teamName: "SKL-ROBOT-2026",
-        category: "โควตาทีมโรงเรียน",
-        overall: "รอการตรวจสอบ",
-        updated: true,
-        emailSentStatus: "ยังไม่ส่ง",
-        members: [
-            { prefix:"นาย", name:"นักเรียนโรงเรียน คนที่ 1", email:"tester_school@gmail.com", phone:"949-482-1250", school:"โรงเรียนขอนแก่นวิทยายน", level:"มัธยมศึกษาปีที่ 6" },
-            { prefix:"นาย", name:"นักเรียนโรงเรียน คนที่ 2", email:"", phone:"223-100-2937", school:"โรงเรียนขอนแก่นวิทยายน", level:"มัธยมศึกษาปีที่ 6" },
-            { prefix:"นาย", name:"นักเรียนโรงเรียน คนที่ 3", email:"", phone:"995-766-4203", school:"โรงเรียนขอนแก่นวิทยายน", level:"มัธยมศึกษาปีที่ 6" }
-        ],
-        advisor: { name:"—", phone:"103-131-2692", email:"" },
-        payment: { date:"5/15/2026", time:"12:30 PM", bank:"—", last4:"9918" },
-        certUrl: "", transcriptUrl: "", slipUrl: "",
-        certStatus: "รอตรวจเอกสาร",
-        transcriptStatus: "รอตรวจเอกสาร",
-        slipStatus: "รอตรวจเอกสาร",
-        lastSubmit: "17/05/26 16:21",
-        version: 1,
-        feedback: "",
-        additionalFormSent: "ยังไม่ส่ง"
-    },
-    {
-        id: "T004", idx: 4,
-        teamName: "MIX-GENIUS-CHAMP",
-        category: "โควตาทีมอิสระ (ทีมผสม)",
-        overall: "สมบูรณ์",
-        updated: false,
-        emailSentStatus: "ส่งแล้ว",
-        members: [
-            { prefix:"นาย", name:"นักเรียนผสม คนที่ 1", email:"tester_mixed@gmail.com", phone:"647-694-1093", school:"โรงเรียนเตรียมอุดมศึกษา", level:"มัธยมศึกษาปีที่ 6" },
-            { prefix:"นาย", name:"นักเรียนผสม คนที่ 2", email:"", phone:"812-420-1819", school:"โรงเรียนขอนแก่นวิทยายน", level:"มัธยมศึกษาปีที่ 6" },
-            { prefix:"นาย", name:"นักเรียนผสม คนที่ 3", email:"", phone:"372-878-1871", school:"โรงเรียนอุดรพิทยานุกูล", level:"มัธยมศึกษาปีที่ 6" }
-        ],
-        advisor: { name:"—", phone:"931-851-6526", email:"" },
-        payment: { date:"5/15/2026", time:"12:30 PM", bank:"—", last4:"9928" },
-        certUrl: "", transcriptUrl: "", slipUrl: "",
-        certStatus: "ไม่ต้องส่ง",
-        transcriptStatus: "เอกสารเรียบร้อย",
-        slipStatus: "เอกสารเรียบร้อย",
-        lastSubmit: "17/05/26 16:21",
-        version: 1,
-        feedback: "เอกสารครบเรียบร้อยทุกอย่าง ✅",
-        additionalFormSent: "ยังไม่ส่ง"
-    }
+/* ====== GAME CONFIG ====== */
+const LADDERS = {5:16, 20:32, 37:48};
+const SNAKES  = {13:3,  28:17, 44:34};
+const CARD_CELLS = [8,24,39];
+const CHECKPOINTS = [15,30,45];
+
+const MARKET_CARDS = [
+  {id:'sandstorm', name:'🌪️ พายุทราย',      desc:'Block ทีมอื่น — ข้ามรอบถัดไป',            price:30, emoji:'🌪️'},
+  {id:'oasis',     name:'🏝️ โอเอซิส',       desc:'คะแนนรอบถัดไป ×1.5 ถ้าตอบถูก',           price:25, emoji:'🏝️'},
+  {id:'shield',    name:'🛡️ โล่เนเฟอร์ติติ', desc:'ป้องกัน Block หรือหารคะแนนครั้งหนึ่ง',   price:35, emoji:'🛡️'},
+  {id:'eye',       name:'👁️ เนตรฮอรัส',     desc:'เปลี่ยนคำถามเป็นหมวดอื่น 1 ครั้ง',         price:20, emoji:'👁️'},
+  {id:'split',     name:'⚡ มนต์ฟาโรห์',    desc:'ทีมที่ถูกเลือก ถ้าตอบถูกได้ครึ่งคะแนน',   price:40, emoji:'⚡'},
 ];
 
-const historyLog = [
-    { staff:"พี่สมรักษ์", action:"เปลี่ยน สลิป → ✅ เรียบร้อย", team:"MIX-GENIUS-CHAMP", time:"17/05/26 14:00" },
-    { staff:"พี่หมวย", action:"เปลี่ยน ปพ.7 → ✅ เรียบร้อย", team:"MIX-GENIUS-CHAMP", time:"17/05/26 13:45" },
+const QUESTIONS = [
+  {subj:'Microbiology',   text:'แบคทีเรียชนิดใดที่ทำให้เกิดอหิวาตกโรค (Cholera) และพบในแหล่งน้ำสกปรก?', choices:['Staphylococcus aureus','Vibrio cholerae','Clostridium tetani','Streptococcus pyogenes'], ans:1, hint:'ชื่อบอกอยู่แล้ว — เกี่ยวกับน้ำ (Vibrio)'},
+  {subj:'Parasitology',   text:'พยาธิชนิดใดแพร่ผ่านผิวหนังและพบในลุ่มแม่น้ำไนล์ ทำให้เกิด Schistosomiasis?', choices:['Taenia saginata','Ascaris lumbricoides','Schistosoma mansoni','Plasmodium falciparum'], ans:2, hint:'ชื่อเกี่ยวกับ "Schisto" — ใบไม้เลือด'},
+  {subj:'Physiology',     text:'เมื่อสูดดมฝุ่นทรายเข้าไป กลไกป้องกันแรกสุดของทางเดินหายใจส่วนบนคืออะไร?', choices:['การสร้าง IgE','ขนกวัด (Cilia) และเมือก','การหลั่ง Histamine','การสร้าง Surfactant'], ans:1, hint:'โครงสร้างที่ขับเสมหะขึ้นมา'},
+  {subj:'Pathology',      text:'Granuloma formation เป็นลักษณะของการตอบสนองภูมิคุ้มกันในโรคใด?', choices:['Cholera','Malaria','Tuberculosis','Typhoid fever'], ans:2, hint:'โรคปอดติดเชื้อ Mycobacterium'},
+  {subj:'Pharmacology',   text:'Artemisinin เป็นยารักษาโรคใดที่มักพบในเขตร้อนชื้น?', choices:['อหิวาตกโรค','ไข้มาลาเรีย','เลือดออกเดงกี่','วัณโรค'], ans:1, hint:'พบใน Plasmodium — ยามาจากพืชจีน'},
+  {subj:'Anatomy',        text:'กระดูก Femur ที่หักอาจทำให้เสียเลือดเข้า Thigh compartment ได้ถึงกี่ลิตร?', choices:['0.5 ลิตร','1–1.5 ลิตร','2–3 ลิตร','5 ลิตร'], ans:1, hint:'Thigh compartment จุได้จำกัด'},
+  {subj:'Biochemistry',   text:'ATP สร้างมากที่สุดในกระบวนการใดในเซลล์?', choices:['Glycolysis','Krebs Cycle','Oxidative Phosphorylation','Beta-oxidation'], ans:2, hint:'ต้องการ O₂ — เกิดใน mitochondria inner membrane'},
+  {subj:'Microbiology',   text:'โปรตีนชั้นนอก (Outer membrane protein) ของแบคทีเรีย Gram-negative มีบทบาทสำคัญต่อสิ่งใด?', choices:['การสร้าง Biofilm','ความต้านทานยาปฏิชีวนะ','การหลั่ง Toxin','ทั้ง ก และ ข'], ans:3, hint:'Outer membrane ให้ความแข็งแกร่งและกรองสาร'},
+  {subj:'Physiology',     text:'ร่างกายสูญเสียน้ำมากในทะเลทราย — กลไกใดถูกกระตุ้นก่อนเพื่อรักษาความดันโลหิต?', choices:['RAAS (Renin-Angiotensin)','Natriuretic Peptide','Histamine Release','Bradykinin release'], ans:0, hint:'เกี่ยวกับ Kidney — Renin'},
+  {subj:'Parasitology',   text:'พาหะของ Malaria (Plasmodium) คือยุงชนิดใด?', choices:['Aedes aegypti','Anopheles','Culex pipiens','Mansonia'], ans:1, hint:'ยุงกัดตอนกลางคืน — ปีกมีลาย'},
+  {subj:'Pathology',      text:'การตรวจพบ Reed-Sternberg cells ใน Biopsy บ่งชี้ถึงโรคมะเร็งชนิดใด?', choices:['Non-Hodgkin lymphoma','Hodgkin lymphoma','Leukemia','Multiple myeloma'], ans:1, hint:'Hodgkin — เซลล์ยักษ์สองนิวเคลียส'},
+  {subj:'Pharmacology',   text:'NSAIDs ออกฤทธิ์ยับยั้ง Enzyme ใดเพื่อลดการอักเสบ?', choices:['Lipoxygenase','COX-1 และ COX-2','Phospholipase A2','Thromboxane Synthase'], ans:1, hint:'COX = Cyclooxygenase'},
+  {subj:'Biochemistry',   text:'เมื่อร่างกายขาดน้ำ Osmolality ของ plasma จะเปลี่ยนแปลงอย่างไร?', choices:['ลดลง','คงที่','เพิ่มขึ้น','ขึ้นอยู่กับ Na⁺'], ans:2, hint:'น้ำน้อย → สารละลายเข้มข้นขึ้น'},
+  {subj:'Anatomy',        text:'ต่อมลูกหมาก (Prostate gland) อยู่ในระดับเดียวกับกระดูกใด?', choices:['L4-L5','Coccyx','Pubic symphysis','Sacrum'], ans:2, hint:'อยู่ใต้กระเพาะปัสสาวะ ระดับ pubis'},
+  {subj:'Microbiology',   text:'Endospore ของแบคทีเรียสร้างขึ้นเมื่อเผชิญกับสภาพแวดล้อมแบบใด?', choices:['อุณหภูมิสูงเกิน 70°C','แสง UV','ขาดสารอาหาร','pH ต่ำกว่า 4'], ans:2, hint:'ปกป้องตัวเองเมื่อสภาพแวดล้อมรุนแรง'},
+  {subj:'Physiology',     text:'Erythropoietin (EPO) ผลิตจากอวัยวะใด?', choices:['ตับ','ต่อมหมวกไต','ไต','ไขกระดูก'], ans:2, hint:'กระตุ้นเมื่อ O₂ ในเลือดต่ำ — ไต'},
+  {subj:'Pathology',      text:'การพบ Psammoma bodies ในชิ้นเนื้อ บ่งชี้ถึงมะเร็งชนิดใด?', choices:['Breast cancer','Papillary thyroid carcinoma','Colon cancer','Hepatocellular carcinoma'], ans:1, hint:'Psammoma = concentric calcified layers — ต่อมไทรอยด์'},
+  {subj:'Pharmacology',   text:'Metronidazole (Flagyl) ใช้รักษาการติดเชื้อจากสิ่งมีชีวิตชนิดใด?', choices:['Virus','แบคทีเรีย Gram-positive','แบคทีเรีย Anaerobes และ Protozoa','Fungi'], ans:2, hint:'ฆ่า Anaerobic bacteria และ Giardia, Amoeba'},
+  {subj:'Biochemistry',   text:'กรดอะมิโนชนิดใดเป็น precursor ของ Serotonin?', choices:['Tyrosine','Phenylalanine','Tryptophan','Histidine'], ans:2, hint:'5-HTP → Serotonin — เส้นทาง Tryptophan'},
+  {subj:'Anatomy',        text:'Brachial plexus ถูก injury ที่ C5-C6 ทำให้เกิด palsy ในลักษณะใด?', choices:['Claw hand','Wrist drop','Waiter\'s tip (Erb\'s palsy)','ไม่มีผลกระทบ'], ans:2, hint:'Erb\'s palsy — แขนหมุนเข้า ข้อศอกเหยียด'},
 ];
 
-let currentTeam = null;
-let docScale = 1, docRotate = 0;
-let currentFilter = 'all';
+/* ====== STATE ====== */
+const players = [
+  {id:0,key:'a',name:'Team A',icon:'🔵',pos:1,score:0,coins:0,hintsLeft:0,perk:'',hand:[],blocked:false,doublePts:false,shielded:false},
+  {id:1,key:'b',name:'Team B',icon:'🔴',pos:1,score:0,coins:0,hintsLeft:0,perk:'',hand:[],blocked:false,doublePts:false,shielded:false},
+];
+let currentTurn = 0;
+let perkSetup = 0;
+let currentQ = null;
+let timerInterval = null;
+let timeLeft = 30;
+let pendingMarket = false;
+let pendingCardApply = null;
+let hintUsedThisQ = false;
 
-// ─── Init ────────────────────────────────────────
-window.onload = () => {
-    renderStats();
-    renderTeamList(mockTeams);
-    setTimeout(() => { /* auto-show version modal for demo */ }, 2500);
-};
-
-// ─── Stats ────────────────────────────────────────
-function renderStats() {
-    const all = mockTeams.length;
-    const done = mockTeams.filter(t=>t.overall==='สมบูรณ์').length;
-    const wait = mockTeams.filter(t=>t.overall==='รอการตรวจสอบ').length;
-    const bad = mockTeams.filter(t=>t.overall==='การสมัครไม่เรียบร้อย').length;
-    const upd = mockTeams.filter(t=>t.updated).length;
-    const emailSent = mockTeams.filter(t=>t.emailSentStatus==='ส่งแล้ว').length;
-    const school = mockTeams.filter(t=>t.category.includes('โรงเรียน')).length;
-    const mixed = mockTeams.filter(t=>t.category.includes('ผสม')).length;
-
-    document.getElementById('statsStrip').innerHTML = `
-        <div class="stat-pill" style="background:#f0f9ff;border-color:#bae6fd;"><span class="num" style="color:#0369a1;">${all}</span><span class="lbl" style="color:#0369a1;">ทั้งหมด</span></div>
-        <div class="stat-pill" style="background:#dcfce7;border-color:#86efac;"><span class="num" style="color:#166534;">${done}</span><span class="lbl" style="color:#166534;">สมบูรณ์</span></div>
-        <div class="stat-pill" style="background:#fef9c3;border-color:#fde047;"><span class="num" style="color:#854d0e;">${wait}</span><span class="lbl" style="color:#854d0e;">รอตรวจ</span></div>
-        <div class="stat-pill" style="background:#fee2e2;border-color:#fca5a5;"><span class="num" style="color:#991b1b;">${bad}</span><span class="lbl" style="color:#991b1b;">ไม่เรียบร้อย</span></div>
-        <div class="stat-pill" style="background:#ffedd5;border-color:#fb923c;"><span class="num" style="color:#9a3412;">${upd}</span><span class="lbl" style="color:#9a3412;">Updated</span></div>
-        <div class="stat-pill" style="background:#ecfdf5;border-color:#6ee7b7;"><span class="num" style="color:#065f46;">${emailSent}</span><span class="lbl" style="color:#065f46;">ส่งเมลแล้ว</span></div>
-        <div class="stat-pill" style="background:#ede9fe;border-color:#c4b5fd;"><span class="num" style="color:#5b21b6;">${school}</span><span class="lbl" style="color:#5b21b6;">ทีม รร.</span></div>
-        <div class="stat-pill" style="background:#fdf4ff;border-color:#e879f9;"><span class="num" style="color:#701a75;">${mixed}</span><span class="lbl" style="color:#701a75;">ทีมผสม</span></div>
-    `;
-    // Update workload
-    document.getElementById('wlText').textContent = `${done}/${all} ทีม`;
-    document.getElementById('wlBar').style.width = `${(done/all)*100}%`;
+/* ====== BOARD LAYOUT ====== */
+// boustrophedon: bottom row = 1-10, next = 20-11, etc.
+function buildBoardOrder(){
+  const order = [];
+  for(let row=4;row>=0;row--){
+    const base = row*10;
+    if(row%2===0){
+      // left to right: 1-10, 21-30, 41-50
+      for(let c=1;c<=10;c++) order.push(base+c);
+    } else {
+      // right to left: 20-11, 40-31
+      for(let c=10;c>=1;c--) order.push(base+c);
+    }
+  }
+  return order;
 }
 
-// ─── Filter ────────────────────────────────────────
-function setFilter(f, btn) {
-    currentFilter = f;
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    filterTeams();
+function initBoard(){
+  const grid = document.getElementById('board');
+  const order = buildBoardOrder();
+  grid.innerHTML = '';
+  order.forEach(n => {
+    const div = document.createElement('div');
+    div.className = 'cell';
+    if(LADDERS[n]) div.classList.add('ladder');
+    if(SNAKES[n])  div.classList.add('snake');
+    if(CARD_CELLS.includes(n)) div.classList.add('card-cell');
+    if(CHECKPOINTS.includes(n)) div.classList.add('checkpoint');
+    if(n===50) div.classList.add('cell-50');
+    if(n===1)  div.classList.add('cell-1');
+    div.id = 'cell-'+n;
+
+    const icon = LADDERS[n]?'🪜':SNAKES[n]?'🐍':CARD_CELLS.includes(n)?'📜':CHECKPOINTS.includes(n)?'🏛️':n===50?'👑':'';
+    div.innerHTML = `<div class="cell-num">${n}</div>${icon?`<div class="cell-icon">${icon}</div>`:''}
+      <div class="tokens">
+        <div class="tok tok-a" id="tok-a-${n}" style="display:none"></div>
+        <div class="tok tok-b" id="tok-b-${n}" style="display:none"></div>
+      </div>`;
+    grid.appendChild(div);
+  });
+
+  // Place start tokens
+  document.getElementById('tok-a-1').style.display='block';
+  document.getElementById('tok-b-1').style.display='block';
+
+  drawConnectors();
 }
 
-function filterTeams() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    const start = parseInt(document.getElementById('rangeStart').value)||1;
-    const end = parseInt(document.getElementById('rangeEnd').value)||9999;
+/* Draw snake/ladder lines on SVG */
+function cellCenter(n){
+  // find row/col for cell n
+  const row = Math.floor((n-1)/10); // 0=bottom,4=top
+  let col;
+  if(row%2===0) col = (n-1)%10;      // left-right
+  else          col = 9-((n-1)%10);  // right-left
 
-    let filtered = mockTeams.filter(t => {
-        const inRange = t.idx >= start && t.idx <= end;
-        const matchQ = !q ||
-            t.teamName.toLowerCase().includes(q) ||
-            t.members.some(m => m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q));
-
-        let matchFilter = true;
-        if (currentFilter==='waiting') matchFilter = t.overall==='รอการตรวจสอบ';
-        else if (currentFilter==='done') matchFilter = t.overall==='สมบูรณ์';
-        else if (currentFilter==='bad') matchFilter = t.overall==='การสมัครไม่เรียบร้อย';
-        else if (currentFilter==='updated') matchFilter = t.updated;
-        else if (currentFilter==='school') matchFilter = t.category.includes('โรงเรียน');
-        else if (currentFilter==='mixed') matchFilter = t.category.includes('ผสม');
-        else if (currentFilter==='email-sent') matchFilter = t.emailSentStatus==='ส่งแล้ว';
-        else if (currentFilter==='email-not') matchFilter = t.emailSentStatus!=='ส่งแล้ว';
-
-        return inRange && matchQ && matchFilter;
-    });
-    renderTeamList(filtered);
+  // SVG viewBox is 100x50, rows inverted (row0=bottom=visual row4)
+  const svgRow = 4 - row;
+  const cx = col*10 + 5;
+  const cy = svgRow*10 + 5;
+  return {cx, cy};
 }
 
-// ─── Render Team List ────────────────────────────────────────
-function renderTeamList(teams) {
-    const container = document.getElementById('teamList');
-    if (teams.length===0) {
-        container.innerHTML = `<div style="text-align:center;padding:40px 20px;color:#94a3b8;"><i class="fa-solid fa-inbox" style="font-size:32px;margin-bottom:8px;display:block;opacity:0.3;"></i><span style="font-size:13px;">ไม่พบทีมที่ตรงกัน</span></div>`;
-        return;
+function drawConnectors(){
+  const svg = document.getElementById('connector-svg');
+  let html = '';
+
+  // Ladders
+  Object.entries(LADDERS).forEach(([from,to])=>{
+    const s = cellCenter(+from), e = cellCenter(+to);
+    html += `<line x1="${s.cx}" y1="${s.cy}" x2="${e.cx}" y2="${e.cy}" stroke="#28a745" stroke-width="1.5" stroke-dasharray="2,1" opacity=".6"/>
+             <circle cx="${s.cx}" cy="${s.cy}" r="1.5" fill="#28a745" opacity=".8"/>
+             <circle cx="${e.cx}" cy="${e.cy}" r="1.5" fill="#28a745" opacity=".8"/>`;
+  });
+
+  // Snakes
+  Object.entries(SNAKES).forEach(([from,to])=>{
+    const s = cellCenter(+from), e = cellCenter(+to);
+    const mx=(s.cx+e.cx)/2+6, my=(s.cy+e.cy)/2;
+    html += `<path d="M${s.cx},${s.cy} Q${mx},${my} ${e.cx},${e.cy}" fill="none" stroke="#dc3545" stroke-width="1.8" opacity=".6"/>
+             <circle cx="${s.cx}" cy="${s.cy}" r="1.5" fill="#dc3545" opacity=".8"/>`;
+  });
+
+  svg.innerHTML = html;
+}
+
+/* ====== UI UPDATE ====== */
+function updateUI(){
+  players.forEach(p=>{
+    document.getElementById('pos-'+p.key).textContent = p.pos;
+    document.getElementById('score-'+p.key).textContent = p.score;
+    document.getElementById('coin-'+p.key).textContent = p.coins;
+    document.getElementById('hint-'+p.key).textContent = p.hintsLeft;
+    document.getElementById('perk-'+p.key).textContent = p.perk || '—';
+
+    // Tokens
+    for(let i=1;i<=50;i++){
+      const t = document.getElementById(`tok-${p.key}-${i}`);
+      if(t) t.style.display = (i===p.pos)?'block':'none';
     }
 
-    const overallColors = {
-        'รอการตรวจสอบ': { bar:'#f59e0b', badge:'s-wait' },
-        'สมบูรณ์': { bar:'#16a34a', badge:'s-done' },
-        'การสมัครไม่เรียบร้อย': { bar:'#dc2626', badge:'s-bad' }
-    };
+    // Active card
+    document.getElementById('card-'+p.key).className = 'team-card team-'+p.key + (currentTurn===p.id?' active':'');
 
-    container.innerHTML = teams.map(t => {
-        const oc = overallColors[t.overall] || { bar:'#94a3b8', badge:'s-na' };
-        const isMixed = t.category.includes('ผสม');
-        const catStyle = isMixed ? 'cat-mixed' : 'cat-school';
-        const membersList = t.members.map(m => `<span class="member-chip">${m.prefix} ${m.name.split(' ').slice(-1)[0]}</span>`).join('');
-        const emailIcon = t.emailSentStatus==='ส่งแล้ว'
-            ? '<span style="font-size:9px;background:#dcfce7;color:#166534;border:1px solid #86efac;padding:2px 7px;border-radius:99px;font-weight:700;">📧 ส่งแล้ว</span>'
-            : '<span style="font-size:9px;background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0;padding:2px 7px;border-radius:99px;">ยังไม่ส่ง</span>';
-
-        return `
-        <div onclick="selectTeam('${t.id}',this)" class="team-card" data-id="${t.id}">
-            <div class="cat-bar" style="background:${oc.bar};"></div>
-            ${t.updated ? `<div class="updated-ring" style="top:10px;right:10px;position:absolute;"></div><div class="updated-badge" style="top:10px;right:10px;position:absolute;"></div>` : ''}
-            <div class="team-card-inner">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
-                    <span class="tag ${catStyle}" style="font-size:9px;padding:2px 7px;">${t.category}</span>
-                    <span class="card-idx">#${t.idx}</span>
-                </div>
-                <div class="card-team">${t.teamName}</div>
-                <div class="card-email">${t.members[0].email || '—'}</div>
-                <div class="card-members">${membersList}</div>
-                <div class="card-footer">
-                    <span class="overall-badge ${oc.badge}">${t.overall}</span>
-                    ${emailIcon}
-                </div>
-            </div>
-        </div>`;
-    }).join('');
+    // Hand
+    const handEl = document.getElementById('hand-'+p.key);
+    handEl.innerHTML = p.hand.map((c,idx)=>`<button class="hcard" onclick="playCard(${p.id},${idx})">${c.emoji} ${c.name.split(' ')[1]||c.name}</button>`).join('');
+  });
+  document.getElementById('turn-name').textContent = players[currentTurn].icon+' '+players[currentTurn].name;
+  if(players[currentTurn].blocked){
+    document.getElementById('turn-name').textContent += ' (BLOCKED)';
+  }
 }
 
-// ─── Select Team ────────────────────────────────────────
-function selectTeam(id, el) {
-    const team = mockTeams.find(t=>t.id===id);
-    if (!team) return;
-    currentTeam = team;
+function log(msg, cls=''){
+  const b = document.getElementById('log');
+  b.innerHTML = `<div class="log-e ${cls}">${msg}</div>` + b.innerHTML;
+}
 
-    // Sidebar highlight
-    document.querySelectorAll('.team-card').forEach(c=>c.classList.remove('active'));
-    if (el) el.classList.add('active');
+/* ====== PERK SETUP ====== */
+function selectPerk(perk){
+  players[perkSetup].perk = perk;
+  if(perk==='Scientific Method') players[perkSetup].hintsLeft = 2;
+  log(`${players[perkSetup].name} เลือก: ${perk}`,'sp');
+  perkSetup++;
+  if(perkSetup >= 2){
+    document.getElementById('perk-overlay').classList.add('hidden');
+    updateUI();
+    log('--- ☥ เริ่มการสำรวจ! ---','sp');
+  } else {
+    document.getElementById('perk-team-label').textContent = `${players[perkSetup].name} — เลือกความเชี่ยวชาญ`;
+  }
+}
 
-    // Show detail
-    document.getElementById('emptyState').style.display = 'none';
-    document.getElementById('detailContent').style.display = 'flex';
+/* ====== DICE & MOVEMENT ====== */
+function rollDice(){
+  const p = players[currentTurn];
 
-    // Populate header
-    const catEl = document.getElementById('dtCategory');
-    catEl.textContent = team.category;
-    catEl.className = `tag ${team.category.includes('ผสม') ? 'cat-mixed' : 'cat-school'}`;
-    document.getElementById('dtId').textContent = `#${team.idx}`;
-    document.getElementById('dtTeamName').textContent = team.teamName;
-    document.getElementById('dtEmail').textContent = team.members[0].email || '—';
-    document.getElementById('dtUpdatedTag').style.display = team.updated ? 'inline-flex' : 'none';
+  // Handle blocked player
+  if(p.blocked){
+    p.blocked = false;
+    log(`${p.icon} ${p.name} ถูก Block — ข้ามตาไป`,'bad');
+    endTurn();
+    return;
+  }
 
-    // Members Grid (prominent)
-    document.getElementById('dtMembersGrid').innerHTML = team.members.map((m,i) => `
-        <div class="member-row">
-            <div class="member-num">${i+1}</div>
-            <div class="member-info">
-                <div class="member-name">${m.prefix} ${m.name}</div>
-                <div class="member-sub">
-                    <span class="member-level">${m.level}</span>
-                    <span style="color:#94a3b8;">|</span>
-                    <span>${m.school}</span>
-                </div>
-                ${m.email ? `<div style="font-size:10px;color:var(--blue);margin-top:1px;"><i class="fa-solid fa-envelope" style="margin-right:3px;font-size:9px;"></i>${m.email}</div>` : ''}
-                ${m.phone ? `<div style="font-size:10px;color:#64748b;"><i class="fa-solid fa-phone" style="margin-right:3px;font-size:9px;"></i>${m.phone}</div>` : ''}
-            </div>
-        </div>
-    `).join('');
+  document.getElementById('roll-btn').disabled = true;
+  const diceEl = document.getElementById('dice');
+  diceEl.classList.add('rolling');
 
-    // Advisor
-    document.getElementById('dtAdvisor').innerHTML =
-        `<b>${team.advisor.name}</b><br>📞 ${team.advisor.phone}${team.advisor.email ? `<br>✉️ ${team.advisor.email}` : ''}`;
+  const faces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+  const roll = Math.floor(Math.random()*6)+1;
 
-    // Payment
-    document.getElementById('dtPayment').innerHTML =
-        `<b>ธ. ${team.payment.bank}</b><br>📅 ${team.payment.date} เวลา ${team.payment.time}<br>เลขท้าย: <span class="mono" style="background:#f1f5f9;padding:1px 5px;border-radius:4px;">${team.payment.last4}</span>`;
+  setTimeout(()=>{
+    diceEl.classList.remove('rolling');
+    diceEl.textContent = faces[roll-1];
+    log(`${p.icon} ${p.name} ทอยได้ <b>${roll}</b>`,'mv');
 
-    // Version
-    document.getElementById('dtVersion').innerHTML =
-        `ส่งล่าสุด: ${team.lastSubmit}<br>Review ครั้งที่: <b>${team.version}</b>`;
+    let newPos = Math.min(p.pos + roll, 50);
+    movePlayer(p, newPos);
+  }, 600);
+}
 
-    // Occupancy
-    document.getElementById('staffViewing').style.display = id==='T003' ? 'inline-flex' : 'none';
+function movePlayer(p, newPos){
+  p.pos = newPos;
+  updateUI();
+  setTimeout(()=>landOnCell(p), 500);
+}
 
-    // Set status dropdowns
-    document.getElementById('sel-cert').value = team.certStatus;
-    document.getElementById('sel-transcript').value = team.transcriptStatus;
-    document.getElementById('sel-slip').value = team.slipStatus;
-    document.getElementById('feedbackText').value = team.feedback;
-    document.getElementById('sendEmail').checked = false;
+function landOnCell(p){
+  const pos = p.pos;
 
-    // Doc viewer
-    viewDoc('cert');
+  if(pos === 50){
+    p.score += 500; p.coins += 50;
+    updateUI();
+    showWin();
+    return;
+  }
 
-    // Mobile
-    if (window.innerWidth < 768) {
-        document.getElementById('sidebar').style.display = 'none';
-        document.getElementById('detailView').classList.add('mobile-open');
-        document.getElementById('btnBack').style.display = 'flex';
+  let eventType = 'normal';
+  if(LADDERS[pos]) eventType='ladder';
+  else if(SNAKES[pos]) eventType='snake';
+  else if(CARD_CELLS.includes(pos)) eventType='card';
+  else if(CHECKPOINTS.includes(pos)) eventType='checkpoint';
+
+  const label = eventType==='ladder'?`🪜 ช่องบันได! ตอบถูก → กระโดดไปช่อง ${LADDERS[pos]}`:
+                eventType==='snake' ?`🐍 ช่องงู! ตอบผิด → ร่วงลงช่อง ${SNAKES[pos]}`:
+                eventType==='card'  ?`📜 ช่องคัมภีร์ลับ! ตอบถูก → รับการ์ดทันที`:
+                eventType==='checkpoint'?`🏛️ Checkpoint! เปิดตลาดซื้อขายการ์ด`:
+                `ช่องปกติ — ตอบถูก +100 คะแนน, +10 Ankh`;
+
+  log(`📍 ${p.name} ลงช่อง ${pos} — ${label}`,'mv');
+
+  if(eventType==='checkpoint'){
+    openMarket(p);
+    return;
+  }
+  showQuestion(p, eventType);
+}
+
+/* ====== QUESTIONS ====== */
+function showQuestion(p, eventType){
+  // Check for Eye of Horus in hand (skip — player can choose to use before rolling)
+  hintUsedThisQ = false;
+  const q = QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)];
+  currentQ = {p, eventType, q};
+
+  const evLabels = {ladder:'🪜 ช่องบันได',snake:'🐍 ช่องกับดักงู',card:'📜 คัมภีร์ลับ',normal:'⬜ ช่องปกติ'};
+  const evDescs  = {
+    ladder:'ตอบถูก → กระโดดขึ้น | ตอบผิด → อยู่เดิม',
+    snake: 'ตอบถูก → รอด | ตอบผิด → ร่วงลง',
+    card:  'ตอบถูก → รับการ์ดพิเศษทันที',
+    normal:'ตอบถูก → +100 คะแนน, +10 Ankh',
+  };
+
+  document.getElementById('q-event-label').textContent = evLabels[eventType]||'คำถาม';
+  document.getElementById('q-event-desc').textContent  = evDescs[eventType]||'';
+  document.getElementById('q-subj').textContent = q.subj.toUpperCase();
+  document.getElementById('q-text').textContent = q.text;
+
+  // Hint button
+  const hintBtn = document.getElementById('hint-btn');
+  const hintLeft = p.hintsLeft;
+  document.getElementById('hint-left').textContent = hintLeft;
+  hintBtn.disabled = (hintLeft <= 0 || hintUsedThisQ);
+  document.getElementById('hint-text').classList.add('hidden');
+
+  // Choices — check for Sandstorm played on this player? No, sandstorm blocks rolling.
+  // Check Oasis (doublePts)
+  const choicesDiv = document.getElementById('q-choices');
+  choicesDiv.innerHTML = q.choices.map((c,i)=>
+    `<button class="choice" id="choice-${i}" onclick="answer(${i})">${c}</button>`
+  ).join('');
+
+  document.getElementById('q-overlay').classList.remove('hidden');
+
+  // Timer 30s
+  clearInterval(timerInterval);
+  timeLeft = 30;
+  document.getElementById('timer-fill').style.width='100%';
+  timerInterval = setInterval(()=>{
+    timeLeft -= 0.1;
+    document.getElementById('timer-fill').style.width = Math.max(0,timeLeft/30*100)+'%';
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      autoTimeUp();
     }
+  },100);
 }
 
-// ─── Doc Viewer ────────────────────────────────────────
-let currentDocType = 'cert';
-function viewDoc(type) {
-    currentDocType = type;
-    ['cert','transcript','slip'].forEach(t => {
-        document.getElementById(`tab-${t}`).className = `doc-tab ${t===type?'active':''}`;
-    });
-
-    document.getElementById('docLoading').style.display = 'flex';
-    document.getElementById('mainDocPreview').style.display = 'none';
-    document.getElementById('noDocMsg').style.display = 'none';
-
-    const urlMap = { cert: currentTeam?.certUrl, transcript: currentTeam?.transcriptUrl, slip: currentTeam?.slipUrl };
-    const url = urlMap[type];
-
-    setTimeout(() => {
-        document.getElementById('docLoading').style.display = 'none';
-        if (url) {
-            // Convert Google Drive open link to direct preview
-            const fileId = url.match(/id=([^&]+)/)?.[1];
-            const previewUrl = fileId
-                ? `https://picsum.photos/seed/${currentTeam.id}${type}/700/900`
-                : url;
-            document.getElementById('mainDocPreview').src = previewUrl;
-            document.getElementById('mainDocPreview').style.display = 'block';
-            document.getElementById('dtPopOut').href = url;
-        } else {
-            document.getElementById('noDocMsg').style.display = 'block';
-        }
-        resetDocTransform();
-    }, 400);
+function useHint(){
+  const p = players[currentTurn];
+  if(p.hintsLeft <= 0 || hintUsedThisQ) return;
+  p.hintsLeft--;
+  hintUsedThisQ = true;
+  document.getElementById('hint-left').textContent = p.hintsLeft;
+  document.getElementById('hint-btn').disabled = true;
+  document.getElementById('hint-text').textContent = '💡 ' + currentQ.q.hint;
+  document.getElementById('hint-text').classList.remove('hidden');
+  log(`${p.name} ใช้ Hint!`,'sp');
+  updateUI();
 }
 
-function adjustDoc(action) {
-    if (action==='zoomIn') docScale = Math.min(docScale+0.25, 4);
-    if (action==='zoomOut') docScale = Math.max(docScale-0.25, 0.5);
-    if (action==='rotate') docRotate = (docRotate+90)%360;
-    document.getElementById('mainDocPreview').style.transform = `scale(${docScale}) rotate(${docRotate}deg)`;
-}
-function resetDocTransform() { docScale=1; docRotate=0; document.getElementById('mainDocPreview').style.transform=''; }
-
-// ─── Feedback ────────────────────────────────────────
-function genBullets() {
-    if (!currentTeam) return;
-    const items = [
-        { sel:'sel-cert', label:'ใบรับรองโรงเรียน' },
-        { sel:'sel-transcript', label:'ปพ.7' },
-        { sel:'sel-slip', label:'สลิปโอนเงิน' }
-    ];
-    const lines = items.map(item => {
-        const val = document.getElementById(item.sel).value;
-        const emoji = { 'เอกสารเรียบร้อย':'✅','รอตรวจเอกสาร':'⏳','ยังไม่ได้รับเอกสาร':'❌','เอกสารไม่เรียบร้อย':'⚠️','ไม่ต้องส่ง':'➖' }[val] || '⏳';
-        const extra = val==='เอกสารไม่เรียบร้อย' ? ': (โปรดระบุ)' : '';
-        return `• ${item.label} ${emoji}${extra}`;
-    });
-    document.getElementById('feedbackText').value = 'สิ่งที่ต้องดำเนินการ:\n' + lines.join('\n');
+function autoTimeUp(){
+  if(!currentQ) return;
+  // disable choices
+  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
+  document.getElementById(`choice-${currentQ.q.ans}`).classList.add('right');
+  log(`⏰ หมดเวลา! คำตอบที่ถูกคือ: ${currentQ.q.choices[currentQ.q.ans]}`,'bad');
+  const {p, eventType} = currentQ;
+  if(eventType==='snake') applySnakePenalty(p);
+  setTimeout(()=>{ document.getElementById('q-overlay').classList.add('hidden'); endTurn(); },2000);
 }
 
-function addFeedback(msg) {
-    const area = document.getElementById('feedbackText');
-    if (!area.value.includes(msg)) area.value += `\n  - ${msg}`;
+function answer(idx){
+  clearInterval(timerInterval);
+  const {p, eventType, q} = currentQ;
+  const correct = idx === q.ans;
+
+  // Reveal answer
+  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
+  document.getElementById(`choice-${idx}`).classList.add(correct?'right':'wrong');
+  if(!correct) document.getElementById(`choice-${q.ans}`).classList.add('right');
+
+  if(correct){
+    handleCorrect(p, eventType);
+  } else {
+    handleWrong(p, eventType);
+  }
+
+  setTimeout(()=>{ document.getElementById('q-overlay').classList.add('hidden'); endTurn(); }, 1800);
 }
 
-// ─── Save Flow ────────────────────────────────────────
-function startSaveFlow() {
-    if (!currentTeam) return;
-    const btn = document.getElementById('btnSave');
-    btn.disabled = true;
-    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> ตรวจสอบเวอร์ชัน...`;
+function handleCorrect(p, eventType){
+  log(`✅ ${p.name} ตอบถูก!`,'ok');
 
-    setTimeout(() => {
-        const conflict = Math.random() > 0.7;
-        if (conflict) {
-            document.getElementById('modalConflict').classList.remove('hidden');
-            resetSaveBtn();
-        } else {
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> บันทึกลง Sheet...`;
-            setTimeout(() => {
-                // Update mock
-                currentTeam.certStatus = document.getElementById('sel-cert').value;
-                currentTeam.transcriptStatus = document.getElementById('sel-transcript').value;
-                currentTeam.slipStatus = document.getElementById('sel-slip').value;
-                currentTeam.feedback = document.getElementById('feedbackText').value;
-                currentTeam.updated = false;
-                if (currentTeam.certStatus==='เอกสารเรียบร้อย' && currentTeam.transcriptStatus==='เอกสารเรียบร้อย' && currentTeam.slipStatus==='เอกสารเรียบร้อย')
-                    currentTeam.overall = 'สมบูรณ์';
-
-                if (document.getElementById('sendEmail').checked) {
-                    currentTeam.emailSentStatus = 'ส่งแล้ว';
-                    showToast('✅ บันทึกแล้ว และส่งอีเมลแจ้งน้องเรียบร้อย!');
-                } else {
-                    showToast('✅ บันทึกข้อมูลเรียบร้อยแล้ว');
-                }
-
-                renderStats();
-                filterTeams();
-                // Re-highlight current
-                setTimeout(()=>{
-                    const el = document.querySelector(`[data-id="${currentTeam.id}"]`);
-                    if(el) el.classList.add('active');
-                },50);
-                resetSaveBtn();
-            }, 800);
-        }
-    }, 700);
+  if(eventType==='normal'||eventType==='checkpoint'){
+    let pts = 100;
+    if(p.doublePts){ pts = Math.floor(pts*1.5); p.doublePts=false; log('🏝️ Oasis ทำงาน! คะแนน ×1.5','sp'); }
+    p.score += pts;
+    p.coins += 10;
+    log(`+${pts} คะแนน, +10 Ankh`,'ok');
+    if(p.perk==='Gen Z Spirit'){
+      p.pos = Math.min(p.pos+1, 50);
+      log(`⚡ Gen Z Spirit: เดินเพิ่ม 1 ช่อง → ช่อง ${p.pos}`,'sp');
+    }
+  } else if(eventType==='ladder'){
+    const dest = LADDERS[p.pos];
+    log(`🪜 กระโดดจากช่อง ${p.pos} → ช่อง ${dest}`,'ok');
+    p.pos = dest;
+    p.score += 50;
+  } else if(eventType==='card'){
+    const card = MARKET_CARDS[Math.floor(Math.random()*MARKET_CARDS.length)];
+    p.hand.push({...card});
+    log(`📜 รับการ์ด: ${card.name}`,'sp');
+    p.score += 50;
+  } else if(eventType==='snake'){
+    log(`🛡️ ตอบถูก — รอดพ้นจากงู! อยู่ช่องเดิม`,'ok');
+    p.score += 50;
+  }
+  updateUI();
 }
 
-function resetSaveBtn() {
-    const btn = document.getElementById('btnSave');
-    btn.disabled = false;
-    btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูล`;
+function handleWrong(p, eventType){
+  log(`❌ ${p.name} ตอบผิด!`,'bad');
+  if(eventType==='snake') applySnakePenalty(p);
+  else if(eventType==='normal'||eventType==='checkpoint'){
+    log(`ไม่ได้คะแนน`,'bad');
+  }
+  updateUI();
 }
 
-function forceSave() {
-    closeModal('modalConflict');
-    showToast('⚠️ เขียนทับข้อมูลเดิมแล้ว');
+function applySnakePenalty(p){
+  let dest = SNAKES[p.pos];
+  if(p.perk==="Pathologist's Eye"){
+    dest = Math.max(dest+2, 1);
+    log(`👁️ Pathologist's Eye ลดโทษ! ร่วงแค่ถึงช่อง ${dest}`,'sp');
+  } else {
+    log(`🐍 ร่วงจากช่อง ${p.pos} → ช่อง ${dest}`,'bad');
+  }
+  p.pos = dest;
 }
 
-// ─── History Modal ────────────────────────────────────────
-function showHistoryModal() {
-    const list = document.getElementById('historyList');
-    list.innerHTML = historyLog.filter(h=>!currentTeam||h.team===currentTeam.teamName).map(h=>`
-        <div style="background:#f8faff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-                <span style="font-size:12px;font-weight:700;color:var(--navy);">${h.staff}</span>
-                <span class="mono" style="font-size:10px;color:#94a3b8;">${h.time}</span>
-            </div>
-            <div style="font-size:12px;color:#475569;">${h.action}</div>
-        </div>
-    `).join('') || '<div style="text-align:center;color:#94a3b8;font-size:13px;padding:20px;">ไม่มีประวัติการแก้ไข</div>';
-    document.getElementById('modalHistory').classList.remove('hidden');
+/* ====== CARDS ====== */
+function playCard(playerId, cardIdx){
+  const p = players[playerId];
+  if(currentTurn !== playerId){ log('ไม่ใช่ตาของคุณ!','bad'); return; }
+  if(document.getElementById('roll-btn').disabled){ log('ไม่สามารถใช้การ์ดขณะตอบคำถาม','bad'); return; }
+
+  const card = p.hand[cardIdx];
+  p.hand.splice(cardIdx,1);
+
+  const opp = players[1-playerId];
+  const cardUseOverlay = document.getElementById('card-use-overlay');
+  document.getElementById('card-use-title').textContent = `ใช้: ${card.name}`;
+  document.getElementById('card-use-icon').textContent = card.emoji;
+
+  let effectDesc = '';
+  if(card.id==='sandstorm'){ opp.blocked=true; effectDesc=`${opp.name} จะข้ามตาถัดไป!`; }
+  else if(card.id==='oasis'){ p.doublePts=true; effectDesc='ถ้าตอบถูกรอบนี้ คะแนน ×1.5!'; }
+  else if(card.id==='shield'){ p.shielded=true; effectDesc='ป้องกัน Block และหารคะแนน 1 ครั้ง'; }
+  else if(card.id==='split'){ opp.doublePts=false; effectDesc=`ถ้า ${opp.name} ตอบถูกรอบนี้ ได้แค่ครึ่งคะแนน`; opp.halfPts=true; }
+  else if(card.id==='eye'){ effectDesc='สามารถ Skip คำถามไปรับคำถามใหม่ได้ 1 ครั้ง'; p.eyeActive=true; }
+
+  document.getElementById('card-use-desc').textContent = effectDesc;
+  cardUseOverlay.classList.remove('hidden');
+  log(`${p.name} ใช้การ์ด ${card.name}: ${effectDesc}`,'sp');
+  updateUI();
 }
 
-// ─── Utils ────────────────────────────────────────
-function checkVersion() {
-    document.getElementById('modalVersion').classList.remove('hidden');
+function closeCardUse(){
+  document.getElementById('card-use-overlay').classList.add('hidden');
 }
 
-function closeModal(id) {
-    document.getElementById(id).classList.add('hidden');
+/* ====== MARKET ====== */
+function openMarket(p){
+  pendingMarket = p;
+  document.getElementById('mkt-team-label').textContent =
+    `${p.icon} ${p.name} — มี ${p.coins} Ankh Coins`;
+
+  const itemsEl = document.getElementById('mkt-items');
+  itemsEl.innerHTML = MARKET_CARDS.map((c,i)=>`
+    <div class="mkt-row">
+      <div class="mkt-info">
+        <div class="mkt-name">${c.emoji} ${c.name}</div>
+        <div class="mkt-desc">${c.desc}</div>
+      </div>
+      <div class="mkt-right">
+        <span class="price-tag">☥${c.price}</span>
+        <button class="buy-btn" id="buy-${i}" onclick="buyCard(${i})" ${p.coins<c.price?'disabled':''}>ซื้อ</button>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('mkt-overlay').classList.remove('hidden');
 }
 
-function closeMobileDetail() {
-    document.getElementById('sidebar').style.display = '';
-    document.getElementById('detailView').classList.remove('mobile-open');
+function buyCard(idx){
+  const p = pendingMarket;
+  const card = MARKET_CARDS[idx];
+  if(p.coins < card.price){ log('Ankh ไม่พอ!','bad'); return; }
+  p.coins -= card.price;
+  p.hand.push({...card});
+  log(`${p.name} ซื้อ ${card.name} (ราคา ${card.price} Ankh)`,'sp');
+  updateUI();
+  // Refresh prices
+  document.getElementById('mkt-team-label').textContent =
+    `${p.icon} ${p.name} — มี ${p.coins} Ankh Coins`;
+  document.querySelectorAll('[id^="buy-"]').forEach((btn,i)=>{
+    btn.disabled = (p.coins < MARKET_CARDS[i].price);
+  });
 }
 
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+function closeMarket(){
+  document.getElementById('mkt-overlay').classList.add('hidden');
+  // After market, show a question for checkpoint
+  showQuestion(pendingMarket,'checkpoint');
+  pendingMarket = null;
 }
-</script>
+
+/* ====== TURN MANAGEMENT ====== */
+function endTurn(){
+  updateUI();
+  currentTurn = 1 - currentTurn;
+  document.getElementById('roll-btn').disabled = false;
+  updateUI();
+}
+
+/* ====== WIN ====== */
+function showWin(){
+  const p = players[currentTurn];
+  document.getElementById('win-name').textContent = `${p.icon} ${p.name} ชนะ!`;
+  const scores = document.getElementById('win-scores');
+  scores.innerHTML = players.map(pl=>
+    `<div class="score-row"><span>${pl.icon} ${pl.name}</span><span>${pl.score} คะแนน | ${pl.coins} ☥ Ankh</span></div>`
+  ).join('');
+  document.getElementById('win-overlay').classList.remove('hidden');
+}
+
+/* ====== INIT ====== */
+initBoard();
+document.getElementById('perk-team-label').textContent = `${players[0].name} — เลือกความเชี่ยวชาญ`;
+updateUI();
+</script>   
 </body>
 </html>
