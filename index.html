@@ -1,774 +1,3209 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MedQuiz KKU 2026: Resurrection — คำสาปพิภพทราย</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --gold:#c9a227;--gold-l:#e8c547;--gold-d:#7a5a0a;
-  --sand:#f5e6c8;--sand-d:#e8d4a0;--parch:#fdf3dc;
-  --dark:#1a0f08;--brown:#3d2314;
-  --lad-bg:#d4edda;--lad-br:#28a745;
-  --snk-bg:#ffe8e8;--snk-br:#dc3545;
-  --crd-bg:#ede0f5;--crd-br:#7b2d8b;
-  --chk-bg:#e0f0ff;--chk-br:#0d6efd;
-}
-body{font-family:'Sarabun',sans-serif;background:#1a0f08;color:var(--dark);min-height:100vh;padding:12px;
-  background-image:radial-gradient(ellipse at 15% 50%,rgba(201,162,39,.07) 0%,transparent 55%),
-                   radial-gradient(ellipse at 85% 20%,rgba(201,162,39,.05) 0%,transparent 50%)}
-h1,h2,h3{font-family:'Cinzel',serif}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedQuiz KKU 2026</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --surface3: #1e2a40;
+      --border: rgba(255, 255, 255, 0.07);
+      --border2: rgba(255, 255, 255, 0.12);
+      --text: #e8edf8;
+      --text2: #8896b3;
+      --text3: #4a5a78;
+      --blue: #3b82f6;
+      --blue-dim: rgba(59, 130, 246, 0.15);
+      --blue-glow: rgba(59, 130, 246, 0.3);
+      --teal: #14b8a6;
+      --teal-dim: rgba(20, 184, 166, 0.15);
+      --amber: #f59e0b;
+      --amber-dim: rgba(245, 158, 11, 0.15);
+      --red: #ef4444;
+      --red-dim: rgba(239, 68, 68, 0.15);
+      --green: #22c55e;
+      --green-dim: rgba(34, 197, 94, 0.15);
+      --purple: #a855f7;
+      --purple-dim: rgba(168, 85, 247, 0.15);
+      --gold: #fbbf24;
+      --font: 'IBM Plex Sans Thai', sans-serif;
+      --mono: 'IBM Plex Mono', monospace;
+    }
 
-.title-bar{text-align:center;padding:12px 20px;background:linear-gradient(135deg,#1a0f08,#3d2314,#1a0f08);
-  border:2px solid var(--gold);border-radius:8px;margin-bottom:12px}
-.title-bar h1{font-size:clamp(18px,3vw,30px);font-weight:900;color:var(--gold-l);letter-spacing:3px}
-.title-bar h2{font-size:12px;font-weight:400;color:#c4a45a;letter-spacing:2px;margin-top:3px}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-.game-wrap{display:grid;grid-template-columns:200px 1fr 210px;gap:10px;max-width:1180px;margin:0 auto}
+    html,
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      min-height: 100vh
+    }
 
-.panel{background:var(--parch);border:2px solid var(--gold-d);border-radius:8px;padding:10px}
-.panel-title{font-size:11px;font-weight:700;color:var(--gold-d);letter-spacing:1px;text-transform:uppercase;
-  text-align:center;padding-bottom:6px;border-bottom:1px solid var(--gold-d);margin-bottom:8px}
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0
+    }
 
-/* Team cards */
-.team-card{background:var(--sand);border:1.5px solid var(--gold-d);border-radius:6px;padding:8px;margin-bottom:8px;transition:.25s}
-.team-card.active{background:#fff9e0;border-color:var(--gold);box-shadow:0 0 14px rgba(201,162,39,.35)}
-.team-name{font-family:'Cinzel',serif;font-size:14px;font-weight:700;margin-bottom:5px}
-.team-a .team-name{color:#1565c0} .team-b .team-name{color:#c62828}
-.stat-row{display:flex;justify-content:space-between;font-size:11px;padding:1px 0;color:var(--brown)}
-.stat-val{font-weight:700;color:var(--dark)}
-.perk-tag{margin-top:5px;font-size:10px;background:var(--gold-d);color:#fff;padding:2px 6px;border-radius:3px;text-align:center;word-break:break-word}
-.hand-label{font-size:10px;color:var(--brown);margin-top:6px;font-weight:600}
-.hand-cards{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
-.hcard{background:var(--crd-br);color:#fff;font-size:9px;padding:2px 5px;border-radius:3px;cursor:pointer;border:none;transition:.15s;font-family:'Sarabun',sans-serif}
-.hcard:hover{opacity:.85;transform:scale(1.05)}
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(59, 130, 246, 0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0
+    }
 
-/* Board */
-.board-area{position:relative;background:var(--sand-d);border:3px solid var(--gold-d);border-radius:10px;padding:7px}
-.board-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
-.cell{aspect-ratio:1;background:#fff;border:1px solid #d4c095;border-radius:3px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;position:relative;font-size:10px;font-weight:700;
-  color:var(--brown);cursor:default;transition:.15s;overflow:hidden}
-.cell:hover{transform:scale(1.06);z-index:5}
-.cell.ladder{background:var(--lad-bg);border-color:var(--lad-br);color:#155724}
-.cell.snake{background:var(--snk-bg);border-color:var(--snk-br);color:#721c24}
-.cell.card-cell{background:var(--crd-bg);border-color:var(--crd-br);color:#4a1060}
-.cell.checkpoint{background:var(--chk-bg);border-color:var(--chk-br);color:#084298}
-.cell.cell-1{background:#f0fff0;border-color:#28a745;border-width:2px}
-.cell.cell-50{background:linear-gradient(135deg,#ffd700,#ff8c00);border-color:#b8860b;border-width:2px;color:#fff}
-.cell-num{font-size:10px;font-weight:700;line-height:1}
-.cell-icon{font-size:12px;line-height:1}
-.tokens{position:absolute;bottom:2px;left:0;right:0;display:flex;justify-content:center;gap:2px;z-index:3}
-.tok{width:13px;height:13px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4);transition:all .4s}
-.tok-a{background:#1565c0} .tok-b{background:#c62828}
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px
+    }
 
-/* SVG connector overlay */
-.board-svg{position:absolute;top:7px;left:7px;right:7px;bottom:7px;pointer-events:none;z-index:2}
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      margin-bottom: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%)
+    }
 
-/* Controls */
-.ctrl-col{display:flex;flex-direction:column;gap:10px}
-.turn-panel{text-align:center;background:var(--parch);border:2px solid var(--gold-d);border-radius:8px;padding:12px}
-.turn-lbl{font-size:10px;letter-spacing:1px;color:var(--gold-d);text-transform:uppercase;font-family:'Cinzel',serif}
-.turn-name{font-size:18px;font-weight:700;margin:4px 0}
-.dice{font-size:50px;margin:6px 0;display:inline-block;user-select:none;transition:.1s}
-.dice.rolling{animation:spin .5s steps(6) infinite}
-@keyframes spin{0%{transform:rotate(0)scale(1.1)}16%{transform:rotate(60deg)scale(.9)}33%{transform:rotate(120deg)scale(1.1)}
-  50%{transform:rotate(180deg)scale(.9)}67%{transform:rotate(240deg)scale(1.1)}83%{transform:rotate(300deg)scale(.9)}100%{transform:rotate(360deg)scale(1.1)}}
-.roll-btn{background:var(--gold-d);color:#fff;border:2px solid var(--gold);padding:10px;font-family:'Cinzel',serif;
-  font-size:13px;font-weight:700;letter-spacing:1px;border-radius:6px;cursor:pointer;width:100%;text-transform:uppercase;transition:.2s}
-.roll-btn:hover:not(:disabled){background:var(--gold);transform:translateY(-1px)}
-.roll-btn:disabled{background:#aaa;border-color:#999;cursor:not-allowed;transform:none}
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
 
-.log-box{background:#fff;border:1px solid #d4c095;border-radius:4px;padding:6px;height:210px;overflow-y:auto;font-size:11px;line-height:1.6}
-.log-e{padding:1px 0;border-bottom:1px solid #f0e8d0}
-.log-e.ok{color:#155724} .log-e.bad{color:#721c24} .log-e.mv{color:#084298;font-weight:600} .log-e.sp{color:#4a1060;font-weight:600}
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 20px var(--blue-glow)
+    }
 
-.legend{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.leg{display:flex;align-items:center;gap:3px;font-size:9px;color:var(--brown)}
-.legdot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+    .logo-text {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.3px
+    }
 
-/* Modals */
-.overlay{position:fixed;inset:0;background:rgba(26,15,8,.88);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px)}
-.overlay.hidden{display:none}
-.mbox{background:var(--parch);border:3px solid var(--gold);border-radius:12px;padding:24px;max-width:460px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.7)}
-.mtitle{font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:var(--gold-d);text-align:center;margin-bottom:4px}
-.msub{text-align:center;font-size:12px;color:var(--brown);margin-bottom:16px}
-.subj-badge{display:inline-block;background:var(--gold-d);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;letter-spacing:1px;margin-bottom:12px}
-.q-text{font-size:14px;line-height:1.75;margin-bottom:16px;color:var(--dark)}
-.timer-wrap{background:#ddd;border-radius:3px;height:5px;overflow:hidden;margin-bottom:12px}
-.timer-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .1s linear}
-.choice{display:block;width:100%;background:var(--sand);border:1.5px solid var(--gold-d);color:var(--dark);padding:9px 12px;
-  text-align:left;border-radius:5px;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:13px;margin-bottom:7px;transition:.15s}
-.choice:hover:not(:disabled){background:var(--gold-l);border-color:var(--gold);transform:translateX(4px)}
-.choice.right{background:#d4edda;border-color:#28a745;color:#155724}
-.choice.wrong{background:#ffe8e8;border-color:#dc3545;color:#721c24}
-.choice:disabled{cursor:default}
-.hint-btn{display:block;margin-top:8px;background:transparent;border:1px dashed var(--gold-d);color:var(--gold-d);
-  padding:5px;width:100%;border-radius:4px;cursor:pointer;font-size:11px;font-family:'Sarabun',sans-serif}
-.hint-btn:hover{background:#fff9e0}
-.hint-btn:disabled{opacity:.4;cursor:not-allowed}
-.hint-text{font-size:11px;color:var(--gold-d);font-style:italic;margin-top:5px;padding:5px;background:#fff9e0;border-radius:3px}
+    .logo-sub {
+      font-size: 10px;
+      color: var(--text2);
+      font-family: var(--mono);
+      letter-spacing: 0.5px
+    }
 
-.perk-opt{display:block;width:100%;background:var(--sand);border:2px solid var(--gold-d);color:var(--dark);
-  padding:11px 13px;text-align:left;border-radius:7px;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:13px;margin-bottom:9px;transition:.2s}
-.perk-opt:hover{background:var(--gold-l);border-color:var(--gold);transform:scale(1.01)}
-.perk-opt strong{display:block;font-size:14px;color:var(--gold-d);font-family:'Cinzel',serif;margin-bottom:3px}
+    .cycle-badges {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap
+    }
 
-.mkt-row{background:var(--sand);border:1.5px solid var(--gold-d);border-radius:6px;padding:9px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.mkt-info .mkt-name{font-weight:700;font-size:13px;color:var(--crd-br)} .mkt-info .mkt-desc{font-size:10px;color:var(--brown);margin-top:2px}
-.mkt-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.price-tag{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--gold-d);white-space:nowrap}
-.buy-btn{background:var(--gold-d);color:#fff;border:none;padding:4px 9px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700}
-.buy-btn:hover{background:var(--gold)} .buy-btn:disabled{background:#ccc;cursor:not-allowed}
-.close-mkt{background:transparent;border:1.5px solid var(--gold-d);color:var(--gold-d);padding:7px 20px;border-radius:5px;
-  cursor:pointer;font-family:'Cinzel',serif;font-size:12px;font-weight:700;width:100%;margin-top:10px;letter-spacing:1px}
-.close-mkt:hover{background:var(--sand)}
+    .badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-family: var(--mono);
+      letter-spacing: 0.3px;
+      border: 1px solid transparent
+    }
 
-.win-box{text-align:center}
-.win-trophy{font-size:60px;margin:8px 0}
-.win-title{font-family:'Cinzel',serif;font-size:32px;font-weight:900;color:var(--gold);margin-bottom:6px}
-.win-sub{font-size:14px;color:var(--brown);margin-bottom:20px}
-.score-summary{background:var(--sand);border-radius:8px;padding:12px;margin-bottom:16px;text-align:left}
-.score-row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;font-weight:600}
-.restart-btn{background:var(--gold-d);color:#fff;border:2px solid var(--gold);padding:11px 28px;font-family:'Cinzel',serif;font-size:14px;font-weight:700;border-radius:7px;cursor:pointer}
-.restart-btn:hover{background:var(--gold)}
+    .b-blue {
+      background: var(--blue-dim);
+      color: #93c5fd;
+      border-color: rgba(59, 130, 246, 0.25)
+    }
 
-.card-desc{font-size:11px;color:var(--brown);margin-top:4px;line-height:1.5}
-</style>
+    .b-amber {
+      background: var(--amber-dim);
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.25)
+    }
+
+    .b-purple {
+      background: var(--purple-dim);
+      color: #d8b4fe;
+      border-color: rgba(168, 85, 247, 0.25)
+    }
+
+    .b-green {
+      background: var(--green-dim);
+      color: #86efac;
+      border-color: rgba(34, 197, 94, 0.25)
+    }
+
+    .b-red {
+      background: var(--red-dim);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.25)
+    }
+
+    .b-teal {
+      background: var(--teal-dim);
+      color: #5eead4;
+      border-color: rgba(20, 184, 166, 0.25)
+    }
+
+    .b-gray {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text2);
+      border-color: var(--border2)
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 14px;
+      padding: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: fit-content
+    }
+
+    .tab {
+      font-size: 12px;
+      padding: 6px 16px;
+      border-radius: 9px;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text2);
+      font-family: var(--font);
+      transition: all 0.2s
+    }
+
+    .tab.active {
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 0 16px var(--blue-glow)
+    }
+
+    .teams-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 14px
+    }
+
+    .team-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s
+    }
+
+    .team-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--tc, var(--blue))
+    }
+
+    .team-card.atk-pending::after {
+      content: '⚔';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 14px;
+      animation: pulse 1s infinite
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.4
+      }
+    }
+
+    .tc-blue {
+      --tc: var(--blue)
+    }
+
+    .tc-teal {
+      --tc: var(--teal)
+    }
+
+    .tc-amber {
+      --tc: var(--amber)
+    }
+
+    .tc-red {
+      --tc: var(--red)
+    }
+
+    .team-rank {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 10px;
+      font-family: var(--mono);
+      color: var(--text3)
+    }
+
+    .team-name {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: 0.2px
+    }
+
+    .team-name.c-blue {
+      color: #93c5fd
+    }
+
+    .team-name.c-teal {
+      color: #5eead4
+    }
+
+    .team-name.c-amber {
+      color: #fcd34d
+    }
+
+    .team-name.c-red {
+      color: #fca5a5
+    }
+
+    .team-score {
+      font-size: 30px;
+      font-weight: 600;
+      font-family: var(--mono);
+      margin-bottom: 6px;
+      letter-spacing: -1px;
+      line-height: 1
+    }
+
+    .score-unit {
+      font-size: 10px;
+      color: var(--text2);
+      margin-left: 2px
+    }
+
+    .cards-row {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+      min-height: 20px;
+      margin-bottom: 6px
+    }
+
+    .chip {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      font-weight: 500
+    }
+
+    .chip-def {
+      background: rgba(245, 158, 11, 0.1);
+      color: #fcd34d;
+      border-color: rgba(245, 158, 11, 0.2)
+    }
+
+    .chip-atk {
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.2)
+    }
+
+    .chip-bomb {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text2);
+      border-color: var(--border2)
+    }
+
+    .chip-x2 {
+      background: rgba(34, 197, 94, 0.1);
+      color: #86efac;
+      border-color: rgba(34, 197, 94, 0.2)
+    }
+
+    .chip-x3 {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border-color: rgba(34, 197, 94, 0.3)
+    }
+
+    .chip-bonus {
+      background: rgba(168, 85, 247, 0.1);
+      color: #d8b4fe;
+      border-color: rgba(168, 85, 247, 0.2)
+    }
+
+    .chip-res {
+      background: rgba(20, 184, 166, 0.1);
+      color: #5eead4;
+      border-color: rgba(20, 184, 166, 0.2)
+    }
+
+    .team-status {
+      font-size: 9px;
+      color: var(--text3);
+      min-height: 12px
+    }
+
+    .btn-rename {
+      font-size: 9px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text3);
+      font-family: var(--font);
+      padding: 0;
+      margin-top: 4px
+    }
+
+    .btn-rename:hover {
+      color: var(--text2)
+    }
+
+    .score-float {
+      position: absolute;
+      right: 10px;
+      top: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--mono);
+      animation: floatup 1.4s ease forwards;
+      pointer-events: none;
+      z-index: 10
+    }
+
+    @keyframes floatup {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1.1)
+      }
+
+      70% {
+        opacity: 1
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.9)
+      }
+    }
+
+    .main-area {
+      display: grid;
+      grid-template-columns: 1fr 210px;
+      gap: 10px;
+      margin-bottom: 10px
+    }
+
+    .qboard {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px
+    }
+
+    .qb-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px
+    }
+
+    .q-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .q-sub {
+      font-size: 10px;
+      color: var(--text2);
+      font-family: var(--mono);
+      margin-top: 2px
+    }
+
+    .timer-box {
+      text-align: right
+    }
+
+    .timer {
+      font-size: 40px;
+      font-weight: 600;
+      font-family: var(--mono);
+      line-height: 1;
+      letter-spacing: -2px;
+      color: var(--text)
+    }
+
+    .timer.warn {
+      color: var(--amber);
+      text-shadow: 0 0 20px rgba(245, 158, 11, 0.4)
+    }
+
+    .timer.danger {
+      color: var(--red);
+      text-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+      animation: blink 0.5s infinite
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0.6
+      }
+    }
+
+    .timer-lbl {
+      font-size: 10px;
+      color: var(--text2);
+      font-family: var(--mono);
+      margin-top: 2px
+    }
+
+    .phase-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px
+    }
+
+    .ph-btn {
+      font-size: 10px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      background: var(--surface2);
+      color: var(--text2);
+      font-family: var(--font);
+      transition: all 0.15s
+    }
+
+    .ph-btn.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+      box-shadow: 0 0 12px var(--blue-glow)
+    }
+
+    .q-display {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 12px
+    }
+
+    .q-display::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--blue), var(--purple))
+    }
+
+    .q-text {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+      padding-left: 8px
+    }
+
+    .q-hint {
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 6px;
+      padding-left: 8px;
+      font-family: var(--mono)
+    }
+
+    .answer-sec .sec-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text2);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px
+    }
+
+    .ans-btn {
+      font-size: 11px;
+      padding: 8px 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      background: var(--surface2);
+      color: var(--text);
+      text-align: center;
+      font-family: var(--font);
+      transition: all 0.15s;
+      font-weight: 500
+    }
+
+    .ans-btn:hover {
+      background: var(--surface3);
+      border-color: var(--blue)
+    }
+
+    .ans-btn.first {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: rgba(168, 85, 247, 0.4);
+      color: #d8b4fe
+    }
+
+    .ans-btn.correct {
+      background: var(--green-dim);
+      border-color: rgba(34, 197, 94, 0.4);
+      color: #86efac
+    }
+
+    .ans-btn.wrong {
+      background: var(--red-dim);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5
+    }
+
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px
+    }
+
+    .panel-lbl {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px
+    }
+
+    .dots-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px
+    }
+
+    .dot {
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text3);
+      transition: all 0.2s
+    }
+
+    .dot.done {
+      background: var(--green-dim);
+      border-color: rgba(34, 197, 94, 0.3);
+      color: #86efac
+    }
+
+    .dot.current {
+      background: var(--blue-dim);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #93c5fd;
+      box-shadow: 0 0 8px var(--blue-glow)
+    }
+
+    .dot.extra {
+      background: var(--amber-dim);
+      border-color: rgba(245, 158, 11, 0.35);
+      color: #fcd34d
+    }
+
+    .dot.current.extra {
+      background: rgba(245, 158, 11, 0.2);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.3)
+    }
+
+    .log-scroll {
+      max-height: 110px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px
+    }
+
+    .log-scroll::-webkit-scrollbar {
+      width: 3px
+    }
+
+    .log-scroll::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 3px
+    }
+
+    .log-item {
+      font-size: 10px;
+      color: var(--text2);
+      padding: 3px 0;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      line-height: 1.4
+    }
+
+    .log-item:last-child {
+      border-bottom: none
+    }
+
+    .atk-list {
+      font-size: 10px;
+      color: var(--text2);
+      font-family: var(--mono)
+    }
+
+    .atk-item {
+      padding: 3px 0;
+      border-bottom: 1px solid var(--border);
+      color: #fca5a5
+    }
+
+    .controls {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px
+    }
+
+    .ctrl {
+      font-size: 11px;
+      padding: 7px 14px;
+      border-radius: 9px;
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      background: var(--surface2);
+      color: var(--text);
+      font-family: var(--font);
+      transition: all 0.15s;
+      font-weight: 500
+    }
+
+    .ctrl:hover {
+      background: var(--surface3);
+      border-color: var(--border2)
+    }
+
+    .ctrl.primary {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+      box-shadow: 0 0 16px var(--blue-glow)
+    }
+
+    .ctrl.primary:hover {
+      background: #2563eb
+    }
+
+    .ctrl.success {
+      background: var(--green-dim);
+      border-color: rgba(34, 197, 94, 0.3);
+      color: #86efac
+    }
+
+    .ctrl.danger {
+      background: var(--red-dim);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5
+    }
+
+    .ctrl.amber {
+      background: var(--amber-dim);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #fcd34d
+    }
+
+    .ctrl.ml {
+      margin-left: auto
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      backdrop-filter: blur(4px)
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      padding: 24px;
+      min-width: 280px;
+      max-width: 440px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      animation: modalIn 0.2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        transform: scale(0.95);
+        opacity: 0
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: var(--text)
+    }
+
+    .modal-sep {
+      height: 1px;
+      background: var(--border);
+      margin: 12px 0
+    }
+
+    .mselect {
+      width: 100%;
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 9px;
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      color: var(--text);
+      font-family: var(--font);
+      margin-bottom: 10px
+    }
+
+    .mbtns {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap
+    }
+
+    .mb {
+      font-size: 12px;
+      padding: 8px 16px;
+      border-radius: 9px;
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      background: var(--surface2);
+      color: var(--text);
+      font-family: var(--font);
+      transition: all 0.15s;
+      font-weight: 500
+    }
+
+    .mb:hover {
+      background: var(--surface3)
+    }
+
+    .mb.primary {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff
+    }
+
+    .mb.success {
+      background: var(--green-dim);
+      border-color: rgba(34, 197, 94, 0.3);
+      color: #86efac
+    }
+
+    .mb.danger {
+      background: var(--red-dim);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5
+    }
+
+    .mb.amber {
+      background: var(--amber-dim);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #fcd34d
+    }
+
+    .mb.purple {
+      background: var(--purple-dim);
+      border-color: rgba(168, 85, 247, 0.3);
+      color: #d8b4fe
+    }
+
+    .mb.teal {
+      background: var(--teal-dim);
+      border-color: rgba(20, 184, 166, 0.3);
+      color: #5eead4
+    }
+
+    .mb.full {
+      width: 100%
+    }
+
+    .cb-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 12px
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: var(--text2);
+      margin-bottom: 10px;
+      line-height: 1.5
+    }
+
+    /* ===== GUIDE ===== */
+    .guide-wrap {
+      padding: 4px 0
+    }
+
+    .guide-hero {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 14px;
+      text-align: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    .guide-hero::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 200px;
+      background: radial-gradient(ellipse, rgba(59, 130, 246, 0.12) 0%, transparent 70%)
+    }
+
+    .guide-hero h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      position: relative
+    }
+
+    .guide-hero p {
+      font-size: 13px;
+      color: var(--text2);
+      position: relative
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px
+    }
+
+    .guide-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px
+    }
+
+    .gc-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px
+    }
+
+    .gc-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0
+    }
+
+    .gc-title {
+      font-size: 14px;
+      font-weight: 600
+    }
+
+    .gc-sub {
+      font-size: 10px;
+      color: var(--text2)
+    }
+
+    .guide-item {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      line-height: 1.5
+    }
+
+    .guide-num {
+      min-width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: var(--blue-dim);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    .guide-text {
+      color: var(--text2)
+    }
+
+    .guide-text strong {
+      color: var(--text)
+    }
+
+    .card-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 4px
+    }
+
+    .card-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center
+    }
+
+    .card-emoji {
+      font-size: 20px;
+      margin-bottom: 4px
+    }
+
+    .card-name {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px
+    }
+
+    .card-desc {
+      font-size: 9px;
+      color: var(--text2);
+      line-height: 1.3
+    }
+
+    .score-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px
+    }
+
+    .score-table th {
+      font-size: 10px;
+      color: var(--text3);
+      text-align: left;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      letter-spacing: 0.5px
+    }
+
+    .score-table td {
+      font-size: 11px;
+      color: var(--text2);
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .score-table td:last-child {
+      text-align: right;
+      font-family: var(--mono);
+      font-weight: 600
+    }
+
+    .td-blue {
+      color: #93c5fd
+    }
+
+    .td-green {
+      color: #86efac
+    }
+
+    .td-red {
+      color: #fca5a5
+    }
+
+    .td-amber {
+      color: #fcd34d
+    }
+
+    .td-purple {
+      color: #d8b4fe
+    }
+
+    .timeline-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-size: 11px
+    }
+
+    .tl-badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-weight: 600;
+      min-width: 55px;
+      text-align: center
+    }
+
+    .tl-blue {
+      background: var(--blue-dim);
+      color: #93c5fd
+    }
+
+    .tl-amber {
+      background: var(--amber-dim);
+      color: #fcd34d
+    }
+
+    .tl-red {
+      background: var(--red-dim);
+      color: #fca5a5
+    }
+
+    .tl-arrow {
+      color: var(--text3)
+    }
+
+    .tl-text {
+      color: var(--text2)
+    }
+
+    /* ===== QUESTION BANK ===== */
+    .qbank-wrap {
+      padding: 4px 0
+    }
+
+    .qb-filters {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap
+    }
+
+    .qbf-btn {
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      background: var(--surface2);
+      color: var(--text2);
+      font-family: var(--font);
+      transition: all 0.15s
+    }
+
+    .qbf-btn.active {
+      border-color: var(--blue);
+      color: #93c5fd;
+      background: var(--blue-dim)
+    }
+
+    .question-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .qitem {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      transition: border-color 0.15s
+    }
+
+    .qitem:hover {
+      border-color: var(--border2)
+    }
+
+    .qitem.expanded {
+      border-color: rgba(59, 130, 246, 0.3)
+    }
+
+    .qi-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px
+    }
+
+    .qi-num {
+      min-width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--mono);
+      flex-shrink: 0
+    }
+
+    .qi-meta {
+      flex: 1
+    }
+
+    .qi-tags {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 4px;
+      flex-wrap: wrap
+    }
+
+    .qi-tag {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      font-weight: 500
+    }
+
+    .qi-q {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.5
+    }
+
+    .qi-expand {
+      font-size: 18px;
+      color: var(--text3);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+      margin-left: auto
+    }
+
+    .qi-expand.open {
+      transform: rotate(90deg)
+    }
+
+    .qi-answer {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      display: none
+    }
+
+    .qi-answer.show {
+      display: block
+    }
+
+    .ans-label {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text3);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px
+    }
+
+    .ans-text {
+      font-size: 12px;
+      color: #86efac;
+      line-height: 1.6
+    }
+
+    .ans-extra {
+      font-size: 11px;
+      color: var(--text2);
+      margin-top: 6px;
+      line-height: 1.5;
+      border-left: 2px solid var(--border2);
+      padding-left: 8px
+    }
+
+    .qi-use-btn {
+      margin-top: 10px;
+      font-size: 11px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      cursor: pointer;
+      background: var(--blue-dim);
+      color: #93c5fd;
+      font-family: var(--font)
+    }
+
+    .qi-use-btn:hover {
+      background: rgba(59, 130, 246, 0.2)
+    }
+
+    .page {
+      display: none
+    }
+
+    .page.active {
+      display: block
+    }
+
+    .final-card {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      padding: 24px;
+      text-align: center
+    }
+
+    .final-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px
+    }
+
+    .rank-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .rank-row:last-child {
+      border: none
+    }
+
+    .rank-icon {
+      font-size: 22px;
+      min-width: 30px
+    }
+
+    .rank-name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: left
+    }
+
+    .rank-score {
+      font-size: 18px;
+      font-weight: 600;
+      font-family: var(--mono)
+    }
+
+    /* ===========================
+       LIVE DISPLAY PAGE
+    =========================== */
+    #page-live {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: #060a14;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #page-live.active {
+      display: flex
+    }
+
+    /* animated background grid for live */
+    #page-live::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
+      pointer-events: none;
+      z-index: 0
+    }
+
+    @keyframes gridMove {
+      from {
+        background-position: 0 0
+      }
+
+      to {
+        background-position: 60px 60px
+      }
+    }
+
+    #page-live::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0
+    }
+
+    .live-close {
+      position: absolute;
+      top: 40px;
+      right: 24px;
+      z-index: 10;
+      font-size: 12px;
+      padding: 6px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.5);
+      font-family: var(--font);
+      transition: all 0.2s;
+    }
+
+    .live-close:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12)
+    }
+
+    .live-header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px 0;
+    }
+
+    .live-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .live-logo-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 0 30px rgba(59, 130, 246, 0.4)
+    }
+
+    .live-logo-title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.3px
+    }
+
+    .live-logo-sub {
+      font-size: 11px;
+      color: var(--text2);
+      font-family: var(--mono)
+    }
+
+    .live-cycle-info {
+      display: flex;
+      gap: 10px
+    }
+
+    .live-badge {
+      font-size: 12px;
+      padding: 5px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-family: var(--mono);
+      border: 1px solid transparent
+    }
+
+    /* Team scoreboard row */
+    .live-scores {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      padding: 16px 32px;
+    }
+
+    .ls-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .ls-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--tc, var(--blue));
+      box-shadow: 0 0 12px var(--tc, var(--blue))
+    }
+
+    .ls-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), transparent);
+      pointer-events: none
+    }
+
+    .ls-card.tc-blue {
+      --tc: var(--blue)
+    }
+
+    .ls-card.tc-teal {
+      --tc: var(--teal)
+    }
+
+    .ls-card.tc-amber {
+      --tc: var(--amber)
+    }
+
+    .ls-card.tc-red {
+      --tc: var(--red)
+    }
+
+    .ls-rank {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text3);
+      margin-bottom: 4px
+    }
+
+    .ls-name {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px
+    }
+
+    .ls-name.c-blue {
+      color: #93c5fd
+    }
+
+    .ls-name.c-teal {
+      color: #5eead4
+    }
+
+    .ls-name.c-amber {
+      color: #fcd34d
+    }
+
+    .ls-name.c-red {
+      color: #fca5a5
+    }
+
+    .ls-score-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px
+    }
+
+    .ls-score {
+      font-size: 48px;
+      font-weight: 600;
+      font-family: var(--mono);
+      line-height: 1;
+      letter-spacing: -2px
+    }
+
+    .ls-unit {
+      font-size: 12px;
+      color: var(--text2)
+    }
+
+    .ls-bar-wrap {
+      margin-top: 10px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 2px;
+      overflow: hidden
+    }
+
+    .ls-bar {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      background: var(--tc, var(--blue));
+      box-shadow: 0 0 8px var(--tc)
+    }
+
+    .ls-cards {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      min-height: 18px
+    }
+
+    .ls-chip {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      font-weight: 500
+    }
+
+    .ls-score-delta {
+      position: absolute;
+      right: 14px;
+      top: 20px;
+      font-size: 18px;
+      font-weight: 600;
+      font-family: var(--mono);
+      animation: liveFloat 1.6s ease forwards;
+      pointer-events: none;
+    }
+
+    @keyframes liveFloat {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1.1)
+      }
+
+      60% {
+        opacity: 1
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-36px) scale(0.85)
+      }
+    }
+
+    /* Main live area */
+    .live-main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      gap: 16px;
+      padding: 0 32px 20px;
+      min-height: 0;
+    }
+
+    /* Question display */
+    .live-qbox {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .live-phase-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .live-ph {
+      font-size: 11px;
+      padding: 6px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      color: var(--text2);
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .live-ph.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+      box-shadow: 0 0 14px var(--blue-glow)
+    }
+
+    .live-question-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .live-question-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(to bottom, var(--blue), var(--purple));
+    }
+
+    .lq-number {
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--text3);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      padding-left: 16px;
+    }
+
+    .lq-type-badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      margin-left: 16px;
+      font-weight: 600;
+    }
+
+    .lq-text {
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: var(--text);
+      padding-left: 16px;
+      transition: opacity 0.3s;
+    }
+
+    .lq-hint {
+      font-size: 12px;
+      color: var(--text3);
+      font-family: var(--mono);
+      margin-top: 10px;
+      padding-left: 16px
+    }
+
+    /* Answer state indicators */
+    .live-answer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .la-card {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.03);
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .la-card.first {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: rgba(168, 85, 247, 0.5);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+      transform: scale(1.04);
+    }
+
+    .la-card.correct {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: rgba(34, 197, 94, 0.4);
+      box-shadow: 0 0 14px rgba(34, 197, 94, 0.15);
+    }
+
+    .la-name {
+      color: var(--text);
+      font-size: 13px
+    }
+
+    .la-mark {
+      font-size: 18px;
+      margin-top: 4px
+    }
+
+    /* Timer live */
+    .live-timer-box {
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .live-timer-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .live-timer {
+      font-size: 72px;
+      font-weight: 600;
+      font-family: var(--mono);
+      line-height: 1;
+      letter-spacing: -4px;
+      transition: color 0.3s;
+    }
+
+    .live-timer.warn {
+      color: var(--amber);
+      text-shadow: 0 0 30px rgba(245, 158, 11, 0.5)
+    }
+
+    .live-timer.danger {
+      color: var(--red);
+      text-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+      animation: lbink 0.5s infinite
+    }
+
+    @keyframes lbink {
+      50% {
+        opacity: 0.55
+      }
+    }
+
+    .live-timer-phase {
+      font-size: 11px;
+      color: var(--text2);
+      font-family: var(--mono);
+      letter-spacing: 1px;
+      margin-top: 6px;
+      text-transform: uppercase
+    }
+
+    .live-timer-arc {
+      width: 100%;
+      aspect-ratio: 1;
+      position: relative;
+    }
+
+    .arc-svg {
+      width: 100%;
+      height: 100%
+    }
+
+    .arc-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.05);
+      stroke-width: 8
+    }
+
+    .arc-fill {
+      fill: none;
+      stroke-width: 8;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 1s linear, stroke 0.3s;
+    }
+
+    /* Progress dots live */
+    .live-progress {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .lp-lbl {
+      font-size: 10px;
+      color: var(--text3);
+      font-family: var(--mono);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px
+    }
+
+    .lp-dots {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px
+    }
+
+    .lp-dot {
+      height: 32px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--mono);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text3);
+      transition: all 0.4s ease;
+    }
+
+    .lp-dot.done {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: rgba(34, 197, 94, 0.3);
+      color: #86efac
+    }
+
+    .lp-dot.cur {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.5);
+      color: #93c5fd;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.3)
+    }
+
+    .lp-dot.ex {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #fcd34d
+    }
+
+    .lp-dot.cur.ex {
+      background: rgba(245, 158, 11, 0.2);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.3)
+    }
+
+    /* Live event feed */
+    .live-feed {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 14px;
+      overflow: hidden;
+      max-height: 180px;
+    }
+
+    .lf-lbl {
+      font-size: 10px;
+      color: var(--text3);
+      font-family: var(--mono);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px
+    }
+
+    .lf-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow-y: auto;
+      max-height: 140px
+    }
+
+    .lf-list::-webkit-scrollbar {
+      width: 2px
+    }
+
+    .lf-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px
+    }
+
+    .lf-item {
+      font-size: 11px;
+      color: var(--text2);
+      font-family: var(--mono);
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      animation: feedIn 0.4s ease;
+    }
+
+    @keyframes feedIn {
+      from {
+        opacity: 0;
+        transform: translateX(-10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
+
+    /* Event overlay animations */
+    .live-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .live-overlay-card {
+      background: rgba(10, 14, 26, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 28px;
+      padding: 40px 60px;
+      text-align: center;
+      animation: overlayIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    }
+
+    @keyframes overlayIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
+
+    .overlay-emoji {
+      font-size: 64px;
+      margin-bottom: 12px;
+      display: block;
+      animation: emojiBounce 0.6s ease
+    }
+
+    @keyframes emojiBounce {
+      0% {
+        transform: scale(0)
+      }
+
+      50% {
+        transform: scale(1.2)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .overlay-title {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 6px
+    }
+
+    .overlay-sub {
+      font-size: 16px;
+      color: var(--text2)
+    }
+
+    .overlay-score {
+      font-size: 48px;
+      font-weight: 600;
+      font-family: var(--mono);
+      margin-top: 10px
+    }
+
+    /* Particle burst */
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: particleFly var(--dur, 1s) ease forwards;
+      pointer-events: none;
+    }
+
+    @keyframes particleFly {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx, 0), var(--ty, -80px)) scale(0)
+      }
+    }
+
+    /* Extra steal pulse ring */
+    .steal-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 200px;
+      margin: -100px 0 0 -100px;
+      border-radius: 50%;
+      border: 3px solid var(--amber);
+      animation: stealRing 1.2s ease-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes stealRing {
+      0% {
+        transform: scale(0.5);
+        opacity: 1
+      }
+
+      100% {
+        transform: scale(2.5);
+        opacity: 0
+      }
+    }
+  </style>
 </head>
+
 <body>
+  <div class="app">
 
-<div class="title-bar">
-  <h1>☥ The Explorer's Path ☥</h1>
-  <h2>MedQuiz KKU 2026: Resurrection — คำสาปพิภพทราย</h2>
-</div>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="logo">
+        <div class="logo-icon">🏥</div>
+        <div>
+          <div class="logo-text">MedQuiz KKU 2026</div>
+          <div class="logo-sub">GAME SHOW • SAQ FORMAT</div>
+        </div>
+      </div>
+      <div class="cycle-badges">
+        <span class="badge b-blue" id="lbl-cycle">Cycle 1 / 4</span>
+        <span class="badge b-amber" id="lbl-q">ข้อที่ 1 / 16</span>
+        <span class="badge b-purple" id="lbl-qtype">ข้อธรรมดา</span>
+        <span class="badge b-gray" id="lbl-phase">เตรียมพร้อม</span>
+      </div>
+      <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">16 ข้อ • 4 Cycle</div>
+    </div>
 
-<div class="game-wrap">
-  <!-- LEFT: Team stats -->
-  <div class="panel">
-    <div class="panel-title">นักสำรวจ</div>
-    <div class="team-card team-a active" id="card-a">
-      <div class="team-name">🔵 Team A</div>
-      <div class="stat-row"><span>ช่อง</span><span class="stat-val" id="pos-a">1</span></div>
-      <div class="stat-row"><span>คะแนน</span><span class="stat-val" id="score-a">0</span></div>
-      <div class="stat-row"><span>☥ Ankh</span><span class="stat-val" id="coin-a">0</span></div>
-      <div class="stat-row"><span>Hint เหลือ</span><span class="stat-val" id="hint-a">0</span></div>
-      <div class="perk-tag" id="perk-a">—</div>
-      <div class="hand-label">การ์ดในมือ:</div>
-      <div class="hand-cards" id="hand-a"></div>
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="showPage('game')">🎮 เกม</button>
+      <button class="tab" onclick="showPage('live')">📺 Live Display</button>
+      <button class="tab" onclick="showPage('guide')">📖 คู่มือ</button>
+      <button class="tab" onclick="showPage('questions')">🧬 ตัวอย่างคำถาม</button>
     </div>
-    <div class="team-card team-b" id="card-b">
-      <div class="team-name">🔴 Team B</div>
-      <div class="stat-row"><span>ช่อง</span><span class="stat-val" id="pos-b">1</span></div>
-      <div class="stat-row"><span>คะแนน</span><span class="stat-val" id="score-b">0</span></div>
-      <div class="stat-row"><span>☥ Ankh</span><span class="stat-val" id="coin-b">0</span></div>
-      <div class="stat-row"><span>Hint เหลือ</span><span class="stat-val" id="hint-b">0</span></div>
-      <div class="perk-tag" id="perk-b">—</div>
-      <div class="hand-label">การ์ดในมือ:</div>
-      <div class="hand-cards" id="hand-b"></div>
-    </div>
-    <div class="panel-title" style="margin-top:8px">ตำนาน</div>
-    <div class="legend">
-      <div class="leg"><div class="legdot" style="background:#28a745"></div>บันได 🪜</div>
-      <div class="leg"><div class="legdot" style="background:#dc3545"></div>งู 🐍</div>
-      <div class="leg"><div class="legdot" style="background:#7b2d8b"></div>การ์ด 📜</div>
-      <div class="leg"><div class="legdot" style="background:#0d6efd"></div>Checkpoint 🏛️</div>
-      <div class="leg"><div class="legdot" style="background:linear-gradient(135deg,#ffd700,#ff8c00)"></div>เส้นชัย 👑</div>
-    </div>
-  </div>
 
-  <!-- CENTER: Board -->
-  <div class="board-area">
-    <div class="board-grid" id="board"></div>
-    <svg class="board-svg" id="connector-svg" viewBox="0 0 100 50" preserveAspectRatio="none"></svg>
-  </div>
-
-  <!-- RIGHT: Controls -->
-  <div class="ctrl-col">
-    <div class="turn-panel">
-      <div class="turn-lbl">ตาของ</div>
-      <div class="turn-name" id="turn-name">🔵 Team A</div>
-      <div style="text-align:center"><span class="dice" id="dice">🎲</span></div>
-      <button class="roll-btn" id="roll-btn" onclick="rollDice()">ทอยลูกเต๋า</button>
-    </div>
-    <div class="panel">
-      <div class="panel-title">บันทึกการสำรวจ</div>
-      <div class="log-box" id="log"></div>
-    </div>
-    <div class="panel">
-      <div class="panel-title">ช่องพิเศษ</div>
-      <div style="font-size:10px;color:var(--brown);line-height:1.7">
-        🪜 บันได: 5→16, 20→32, 37→48<br>
-        🐍 งู: 13→3, 28→17, 44→34<br>
-        📜 การ์ด: ช่อง 8, 24, 39<br>
-        🏛️ Checkpoint: 15, 30, 45
+    <!-- PAGE: GAME -->
+    <div class="page active" id="page-game">
+      <div class="teams-grid" id="teams-grid"></div>
+      <div class="main-area">
+        <div class="qboard">
+          <div class="qb-top">
+            <div>
+              <div class="q-title" id="q-title">ข้อที่ 1 — ข้อธรรมดา</div>
+              <div class="q-sub" id="q-sub">CYCLE 1 | QUESTION 1 OF 3</div>
+            </div>
+            <div class="timer-box">
+              <div class="timer" id="timer">2:00</div>
+              <div class="timer-lbl" id="timer-lbl">เวลาตอบ</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <button class="ph-btn active" id="ph-answer" onclick="setPhase('answer')">⏱ ตอบ (2 นาที)</button>
+            <button class="ph-btn" id="ph-reveal" onclick="setPhase('reveal')">📖 เฉลย (4-5 นาที)</button>
+            <button class="ph-btn" id="ph-appeal" onclick="setPhase('appeal')">⚖ อุทธรณ์ (1 นาที)</button>
+          </div>
+          <div class="q-display">
+            <div class="q-text" id="q-body">กด <strong>"▶ เริ่มจับเวลา"</strong> เพื่อเริ่มรอบตอบคำถาม</div>
+            <div class="q-hint" id="q-hint"></div>
+          </div>
+          <div class="answer-sec">
+            <div class="sec-label">บันทึกผลการตอบ</div>
+            <div class="answer-grid" id="answer-grid"></div>
+          </div>
+        </div>
+        <div class="right-panel">
+          <div class="panel">
+            <div class="panel-lbl">ความคืบหน้า</div>
+            <div class="dots-grid" id="cycle-dots"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-lbl">Log เหตุการณ์</div>
+            <div class="log-scroll" id="log-area"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-lbl">การ์ดรอสรุป</div>
+            <div id="card-resolve-area" class="atk-list">
+              <span style="color:var(--text3);font-size:10px">ยังไม่มีการ์ดรอสรุป</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="ctrl primary" id="btn-timer" onclick="toggleTimer()">▶ เริ่มจับเวลา</button>
+        <button class="ctrl" onclick="resetTimer()">↺ รีเซ็ต</button>
+        <button class="ctrl success" onclick="nextQuestion()">ข้อถัดไป →</button>
+        <button class="ctrl amber" onclick="openCardModal()">🃏 ใช้การ์ด</button>
+        <button class="ctrl" onclick="openExtraModal()"
+          style="border-color:rgba(245,158,11,0.3);color:#fcd34d;background:var(--amber-dim)">⭐ Extra Steal</button>
+        <button class="ctrl danger" onclick="resolveCards()">⚔ สรุปการ์ด Cycle</button>
+        <button class="ctrl" style="background:var(--teal-dim);border-color:rgba(20,184,166,0.3);color:#5eead4"
+          onclick="openResurrection()">💊 Resurrection</button>
+        <button class="ctrl ml" onclick="resetGame()" style="border-color:rgba(255,255,255,0.08)">🔄 เริ่มใหม่</button>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- === MODALS === -->
-<!-- Perk Selection -->
-<div class="overlay" id="perk-overlay">
-  <div class="mbox">
-    <div class="mtitle">☥ เลือก Perk พิเศษ</div>
-    <div class="msub" id="perk-team-label">Team A — เลือกความเชี่ยวชาญ</div>
-    <button class="perk-opt" onclick="selectPerk('Pathologist\'s Eye')">
-      <strong>👁️ Pathologist's Eye</strong>
-      เมื่อตกช่องกับดัก (งู) จะถอยหลังน้อยลง 2 ช่อง — ลดผลกระทบของ Ancient Curse
-    </button>
-    <button class="perk-opt" onclick="selectPerk('Gen Z Spirit')">
-      <strong>⚡ Gen Z Spirit</strong>
-      เมื่อตอบคำถามช่องธรรมดาถูก จะได้เดินเพิ่ม 1 ช่องโบนัส
-    </button>
-    <button class="perk-opt" onclick="selectPerk('Scientific Method')">
-      <strong>🔬 Scientific Method</strong>
-      ได้รับ Hint 2 ครั้งตลอดเกม — ตัดตัวเลือกผิดออก 1 ตัว
-    </button>
-  </div>
-</div>
-
-<!-- Question Modal -->
-<div class="overlay hidden" id="q-overlay">
-  <div class="mbox">
-    <div class="mtitle" id="q-event-label">คำถาม</div>
-    <div class="msub" id="q-event-desc"></div>
-    <span class="subj-badge" id="q-subj">Subject</span>
-    <div class="timer-wrap"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
-    <div class="q-text" id="q-text">Loading...</div>
-    <div id="q-choices"></div>
-    <button class="hint-btn" id="hint-btn" onclick="useHint()">💡 ใช้ Hint (เหลือ <span id="hint-left">0</span>)</button>
-    <div class="hint-text hidden" id="hint-text"></div>
-  </div>
-</div>
-
-<!-- Market / Checkpoint -->
-<div class="overlay hidden" id="mkt-overlay">
-  <div class="mbox">
-    <div class="mtitle">🏛️ ตลาดมืดแห่งไคโร</div>
-    <div class="msub" id="mkt-team-label">ประมูลคัมภีร์ด้วย Ankh Coins</div>
-    <div id="mkt-items"></div>
-    <button class="close-mkt" onclick="closeMarket()">☥ ออกจากตลาด</button>
-  </div>
-</div>
-
-<!-- Card Used Modal -->
-<div class="overlay hidden" id="card-use-overlay">
-  <div class="mbox" style="text-align:center">
-    <div class="mtitle" id="card-use-title">ใช้คัมภีร์</div>
-    <div style="font-size:40px;margin:10px 0" id="card-use-icon">📜</div>
-    <div class="q-text" id="card-use-desc"></div>
-    <button class="close-mkt" onclick="closeCardUse()">ตกลง</button>
-  </div>
-</div>
-
-<!-- Win Modal -->
-<div class="overlay hidden" id="win-overlay">
-  <div class="mbox win-box">
-    <div class="win-trophy">👑</div>
-    <div class="win-title" id="win-name">Team A ชนะ!</div>
-    <div class="win-sub">พิสูจน์แล้วว่าโรคระบาดมาจากวิทยาศาสตร์ ไม่ใช่คำสาป!</div>
-    <div class="score-summary" id="win-scores"></div>
-    <button class="restart-btn" onclick="location.reload()">☥ เริ่มการสำรวจใหม่</button>
-  </div>
-</div>
-
-<script>
-/* ====== GAME CONFIG ====== */
-const LADDERS = {5:16, 20:32, 37:48};
-const SNAKES  = {13:3,  28:17, 44:34};
-const CARD_CELLS = [8,24,39];
-const CHECKPOINTS = [15,30,45];
-
-const MARKET_CARDS = [
-  {id:'sandstorm', name:'🌪️ พายุทราย',      desc:'Block ทีมอื่น — ข้ามรอบถัดไป',            price:30, emoji:'🌪️'},
-  {id:'oasis',     name:'🏝️ โอเอซิส',       desc:'คะแนนรอบถัดไป ×1.5 ถ้าตอบถูก',           price:25, emoji:'🏝️'},
-  {id:'shield',    name:'🛡️ โล่เนเฟอร์ติติ', desc:'ป้องกัน Block หรือหารคะแนนครั้งหนึ่ง',   price:35, emoji:'🛡️'},
-  {id:'eye',       name:'👁️ เนตรฮอรัส',     desc:'เปลี่ยนคำถามเป็นหมวดอื่น 1 ครั้ง',         price:20, emoji:'👁️'},
-  {id:'split',     name:'⚡ มนต์ฟาโรห์',    desc:'ทีมที่ถูกเลือก ถ้าตอบถูกได้ครึ่งคะแนน',   price:40, emoji:'⚡'},
-];
-
-const QUESTIONS = [
-  {subj:'Microbiology',   text:'แบคทีเรียชนิดใดที่ทำให้เกิดอหิวาตกโรค (Cholera) และพบในแหล่งน้ำสกปรก?', choices:['Staphylococcus aureus','Vibrio cholerae','Clostridium tetani','Streptococcus pyogenes'], ans:1, hint:'ชื่อบอกอยู่แล้ว — เกี่ยวกับน้ำ (Vibrio)'},
-  {subj:'Parasitology',   text:'พยาธิชนิดใดแพร่ผ่านผิวหนังและพบในลุ่มแม่น้ำไนล์ ทำให้เกิด Schistosomiasis?', choices:['Taenia saginata','Ascaris lumbricoides','Schistosoma mansoni','Plasmodium falciparum'], ans:2, hint:'ชื่อเกี่ยวกับ "Schisto" — ใบไม้เลือด'},
-  {subj:'Physiology',     text:'เมื่อสูดดมฝุ่นทรายเข้าไป กลไกป้องกันแรกสุดของทางเดินหายใจส่วนบนคืออะไร?', choices:['การสร้าง IgE','ขนกวัด (Cilia) และเมือก','การหลั่ง Histamine','การสร้าง Surfactant'], ans:1, hint:'โครงสร้างที่ขับเสมหะขึ้นมา'},
-  {subj:'Pathology',      text:'Granuloma formation เป็นลักษณะของการตอบสนองภูมิคุ้มกันในโรคใด?', choices:['Cholera','Malaria','Tuberculosis','Typhoid fever'], ans:2, hint:'โรคปอดติดเชื้อ Mycobacterium'},
-  {subj:'Pharmacology',   text:'Artemisinin เป็นยารักษาโรคใดที่มักพบในเขตร้อนชื้น?', choices:['อหิวาตกโรค','ไข้มาลาเรีย','เลือดออกเดงกี่','วัณโรค'], ans:1, hint:'พบใน Plasmodium — ยามาจากพืชจีน'},
-  {subj:'Anatomy',        text:'กระดูก Femur ที่หักอาจทำให้เสียเลือดเข้า Thigh compartment ได้ถึงกี่ลิตร?', choices:['0.5 ลิตร','1–1.5 ลิตร','2–3 ลิตร','5 ลิตร'], ans:1, hint:'Thigh compartment จุได้จำกัด'},
-  {subj:'Biochemistry',   text:'ATP สร้างมากที่สุดในกระบวนการใดในเซลล์?', choices:['Glycolysis','Krebs Cycle','Oxidative Phosphorylation','Beta-oxidation'], ans:2, hint:'ต้องการ O₂ — เกิดใน mitochondria inner membrane'},
-  {subj:'Microbiology',   text:'โปรตีนชั้นนอก (Outer membrane protein) ของแบคทีเรีย Gram-negative มีบทบาทสำคัญต่อสิ่งใด?', choices:['การสร้าง Biofilm','ความต้านทานยาปฏิชีวนะ','การหลั่ง Toxin','ทั้ง ก และ ข'], ans:3, hint:'Outer membrane ให้ความแข็งแกร่งและกรองสาร'},
-  {subj:'Physiology',     text:'ร่างกายสูญเสียน้ำมากในทะเลทราย — กลไกใดถูกกระตุ้นก่อนเพื่อรักษาความดันโลหิต?', choices:['RAAS (Renin-Angiotensin)','Natriuretic Peptide','Histamine Release','Bradykinin release'], ans:0, hint:'เกี่ยวกับ Kidney — Renin'},
-  {subj:'Parasitology',   text:'พาหะของ Malaria (Plasmodium) คือยุงชนิดใด?', choices:['Aedes aegypti','Anopheles','Culex pipiens','Mansonia'], ans:1, hint:'ยุงกัดตอนกลางคืน — ปีกมีลาย'},
-  {subj:'Pathology',      text:'การตรวจพบ Reed-Sternberg cells ใน Biopsy บ่งชี้ถึงโรคมะเร็งชนิดใด?', choices:['Non-Hodgkin lymphoma','Hodgkin lymphoma','Leukemia','Multiple myeloma'], ans:1, hint:'Hodgkin — เซลล์ยักษ์สองนิวเคลียส'},
-  {subj:'Pharmacology',   text:'NSAIDs ออกฤทธิ์ยับยั้ง Enzyme ใดเพื่อลดการอักเสบ?', choices:['Lipoxygenase','COX-1 และ COX-2','Phospholipase A2','Thromboxane Synthase'], ans:1, hint:'COX = Cyclooxygenase'},
-  {subj:'Biochemistry',   text:'เมื่อร่างกายขาดน้ำ Osmolality ของ plasma จะเปลี่ยนแปลงอย่างไร?', choices:['ลดลง','คงที่','เพิ่มขึ้น','ขึ้นอยู่กับ Na⁺'], ans:2, hint:'น้ำน้อย → สารละลายเข้มข้นขึ้น'},
-  {subj:'Anatomy',        text:'ต่อมลูกหมาก (Prostate gland) อยู่ในระดับเดียวกับกระดูกใด?', choices:['L4-L5','Coccyx','Pubic symphysis','Sacrum'], ans:2, hint:'อยู่ใต้กระเพาะปัสสาวะ ระดับ pubis'},
-  {subj:'Microbiology',   text:'Endospore ของแบคทีเรียสร้างขึ้นเมื่อเผชิญกับสภาพแวดล้อมแบบใด?', choices:['อุณหภูมิสูงเกิน 70°C','แสง UV','ขาดสารอาหาร','pH ต่ำกว่า 4'], ans:2, hint:'ปกป้องตัวเองเมื่อสภาพแวดล้อมรุนแรง'},
-  {subj:'Physiology',     text:'Erythropoietin (EPO) ผลิตจากอวัยวะใด?', choices:['ตับ','ต่อมหมวกไต','ไต','ไขกระดูก'], ans:2, hint:'กระตุ้นเมื่อ O₂ ในเลือดต่ำ — ไต'},
-  {subj:'Pathology',      text:'การพบ Psammoma bodies ในชิ้นเนื้อ บ่งชี้ถึงมะเร็งชนิดใด?', choices:['Breast cancer','Papillary thyroid carcinoma','Colon cancer','Hepatocellular carcinoma'], ans:1, hint:'Psammoma = concentric calcified layers — ต่อมไทรอยด์'},
-  {subj:'Pharmacology',   text:'Metronidazole (Flagyl) ใช้รักษาการติดเชื้อจากสิ่งมีชีวิตชนิดใด?', choices:['Virus','แบคทีเรีย Gram-positive','แบคทีเรีย Anaerobes และ Protozoa','Fungi'], ans:2, hint:'ฆ่า Anaerobic bacteria และ Giardia, Amoeba'},
-  {subj:'Biochemistry',   text:'กรดอะมิโนชนิดใดเป็น precursor ของ Serotonin?', choices:['Tyrosine','Phenylalanine','Tryptophan','Histidine'], ans:2, hint:'5-HTP → Serotonin — เส้นทาง Tryptophan'},
-  {subj:'Anatomy',        text:'Brachial plexus ถูก injury ที่ C5-C6 ทำให้เกิด palsy ในลักษณะใด?', choices:['Claw hand','Wrist drop','Waiter\'s tip (Erb\'s palsy)','ไม่มีผลกระทบ'], ans:2, hint:'Erb\'s palsy — แขนหมุนเข้า ข้อศอกเหยียด'},
-];
-
-/* ====== STATE ====== */
-const players = [
-  {id:0,key:'a',name:'Team A',icon:'🔵',pos:1,score:0,coins:0,hintsLeft:0,perk:'',hand:[],blocked:false,doublePts:false,shielded:false},
-  {id:1,key:'b',name:'Team B',icon:'🔴',pos:1,score:0,coins:0,hintsLeft:0,perk:'',hand:[],blocked:false,doublePts:false,shielded:false},
-];
-let currentTurn = 0;
-let perkSetup = 0;
-let currentQ = null;
-let timerInterval = null;
-let timeLeft = 30;
-let pendingMarket = false;
-let pendingCardApply = null;
-let hintUsedThisQ = false;
-
-/* ====== BOARD LAYOUT ====== */
-// boustrophedon: bottom row = 1-10, next = 20-11, etc.
-function buildBoardOrder(){
-  const order = [];
-  for(let row=4;row>=0;row--){
-    const base = row*10;
-    if(row%2===0){
-      // left to right: 1-10, 21-30, 41-50
-      for(let c=1;c<=10;c++) order.push(base+c);
-    } else {
-      // right to left: 20-11, 40-31
-      for(let c=10;c>=1;c--) order.push(base+c);
-    }
-  }
-  return order;
-}
-
-function initBoard(){
-  const grid = document.getElementById('board');
-  const order = buildBoardOrder();
-  grid.innerHTML = '';
-  order.forEach(n => {
-    const div = document.createElement('div');
-    div.className = 'cell';
-    if(LADDERS[n]) div.classList.add('ladder');
-    if(SNAKES[n])  div.classList.add('snake');
-    if(CARD_CELLS.includes(n)) div.classList.add('card-cell');
-    if(CHECKPOINTS.includes(n)) div.classList.add('checkpoint');
-    if(n===50) div.classList.add('cell-50');
-    if(n===1)  div.classList.add('cell-1');
-    div.id = 'cell-'+n;
-
-    const icon = LADDERS[n]?'🪜':SNAKES[n]?'🐍':CARD_CELLS.includes(n)?'📜':CHECKPOINTS.includes(n)?'🏛️':n===50?'👑':'';
-    div.innerHTML = `<div class="cell-num">${n}</div>${icon?`<div class="cell-icon">${icon}</div>`:''}
-      <div class="tokens">
-        <div class="tok tok-a" id="tok-a-${n}" style="display:none"></div>
-        <div class="tok tok-b" id="tok-b-${n}" style="display:none"></div>
-      </div>`;
-    grid.appendChild(div);
-  });
-
-  // Place start tokens
-  document.getElementById('tok-a-1').style.display='block';
-  document.getElementById('tok-b-1').style.display='block';
-
-  drawConnectors();
-}
-
-/* Draw snake/ladder lines on SVG */
-function cellCenter(n){
-  // find row/col for cell n
-  const row = Math.floor((n-1)/10); // 0=bottom,4=top
-  let col;
-  if(row%2===0) col = (n-1)%10;      // left-right
-  else          col = 9-((n-1)%10);  // right-left
-
-  // SVG viewBox is 100x50, rows inverted (row0=bottom=visual row4)
-  const svgRow = 4 - row;
-  const cx = col*10 + 5;
-  const cy = svgRow*10 + 5;
-  return {cx, cy};
-}
-
-function drawConnectors(){
-  const svg = document.getElementById('connector-svg');
-  let html = '';
-
-  // Ladders
-  Object.entries(LADDERS).forEach(([from,to])=>{
-    const s = cellCenter(+from), e = cellCenter(+to);
-    html += `<line x1="${s.cx}" y1="${s.cy}" x2="${e.cx}" y2="${e.cy}" stroke="#28a745" stroke-width="1.5" stroke-dasharray="2,1" opacity=".6"/>
-             <circle cx="${s.cx}" cy="${s.cy}" r="1.5" fill="#28a745" opacity=".8"/>
-             <circle cx="${e.cx}" cy="${e.cy}" r="1.5" fill="#28a745" opacity=".8"/>`;
-  });
-
-  // Snakes
-  Object.entries(SNAKES).forEach(([from,to])=>{
-    const s = cellCenter(+from), e = cellCenter(+to);
-    const mx=(s.cx+e.cx)/2+6, my=(s.cy+e.cy)/2;
-    html += `<path d="M${s.cx},${s.cy} Q${mx},${my} ${e.cx},${e.cy}" fill="none" stroke="#dc3545" stroke-width="1.8" opacity=".6"/>
-             <circle cx="${s.cx}" cy="${s.cy}" r="1.5" fill="#dc3545" opacity=".8"/>`;
-  });
-
-  svg.innerHTML = html;
-}
-
-/* ====== UI UPDATE ====== */
-function updateUI(){
-  players.forEach(p=>{
-    document.getElementById('pos-'+p.key).textContent = p.pos;
-    document.getElementById('score-'+p.key).textContent = p.score;
-    document.getElementById('coin-'+p.key).textContent = p.coins;
-    document.getElementById('hint-'+p.key).textContent = p.hintsLeft;
-    document.getElementById('perk-'+p.key).textContent = p.perk || '—';
-
-    // Tokens
-    for(let i=1;i<=50;i++){
-      const t = document.getElementById(`tok-${p.key}-${i}`);
-      if(t) t.style.display = (i===p.pos)?'block':'none';
-    }
-
-    // Active card
-    document.getElementById('card-'+p.key).className = 'team-card team-'+p.key + (currentTurn===p.id?' active':'');
-
-    // Hand
-    const handEl = document.getElementById('hand-'+p.key);
-    handEl.innerHTML = p.hand.map((c,idx)=>`<button class="hcard" onclick="playCard(${p.id},${idx})">${c.emoji} ${c.name.split(' ')[1]||c.name}</button>`).join('');
-  });
-  document.getElementById('turn-name').textContent = players[currentTurn].icon+' '+players[currentTurn].name;
-  if(players[currentTurn].blocked){
-    document.getElementById('turn-name').textContent += ' (BLOCKED)';
-  }
-}
-
-function log(msg, cls=''){
-  const b = document.getElementById('log');
-  b.innerHTML = `<div class="log-e ${cls}">${msg}</div>` + b.innerHTML;
-}
-
-/* ====== PERK SETUP ====== */
-function selectPerk(perk){
-  players[perkSetup].perk = perk;
-  if(perk==='Scientific Method') players[perkSetup].hintsLeft = 2;
-  log(`${players[perkSetup].name} เลือก: ${perk}`,'sp');
-  perkSetup++;
-  if(perkSetup >= 2){
-    document.getElementById('perk-overlay').classList.add('hidden');
-    updateUI();
-    log('--- ☥ เริ่มการสำรวจ! ---','sp');
-  } else {
-    document.getElementById('perk-team-label').textContent = `${players[perkSetup].name} — เลือกความเชี่ยวชาญ`;
-  }
-}
-
-/* ====== DICE & MOVEMENT ====== */
-function rollDice(){
-  const p = players[currentTurn];
-
-  // Handle blocked player
-  if(p.blocked){
-    p.blocked = false;
-    log(`${p.icon} ${p.name} ถูก Block — ข้ามตาไป`,'bad');
-    endTurn();
-    return;
-  }
-
-  document.getElementById('roll-btn').disabled = true;
-  const diceEl = document.getElementById('dice');
-  diceEl.classList.add('rolling');
-
-  const faces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
-  const roll = Math.floor(Math.random()*6)+1;
-
-  setTimeout(()=>{
-    diceEl.classList.remove('rolling');
-    diceEl.textContent = faces[roll-1];
-    log(`${p.icon} ${p.name} ทอยได้ <b>${roll}</b>`,'mv');
-
-    let newPos = Math.min(p.pos + roll, 50);
-    movePlayer(p, newPos);
-  }, 600);
-}
-
-function movePlayer(p, newPos){
-  p.pos = newPos;
-  updateUI();
-  setTimeout(()=>landOnCell(p), 500);
-}
-
-function landOnCell(p){
-  const pos = p.pos;
-
-  if(pos === 50){
-    p.score += 500; p.coins += 50;
-    updateUI();
-    showWin();
-    return;
-  }
-
-  let eventType = 'normal';
-  if(LADDERS[pos]) eventType='ladder';
-  else if(SNAKES[pos]) eventType='snake';
-  else if(CARD_CELLS.includes(pos)) eventType='card';
-  else if(CHECKPOINTS.includes(pos)) eventType='checkpoint';
-
-  const label = eventType==='ladder'?`🪜 ช่องบันได! ตอบถูก → กระโดดไปช่อง ${LADDERS[pos]}`:
-                eventType==='snake' ?`🐍 ช่องงู! ตอบผิด → ร่วงลงช่อง ${SNAKES[pos]}`:
-                eventType==='card'  ?`📜 ช่องคัมภีร์ลับ! ตอบถูก → รับการ์ดทันที`:
-                eventType==='checkpoint'?`🏛️ Checkpoint! เปิดตลาดซื้อขายการ์ด`:
-                `ช่องปกติ — ตอบถูก +100 คะแนน, +10 Ankh`;
-
-  log(`📍 ${p.name} ลงช่อง ${pos} — ${label}`,'mv');
-
-  if(eventType==='checkpoint'){
-    openMarket(p);
-    return;
-  }
-  showQuestion(p, eventType);
-}
-
-/* ====== QUESTIONS ====== */
-function showQuestion(p, eventType){
-  // Check for Eye of Horus in hand (skip — player can choose to use before rolling)
-  hintUsedThisQ = false;
-  const q = QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)];
-  currentQ = {p, eventType, q};
-
-  const evLabels = {ladder:'🪜 ช่องบันได',snake:'🐍 ช่องกับดักงู',card:'📜 คัมภีร์ลับ',normal:'⬜ ช่องปกติ'};
-  const evDescs  = {
-    ladder:'ตอบถูก → กระโดดขึ้น | ตอบผิด → อยู่เดิม',
-    snake: 'ตอบถูก → รอด | ตอบผิด → ร่วงลง',
-    card:  'ตอบถูก → รับการ์ดพิเศษทันที',
-    normal:'ตอบถูก → +100 คะแนน, +10 Ankh',
-  };
-
-  document.getElementById('q-event-label').textContent = evLabels[eventType]||'คำถาม';
-  document.getElementById('q-event-desc').textContent  = evDescs[eventType]||'';
-  document.getElementById('q-subj').textContent = q.subj.toUpperCase();
-  document.getElementById('q-text').textContent = q.text;
-
-  // Hint button
-  const hintBtn = document.getElementById('hint-btn');
-  const hintLeft = p.hintsLeft;
-  document.getElementById('hint-left').textContent = hintLeft;
-  hintBtn.disabled = (hintLeft <= 0 || hintUsedThisQ);
-  document.getElementById('hint-text').classList.add('hidden');
-
-  // Choices — check for Sandstorm played on this player? No, sandstorm blocks rolling.
-  // Check Oasis (doublePts)
-  const choicesDiv = document.getElementById('q-choices');
-  choicesDiv.innerHTML = q.choices.map((c,i)=>
-    `<button class="choice" id="choice-${i}" onclick="answer(${i})">${c}</button>`
-  ).join('');
-
-  document.getElementById('q-overlay').classList.remove('hidden');
-
-  // Timer 30s
-  clearInterval(timerInterval);
-  timeLeft = 30;
-  document.getElementById('timer-fill').style.width='100%';
-  timerInterval = setInterval(()=>{
-    timeLeft -= 0.1;
-    document.getElementById('timer-fill').style.width = Math.max(0,timeLeft/30*100)+'%';
-    if(timeLeft <= 0){
-      clearInterval(timerInterval);
-      autoTimeUp();
-    }
-  },100);
-}
-
-function useHint(){
-  const p = players[currentTurn];
-  if(p.hintsLeft <= 0 || hintUsedThisQ) return;
-  p.hintsLeft--;
-  hintUsedThisQ = true;
-  document.getElementById('hint-left').textContent = p.hintsLeft;
-  document.getElementById('hint-btn').disabled = true;
-  document.getElementById('hint-text').textContent = '💡 ' + currentQ.q.hint;
-  document.getElementById('hint-text').classList.remove('hidden');
-  log(`${p.name} ใช้ Hint!`,'sp');
-  updateUI();
-}
-
-function autoTimeUp(){
-  if(!currentQ) return;
-  // disable choices
-  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
-  document.getElementById(`choice-${currentQ.q.ans}`).classList.add('right');
-  log(`⏰ หมดเวลา! คำตอบที่ถูกคือ: ${currentQ.q.choices[currentQ.q.ans]}`,'bad');
-  const {p, eventType} = currentQ;
-  if(eventType==='snake') applySnakePenalty(p);
-  setTimeout(()=>{ document.getElementById('q-overlay').classList.add('hidden'); endTurn(); },2000);
-}
-
-function answer(idx){
-  clearInterval(timerInterval);
-  const {p, eventType, q} = currentQ;
-  const correct = idx === q.ans;
-
-  // Reveal answer
-  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
-  document.getElementById(`choice-${idx}`).classList.add(correct?'right':'wrong');
-  if(!correct) document.getElementById(`choice-${q.ans}`).classList.add('right');
-
-  if(correct){
-    handleCorrect(p, eventType);
-  } else {
-    handleWrong(p, eventType);
-  }
-
-  setTimeout(()=>{ document.getElementById('q-overlay').classList.add('hidden'); endTurn(); }, 1800);
-}
-
-function handleCorrect(p, eventType){
-  log(`✅ ${p.name} ตอบถูก!`,'ok');
-
-  if(eventType==='normal'||eventType==='checkpoint'){
-    let pts = 100;
-    if(p.doublePts){ pts = Math.floor(pts*1.5); p.doublePts=false; log('🏝️ Oasis ทำงาน! คะแนน ×1.5','sp'); }
-    p.score += pts;
-    p.coins += 10;
-    log(`+${pts} คะแนน, +10 Ankh`,'ok');
-    if(p.perk==='Gen Z Spirit'){
-      p.pos = Math.min(p.pos+1, 50);
-      log(`⚡ Gen Z Spirit: เดินเพิ่ม 1 ช่อง → ช่อง ${p.pos}`,'sp');
-    }
-  } else if(eventType==='ladder'){
-    const dest = LADDERS[p.pos];
-    log(`🪜 กระโดดจากช่อง ${p.pos} → ช่อง ${dest}`,'ok');
-    p.pos = dest;
-    p.score += 50;
-  } else if(eventType==='card'){
-    const card = MARKET_CARDS[Math.floor(Math.random()*MARKET_CARDS.length)];
-    p.hand.push({...card});
-    log(`📜 รับการ์ด: ${card.name}`,'sp');
-    p.score += 50;
-  } else if(eventType==='snake'){
-    log(`🛡️ ตอบถูก — รอดพ้นจากงู! อยู่ช่องเดิม`,'ok');
-    p.score += 50;
-  }
-  updateUI();
-}
-
-function handleWrong(p, eventType){
-  log(`❌ ${p.name} ตอบผิด!`,'bad');
-  if(eventType==='snake') applySnakePenalty(p);
-  else if(eventType==='normal'||eventType==='checkpoint'){
-    log(`ไม่ได้คะแนน`,'bad');
-  }
-  updateUI();
-}
-
-function applySnakePenalty(p){
-  let dest = SNAKES[p.pos];
-  if(p.perk==="Pathologist's Eye"){
-    dest = Math.max(dest+2, 1);
-    log(`👁️ Pathologist's Eye ลดโทษ! ร่วงแค่ถึงช่อง ${dest}`,'sp');
-  } else {
-    log(`🐍 ร่วงจากช่อง ${p.pos} → ช่อง ${dest}`,'bad');
-  }
-  p.pos = dest;
-}
-
-/* ====== CARDS ====== */
-function playCard(playerId, cardIdx){
-  const p = players[playerId];
-  if(currentTurn !== playerId){ log('ไม่ใช่ตาของคุณ!','bad'); return; }
-  if(document.getElementById('roll-btn').disabled){ log('ไม่สามารถใช้การ์ดขณะตอบคำถาม','bad'); return; }
-
-  const card = p.hand[cardIdx];
-  p.hand.splice(cardIdx,1);
-
-  const opp = players[1-playerId];
-  const cardUseOverlay = document.getElementById('card-use-overlay');
-  document.getElementById('card-use-title').textContent = `ใช้: ${card.name}`;
-  document.getElementById('card-use-icon').textContent = card.emoji;
-
-  let effectDesc = '';
-  if(card.id==='sandstorm'){ opp.blocked=true; effectDesc=`${opp.name} จะข้ามตาถัดไป!`; }
-  else if(card.id==='oasis'){ p.doublePts=true; effectDesc='ถ้าตอบถูกรอบนี้ คะแนน ×1.5!'; }
-  else if(card.id==='shield'){ p.shielded=true; effectDesc='ป้องกัน Block และหารคะแนน 1 ครั้ง'; }
-  else if(card.id==='split'){ opp.doublePts=false; effectDesc=`ถ้า ${opp.name} ตอบถูกรอบนี้ ได้แค่ครึ่งคะแนน`; opp.halfPts=true; }
-  else if(card.id==='eye'){ effectDesc='สามารถ Skip คำถามไปรับคำถามใหม่ได้ 1 ครั้ง'; p.eyeActive=true; }
-
-  document.getElementById('card-use-desc').textContent = effectDesc;
-  cardUseOverlay.classList.remove('hidden');
-  log(`${p.name} ใช้การ์ด ${card.name}: ${effectDesc}`,'sp');
-  updateUI();
-}
-
-function closeCardUse(){
-  document.getElementById('card-use-overlay').classList.add('hidden');
-}
-
-/* ====== MARKET ====== */
-function openMarket(p){
-  pendingMarket = p;
-  document.getElementById('mkt-team-label').textContent =
-    `${p.icon} ${p.name} — มี ${p.coins} Ankh Coins`;
-
-  const itemsEl = document.getElementById('mkt-items');
-  itemsEl.innerHTML = MARKET_CARDS.map((c,i)=>`
-    <div class="mkt-row">
-      <div class="mkt-info">
-        <div class="mkt-name">${c.emoji} ${c.name}</div>
-        <div class="mkt-desc">${c.desc}</div>
+    <!-- PAGE: LIVE DISPLAY -->
+    <div class="page" id="page-live">
+      <button class="live-close" onclick="showPage('game')">✕ ปิด Live View</button>
+
+      <div class="live-header">
+        <div class="live-logo">
+          <div class="live-logo-icon">🏥</div>
+          <div>
+            <div class="live-logo-title">MedQuiz KKU 2026</div>
+            <div class="live-logo-sub">GAME SHOW • SAQ FORMAT</div>
+          </div>
+        </div>
+        <div class="live-cycle-info">
+          <span class="live-badge b-blue" id="live-lbl-cycle">Cycle 1 / 4</span>
+          <span class="live-badge b-amber" id="live-lbl-q">ข้อที่ 1 / 16</span>
+          <span class="live-badge b-purple" id="live-lbl-qtype">ข้อธรรมดา</span>
+          <span class="live-badge b-gray" id="live-lbl-phase">เตรียมพร้อม</span>
+        </div>
       </div>
-      <div class="mkt-right">
-        <span class="price-tag">☥${c.price}</span>
-        <button class="buy-btn" id="buy-${i}" onclick="buyCard(${i})" ${p.coins<c.price?'disabled':''}>ซื้อ</button>
+
+      <!-- Score row -->
+      <div class="live-scores" id="live-scores"></div>
+
+      <!-- Main area -->
+      <div class="live-main">
+        <!-- Question + answers -->
+        <div class="live-qbox">
+          <div class="live-phase-bar">
+            <button class="live-ph active" id="live-ph-answer" onclick="setPhase('answer')">⏱ ตอบ (2 นาที)</button>
+            <button class="live-ph" id="live-ph-reveal" onclick="setPhase('reveal')">📖 เฉลย (4-5 นาที)</button>
+            <button class="live-ph" id="live-ph-appeal" onclick="setPhase('appeal')">⚖ อุทธรณ์ (1 นาที)</button>
+          </div>
+
+          <div class="live-question-card" id="live-qcard">
+            <div>
+              <div class="lq-number" id="live-q-number">CYCLE 1 • ข้อที่ 1 จาก 3</div>
+              <div id="live-q-typebadge"></div>
+              <div class="lq-text" id="live-q-text">รอเริ่มเกม...</div>
+              <div class="lq-hint" id="live-q-hint"></div>
+            </div>
+            <div class="live-answer-grid" id="live-answer-grid"></div>
+          </div>
+        </div>
+
+        <!-- Right sidebar -->
+        <div class="live-timer-box">
+          <!-- Arc timer -->
+          <div class="live-timer-card">
+            <div class="live-timer-arc">
+              <svg class="arc-svg" viewBox="0 0 100 100">
+                <circle class="arc-bg" cx="50" cy="50" r="42" />
+                <circle class="arc-fill" id="live-arc" cx="50" cy="50" r="42" stroke="#3b82f6" stroke-dasharray="263.9"
+                  stroke-dashoffset="0" />
+              </svg>
+              <div
+                style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                <div class="live-timer" id="live-timer">2:00</div>
+                <div class="live-timer-phase" id="live-timer-phase">ตอบ</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;justify-content:center;margin-top:10px">
+              <button class="ctrl primary" id="live-btn-timer" onclick="toggleTimer()"
+                style="font-size:10px;padding:5px 12px">▶ เริ่ม</button>
+              <button class="ctrl" onclick="resetTimer()" style="font-size:10px;padding:5px 10px">↺</button>
+            </div>
+          </div>
+
+          <!-- Progress dots -->
+          <div class="live-progress">
+            <div class="lp-lbl">ความคืบหน้า</div>
+            <div class="lp-dots" id="live-dots"></div>
+          </div>
+
+          <!-- Event feed -->
+          <div class="live-feed">
+            <div class="lf-lbl">เหตุการณ์ล่าสุด</div>
+            <div class="lf-list" id="live-log"></div>
+          </div>
+        </div>
       </div>
-    </div>`).join('');
 
-  document.getElementById('mkt-overlay').classList.remove('hidden');
-}
+      <!-- Overlay container -->
+      <div class="live-overlay" id="live-overlay" style="display:none"></div>
+    </div>
 
-function buyCard(idx){
-  const p = pendingMarket;
-  const card = MARKET_CARDS[idx];
-  if(p.coins < card.price){ log('Ankh ไม่พอ!','bad'); return; }
-  p.coins -= card.price;
-  p.hand.push({...card});
-  log(`${p.name} ซื้อ ${card.name} (ราคา ${card.price} Ankh)`,'sp');
-  updateUI();
-  // Refresh prices
-  document.getElementById('mkt-team-label').textContent =
-    `${p.icon} ${p.name} — มี ${p.coins} Ankh Coins`;
-  document.querySelectorAll('[id^="buy-"]').forEach((btn,i)=>{
-    btn.disabled = (p.coins < MARKET_CARDS[i].price);
-  });
-}
+    <!-- PAGE: GUIDE -->
+    <div class="page" id="page-guide">
+      <div class="guide-wrap">
+        <div class="guide-hero">
+          <h1>📋 คู่มือการเล่น MedQuiz KKU 2026</h1>
+          <p>Game Show รูปแบบผสม — ตอบพร้อมกัน + Extra Steal พร้อมระบบการ์ดกลยุทธ์</p>
+        </div>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <div class="gc-head">
+              <div class="gc-icon" style="background:var(--blue-dim)">🎮</div>
+              <div>
+                <div class="gc-title">ภาพรวมเกม</div>
+                <div class="gc-sub">โครงสร้างหลัก</div>
+              </div>
+            </div>
+            <table class="score-table">
+              <tr>
+                <th>รายการ</th>
+                <th>จำนวน</th>
+              </tr>
+              <tr>
+                <td>จำนวนข้อทั้งหมด</td>
+                <td class="td-blue">16 ข้อ</td>
+              </tr>
+              <tr>
+                <td>จำนวน Cycle</td>
+                <td class="td-blue">4 Cycle</td>
+              </tr>
+              <tr>
+                <td>ข้อต่อ Cycle</td>
+                <td class="td-blue">4 ข้อ</td>
+              </tr>
+              <tr>
+                <td>ข้อธรรมดา / Cycle</td>
+                <td class="td-green">3 ข้อ</td>
+              </tr>
+              <tr>
+                <td>ข้อ Extra / Cycle</td>
+                <td class="td-amber">1 ข้อ</td>
+              </tr>
+              <tr>
+                <td>รูปแบบคำถาม</td>
+                <td class="td-purple">SAQ</td>
+              </tr>
+              <tr>
+                <td>เวลาทั้งหมด</td>
+                <td class="td-amber">~144 นาที</td>
+              </tr>
+            </table>
+          </div>
+          <div class="guide-card">
+            <div class="gc-head">
+              <div class="gc-icon" style="background:var(--amber-dim)">⏱</div>
+              <div>
+                <div class="gc-title">ระยะเวลาแต่ละช่วง</div>
+                <div class="gc-sub">ต่อ 1 ข้อ</div>
+              </div>
+            </div>
+            <div class="timeline-row"><span class="tl-badge tl-blue">2 นาที</span><span class="tl-arrow">→</span><span
+                class="tl-text">ช่วงตอบ (ทุกทีมตอบพร้อมกัน)</span></div>
+            <div class="timeline-row"><span class="tl-badge tl-amber">4-5 นาที</span><span
+                class="tl-arrow">→</span><span class="tl-text">ช่วงเฉลยและอธิบาย</span></div>
+            <div class="timeline-row"><span class="tl-badge tl-red">1 นาที</span><span class="tl-arrow">→</span><span
+                class="tl-text">อุทธรณ์ (รวมทุกทีมใน cycle)</span></div>
+            <div class="modal-sep"></div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.6">⚠ อุทธรณ์ได้หลังจบข้อ Extra ของแต่ละ
+              Cycle<br>⚠ ทุกทีมรวมกันมีเวลาอุทธรณ์ 1 นาทีต่อ Cycle</div>
+          </div>
+          <div class="guide-card">
+            <div class="gc-head">
+              <div class="gc-icon" style="background:var(--green-dim)">🏆</div>
+              <div>
+                <div class="gc-title">ระบบคะแนน</div>
+                <div class="gc-sub">การให้คะแนน</div>
+              </div>
+            </div>
+            <table class="score-table">
+              <tr>
+                <th>สถานการณ์</th>
+                <th>คะแนน</th>
+              </tr>
+              <tr>
+                <td>ตอบถูก <strong>ทีมแรก</strong> (ข้อธรรมดา)</td>
+                <td class="td-purple">+13</td>
+              </tr>
+              <tr>
+                <td>ตอบถูก ทีมอื่นๆ (ข้อธรรมดา)</td>
+                <td class="td-green">+10</td>
+              </tr>
+              <tr>
+                <td>ชนะ Extra (Steal + ตอบถูก)</td>
+                <td class="td-amber">+15</td>
+              </tr>
+              <tr>
+                <td>โดนการ์ดโจมตี</td>
+                <td class="td-red">-8</td>
+              </tr>
+              <tr>
+                <td>โดนระเบิด (ตอบผิด)</td>
+                <td class="td-red">-10</td>
+              </tr>
+            </table>
+          </div>
+          <div class="guide-card">
+            <div class="gc-head">
+              <div class="gc-icon" style="background:var(--purple-dim)">🃏</div>
+              <div>
+                <div class="gc-title">การ์ด Default</div>
+                <div class="gc-sub">เลือกก่อนเกม</div>
+              </div>
+            </div>
+            <div class="guide-item">
+              <div class="guide-num">1</div>
+              <div class="guide-text">แต่ละทีมเลือก <strong>2 ใบ</strong> ตั้งแต่เริ่มเกม</div>
+            </div>
+            <div class="guide-item">
+              <div class="guide-num">2</div>
+              <div class="guide-text">แบ่งเป็น 3 รอบเลือก: <strong>ต้นเกม / กลางเกม / ท้ายเกม</strong></div>
+            </div>
+            <div class="guide-item">
+              <div class="guide-num">3</div>
+              <div class="guide-text"><strong>บังคับใช้ 1 ใบ</strong> ตั้งแต่เริ่มเกม</div>
+            </div>
+            <div class="guide-item">
+              <div class="guide-num">4</div>
+              <div class="guide-text">ผลการ์ดโจมตี/ป้องกัน <strong>สรุปท้าย 3 ข้อธรรมดา</strong></div>
+            </div>
+            <div class="guide-item">
+              <div class="guide-num">5</div>
+              <div class="guide-text">โดนโจมตี <strong>หลายใบ</strong>? ป้องกัน <strong>1 ใบ</strong> บล็อกได้ทั้งหมด
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="guide-card" style="margin-bottom:10px">
+          <div class="gc-head">
+            <div class="gc-icon" style="background:var(--amber-dim)">⭐</div>
+            <div>
+              <div class="gc-title">การ์ดพิเศษ (จากข้อ Extra)</div>
+              <div class="gc-sub">ใช้ใน 3 ข้อธรรมดา Cycle ถัดไป</div>
+            </div>
+          </div>
+          <div class="card-gallery">
+            <div class="card-item">
+              <div class="card-emoji">💣</div>
+              <div class="card-name">ระเบิด</div>
+              <div class="card-desc">ส่งต่อทีมถัดไป ตอบผิด = -10 ตอบถูก = ส่งต่อ</div>
+            </div>
+            <div class="card-item">
+              <div class="card-emoji">×2</div>
+              <div class="card-name">การ์ด ×2</div>
+              <div class="card-desc">บวกคะแนนปัจจุบันเพิ่มอีก 50%</div>
+            </div>
+            <div class="card-item">
+              <div class="card-emoji">×3</div>
+              <div class="card-name">การ์ด ×3</div>
+              <div class="card-desc">บวกคะแนนปัจจุบันเพิ่มอีก 100%</div>
+            </div>
+            <div class="card-item">
+              <div class="card-emoji">⭐</div>
+              <div class="card-name">บวกคะแนน</div>
+              <div class="card-desc">รับคะแนนโบนัสพิเศษทันที</div>
+            </div>
+            <div class="card-item">
+              <div class="card-emoji">💊</div>
+              <div class="card-name">Resurrection</div>
+              <div class="card-desc">ฟื้นฟูคะแนนกลับเป็น 0 หากติดลบ</div>
+            </div>
+            <div class="card-item">
+              <div class="card-emoji">⚔</div>
+              <div class="card-name">โจมตี</div>
+              <div class="card-desc">หักคะแนนทีมเป้าหมาย -8</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-function closeMarket(){
-  document.getElementById('mkt-overlay').classList.add('hidden');
-  // After market, show a question for checkpoint
-  showQuestion(pendingMarket,'checkpoint');
-  pendingMarket = null;
-}
+    <!-- PAGE: QUESTIONS -->
+    <div class="page" id="page-questions">
+      <div class="qbank-wrap">
+        <div class="qb-filters">
+          <button class="qbf-btn active" onclick="filterQ('all',this)">ทั้งหมด</button>
+          <button class="qbf-btn" onclick="filterQ('normal',this)">ข้อธรรมดา</button>
+          <button class="qbf-btn" onclick="filterQ('extra',this)">ข้อ Extra</button>
+          <button class="qbf-btn" onclick="filterQ('anatomy',this)">กายวิภาค</button>
+          <button class="qbf-btn" onclick="filterQ('physio',this)">สรีรวิทยา</button>
+          <button class="qbf-btn" onclick="filterQ('pharma',this)">เภสัชวิทยา</button>
+          <button class="qbf-btn" onclick="filterQ('clinical',this)">คลินิก</button>
+        </div>
+        <div class="question-list" id="question-list"></div>
+      </div>
+    </div>
 
-/* ====== TURN MANAGEMENT ====== */
-function endTurn(){
-  updateUI();
-  currentTurn = 1 - currentTurn;
-  document.getElementById('roll-btn').disabled = false;
-  updateUI();
-}
+  </div><!-- end .app -->
+  <div id="modal-root"></div>
 
-/* ====== WIN ====== */
-function showWin(){
-  const p = players[currentTurn];
-  document.getElementById('win-name').textContent = `${p.icon} ${p.name} ชนะ!`;
-  const scores = document.getElementById('win-scores');
-  scores.innerHTML = players.map(pl=>
-    `<div class="score-row"><span>${pl.icon} ${pl.name}</span><span>${pl.score} คะแนน | ${pl.coins} ☥ Ankh</span></div>`
-  ).join('');
-  document.getElementById('win-overlay').classList.remove('hidden');
-}
+  <script>
+    const TEAMS = [
+      { name: 'ทีม 1', color: 'blue', score: 0, cards: { def: 0, atk: 0, bomb: 0, x2: 0, x3: 0, bonus: 0, res: 0 }, defaultCards: [], eliminated: false, status: '' },
+      { name: 'ทีม 2', color: 'teal', score: 0, cards: { def: 0, atk: 0, bomb: 0, x2: 0, x3: 0, bonus: 0, res: 0 }, defaultCards: [], eliminated: false, status: '' },
+      { name: 'ทีม 3', color: 'amber', score: 0, cards: { def: 0, atk: 0, bomb: 0, x2: 0, x3: 0, bonus: 0, res: 0 }, defaultCards: [], eliminated: false, status: '' },
+      { name: 'ทีม 4', color: 'red', score: 0, cards: { def: 0, atk: 0, bomb: 0, x2: 0, x3: 0, bonus: 0, res: 0 }, defaultCards: [], eliminated: false, status: '' }
+    ];
+    const COLORS = { blue: '#3b82f6', teal: '#14b8a6', amber: '#f59e0b', red: '#ef4444' };
+    const PHASES = { answer: 120, reveal: 270, appeal: 60 };
+    const SCORES = { normal: 10, first: 13, extra: 15, atk: -8, bomb: -10 };
+    let G = { cycle: 1, qInCycle: 0, isExtra: false, phase: 'answer', timerVal: 120, timerOn: false, timerInt: null, first: null, answered: [], atkPending: [], defPending: [] };
+    let LOG = [];
+    let timerMax = 120;
 
-/* ====== INIT ====== */
-initBoard();
-document.getElementById('perk-team-label').textContent = `${players[0].name} — เลือกความเชี่ยวชาญ`;
-updateUI();
-</script>   
+    const QUESTIONS = [
+      { id: 1, type: 'normal', cat: 'physio', tags: ['สรีรวิทยา', 'หัวใจ'], q: 'ค่า Cardiac Output ปกติในผู้ใหญ่คือเท่าใด และคำนวณจากตัวแปรใดบ้าง?', a: 'CO = HR × SV ปกติประมาณ 4–8 L/min (ประมาณ 5 L/min)', extra: 'Heart Rate ~70 bpm × Stroke Volume ~70 mL = ~4,900 mL/min ≈ 5 L/min' },
+      { id: 2, type: 'normal', cat: 'anatomy', tags: ['กายวิภาค', 'ข้อ'], q: 'เส้นประสาทใดที่ผ่าน Carpal Tunnel และอาการหลักของ Carpal Tunnel Syndrome คืออะไร?', a: 'เส้นประสาท Median Nerve ผ่าน Carpal Tunnel', extra: 'อาการ: ชา/เจ็บนิ้ว 1-3 และครึ่งนิ้ว 4 (lateral) มักแย่ลงตอนกลางคืน' },
+      { id: 3, type: 'normal', cat: 'pharma', tags: ['เภสัชวิทยา', 'ยาปฏิชีวนะ'], q: 'ยา Penicillin ออกฤทธิ์โดยการยับยั้งขั้นตอนใดของการสร้างผนังเซลล์แบคทีเรีย?', a: 'ยับยั้ง Transpeptidase (Penicillin-binding proteins) ทำให้ไม่เกิด Cross-linking ของ Peptidoglycan', extra: 'beta-lactam ring จับกับ PBP → ขัดขวาง final cross-linking → Cell lysis' },
+      { id: 4, type: 'extra', cat: 'clinical', tags: ['คลินิก', 'Extra'], q: 'ผู้ป่วยชาย 55 ปี เจ็บหน้าอกเฉียบพลัน ECG แสดง ST elevation ใน lead II, III, aVF ระบุ: ส่วนใดของหัวใจขาดเลือด และหลอดเลือดใดอุดตัน?', a: 'Inferior MI — หลอดเลือด RCA (Right Coronary Artery) อุดตัน', extra: 'ST elevation II, III, aVF → RCA territory. มักพบ Right ventricular infarction ร่วมด้วย' },
+      { id: 5, type: 'normal', cat: 'physio', tags: ['สรีรวิทยา', 'ไต'], q: 'ฮอร์โมน ADH (Vasopressin) ส่งผลต่อการทำงานของไตอย่างไร และถูกหลั่งจากที่ใด?', a: 'ADH หลั่งจาก Posterior pituitary — เพิ่มการดูดซึมน้ำที่ Collecting duct โดยกระตุ้น Aquaporin-2', extra: 'ถูกกระตุ้นโดย: hyperosmolality, hypovolemia. เป้าหมาย: V2 receptor' },
+      { id: 6, type: 'normal', cat: 'anatomy', tags: ['กายวิภาค', 'ระบบประสาท'], q: 'Circle of Willis ประกอบด้วยหลอดเลือดอะไรบ้าง และมีความสำคัญอย่างไร?', a: 'ACA, MCA, PCA, ICA, Basilar artery เชื่อมด้วย Anterior communicating และ Posterior communicating arteries', extra: 'หน้าที่: เป็น collateral circulation ของสมอง' },
+      { id: 7, type: 'normal', cat: 'clinical', tags: ['คลินิก', 'ฉุกเฉิน'], q: 'ขั้นตอนการทำ ABCDE Assessment ในผู้ป่วยอุบัติเหตุ แต่ละตัวอักษรหมายถึงอะไร?', a: 'A=Airway, B=Breathing, C=Circulation, D=Disability (neuro), E=Exposure', extra: 'ทำตามลำดับอย่างเคร่งครัด — ถ้า A ไม่ผ่านให้แก้ก่อนทุกอย่าง' },
+      { id: 8, type: 'extra', cat: 'pharma', tags: ['เภสัชวิทยา', 'Extra'], q: 'ยา Warfarin ออกฤทธิ์โดยการยับยั้งอะไร? Antidote คืออะไร? และทำไมต้องใช้เวลาหลายวันก่อนเห็นผล?', a: 'ยับยั้ง Vitamin K epoxide reductase → ลด Vitamin K-dependent factors (II,VII,IX,X). Antidote = Vitamin K / FFP', extra: 'factor VII t½ ~6h สั้นสุด จึงเห็นผลก่อน ระยะเวลาเต็มฤทธิ์ ~3-5 วัน' },
+      { id: 9, type: 'normal', cat: 'physio', tags: ['สรีรวิทยา', 'ปอด'], q: 'อธิบาย V/Q ratio ปกติและความผิดปกติที่เกิดขึ้นใน Pulmonary Embolism', a: 'V/Q ปกติ ≈ 0.8. ใน PE: ventilation ปกติแต่ perfusion ลด → V/Q สูงขึ้น (dead space เพิ่ม)', extra: 'Shunt: V/Q→0. Dead space: V/Q→∞ (PE). ผล ABG: hypoxemia, hypocapnia' },
+      { id: 10, type: 'normal', cat: 'anatomy', tags: ['กายวิภาค', 'ช่องท้อง'], q: 'Appendix มักตั้งอยู่ที่จุด McBurney point ซึ่งอยู่ที่ตำแหน่งใด?', a: '1/3 ของระยะทางจาก ASIS (Anterior Superior Iliac Spine) ถึงสะดือ บริเวณ RIF', extra: 'McBurney sign: กด แล้วเจ็บที่จุดนี้ → บ่งชี้ appendicitis' },
+      { id: 11, type: 'normal', cat: 'clinical', tags: ['คลินิก', 'เด็ก'], q: 'วัคซีน MMR ป้องกันโรคใดบ้าง และให้ตอนอายุเท่าไหร่ตามแผนการสร้างเสริมภูมิคุ้มกัน EPI ของไทย?', a: 'MMR = Measles (หัด), Mumps (คางทูม), Rubella (หัดเยอรมัน). ให้ตอนอายุ 9-12 เดือน และ 2.5 ปี', extra: 'Live attenuated vaccine ห้ามให้ใน immunocompromised' },
+      { id: 12, type: 'extra', cat: 'clinical', tags: ['คลินิก', 'Extra'], q: 'ผู้ป่วยหญิง 28 ปี มีไข้ ปวดศีรษะรุนแรง คอแข็ง และมี petechial rash ทั่วตัว วินิจฉัยคือโรคใด และ empirical treatment คืออะไร?', a: 'Bacterial Meningitis (สงสัย Neisseria meningitidis) — รักษาด้วย Ceftriaxone 2g IV q12h + Dexamethasone', extra: 'Kernig / Brudzinski sign บ่งชี้ meningitis. Petechial rash = meningococcemia' },
+      { id: 13, type: 'normal', cat: 'pharma', tags: ['เภสัชวิทยา', 'ความดัน'], q: 'ยา ACE Inhibitor ออกฤทธิ์อย่างไร และผลข้างเคียงที่พบบ่อยที่สุดคืออะไร?', a: 'ยับยั้ง ACE → ลดการสร้าง Angiotensin II → ลดความดันโลหิต. ผลข้างเคียงที่พบบ่อย: ไอแห้ง (Bradykinin สะสม)', extra: 'Contraindication: ตั้งครรภ์. ถ้าไม่ทนผลข้างเคียง ให้เปลี่ยนเป็น ARB' },
+      { id: 14, type: 'normal', cat: 'physio', tags: ['สรีรวิทยา', 'ระบบประสาท'], q: 'อธิบายกลไก Action Potential ในเซลล์ประสาท พร้อมระบุบทบาทของ Na+ และ K+ channel', a: 'Depolarization: Na+ ไหลเข้า → Repolarization: K+ ไหลออก → Hyperpolarization → Return to resting potential', extra: 'Threshold: -55 mV. Resting: -70 mV. Peak: +30 mV' },
+      { id: 15, type: 'normal', cat: 'clinical', tags: ['คลินิก', 'ฉุกเฉิน'], q: 'ภาวะ Diabetic Ketoacidosis (DKA) เกิดขึ้นได้อย่างไร และ 3 สิ่งที่ต้องรีบแก้ไขคืออะไร?', a: 'ขาด insulin → lipolysis → ketone bodies → acidosis. แก้ไข: 1) IV fluid, 2) Insulin, 3) Electrolytes (K+)', extra: 'DKA Triad: hyperglycemia >250, AG metabolic acidosis, ketonemia/ketonuria' },
+      { id: 16, type: 'extra', cat: 'anatomy', tags: ['กายวิภาค', 'Extra'], q: 'อธิบาย Dermatome ของเส้นประสาท L4, L5, S1 และบอกว่าหากมีอาการชาบริเวณใด บ่งชี้ว่ามีปัญหาที่ระดับใด?', a: 'L4: หน้าแข้ง/ข้อเท้าด้านใน, L5: หลังเท้า/นิ้วกลาง, S1: ส้นเท้า/ฝ่าเท้าด้านนอก', extra: 'L4: Reflex: patellar. L5: ขยับนิ้วเท้าขึ้น. S1: Reflex: Achilles' }
+    ];
+
+    let currentFilter = 'all';
+
+    function filterQ(f, btn) {
+      currentFilter = f;
+      document.querySelectorAll('.qbf-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderQuestions();
+    }
+
+    function renderQuestions() {
+      const list = document.getElementById('question-list');
+      const filtered = QUESTIONS.filter(q => {
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'normal') return q.type === 'normal';
+        if (currentFilter === 'extra') return q.type === 'extra';
+        return q.cat === currentFilter;
+      });
+      list.innerHTML = filtered.map(q => {
+        const typeBadge = q.type === 'extra' ? `<span class="qi-tag" style="background:var(--amber-dim);color:#fcd34d;border-color:rgba(245,158,11,0.25)">⭐ Extra</span>` : `<span class="qi-tag" style="background:var(--blue-dim);color:#93c5fd;border-color:rgba(59,130,246,0.25)">ธรรมดา</span>`;
+        const catColors = { anatomy: 'var(--green-dim),#86efac,rgba(34,197,94,0.2)', physio: 'var(--blue-dim),#93c5fd,rgba(59,130,246,0.2)', pharma: 'var(--purple-dim),#d8b4fe,rgba(168,85,247,0.2)', clinical: 'var(--red-dim),#fca5a5,rgba(239,68,68,0.2)' };
+        const cc = (catColors[q.cat] || 'rgba(255,255,255,0.05),var(--text2),rgba(255,255,255,0.1)').split(',');
+        const catTag = `<span class="qi-tag" style="background:${cc[0]};color:${cc[1]};border-color:${cc[2]}">${q.tags[1] || q.cat}</span>`;
+        return `<div class="qitem" id="qi-${q.id}" onclick="toggleQ(${q.id})">
+      <div class="qi-top">
+        <div class="qi-num" style="background:rgba(59,130,246,0.1);color:#93c5fd;border-color:rgba(59,130,246,0.2)">${String(q.id).padStart(2, '0')}</div>
+        <div class="qi-meta"><div class="qi-tags">${typeBadge}${catTag}</div><div class="qi-q">${q.q}</div></div>
+        <div class="qi-expand" id="qex-${q.id}">›</div>
+      </div>
+      <div class="qi-answer" id="qa-${q.id}">
+        <div class="ans-label">เฉลย</div>
+        <div class="ans-text">${q.a}</div>
+        ${q.extra ? `<div class="ans-extra">${q.extra}</div>` : ''}
+        <button class="qi-use-btn" onclick="event.stopPropagation();useQuestion(${q.id})">📋 นำไปใช้ในเกม</button>
+      </div>
+    </div>`;
+      }).join('');
+    }
+
+    function toggleQ(id) {
+      const ans = document.getElementById('qa-' + id);
+      const ex = document.getElementById('qex-' + id);
+      const item = document.getElementById('qi-' + id);
+      const isOpen = ans.classList.contains('show');
+      ans.classList.toggle('show', !isOpen);
+      ex.classList.toggle('open', !isOpen);
+      item.classList.toggle('expanded', !isOpen);
+    }
+
+    function useQuestion(id) {
+      const q = QUESTIONS.find(x => x.id === id);
+      if (!q) return;
+      document.getElementById('q-body').textContent = q.q;
+      document.getElementById('q-hint').textContent = 'หมวด: ' + q.tags.join(' | ');
+      document.getElementById('live-q-text').textContent = q.q;
+      document.getElementById('live-q-hint').textContent = 'หมวด: ' + q.tags.join(' | ');
+      showPage('game');
+      addLog(`📋 โหลดคำถาม #${q.id}: ${q.q.substring(0, 30)}...`);
+    }
+
+    /* ===== GAME LOGIC ===== */
+    function initTeams() {
+      TEAMS.forEach(t => { t.score = 0; t.cards = { def: 0, atk: 0, bomb: 0, x2: 0, x3: 0, bonus: 0, res: 0 }; t.eliminated = false; t.status = ''; t.defaultCards = []; });
+    }
+
+    function init() {
+      initTeams();
+      G = { cycle: 1, qInCycle: 0, isExtra: false, phase: 'answer', timerVal: 120, timerOn: false, timerInt: null, first: null, answered: [], atkPending: [], defPending: [] };
+      timerMax = 120;
+      LOG = [];
+      renderAll();
+      openSetupModal();
+    }
+
+    function renderAll() { renderTeams(); renderDots(); renderAnswerGrid(); updateLabels(); renderLog(); renderCardResolve(); renderLive(); }
+
+    function tc(c) { return COLORS[c] || '#888' }
+
+    function renderTeams() {
+      const g = document.getElementById('teams-grid');
+      const sorted = [...TEAMS].map((t, i) => ({ ...t, idx: i })).sort((a, b) => b.score - a.score);
+      const rankMap = {}; sorted.forEach((t, r) => { rankMap[t.idx] = r + 1; });
+      g.innerHTML = TEAMS.map((t, i) => `
+  <div class="team-card tc-${t.color}" id="tc-${i}">
+    <div class="team-rank">#${rankMap[i]}</div>
+    <div class="team-name c-${t.color}">${t.name}</div>
+    <div class="team-score">${t.score}<span class="score-unit">pts</span></div>
+    <div class="cards-row">${renderChips(t)}</div>
+    <div class="team-status" id="tst-${i}">${t.status}</div>
+    <button class="btn-rename" onclick="editName(${i})">✎ เปลี่ยนชื่อ</button>
+  </div>`).join('');
+    }
+
+    function renderChips(t) {
+      let h = '';
+      if (t.cards.def > 0) h += `<span class="chip chip-def">🛡×${t.cards.def}</span>`;
+      if (t.cards.atk > 0) h += `<span class="chip chip-atk">⚔×${t.cards.atk}</span>`;
+      if (t.cards.bomb > 0) h += `<span class="chip chip-bomb">💣×${t.cards.bomb}</span>`;
+      if (t.cards.x2 > 0) h += `<span class="chip chip-x2">×2</span>`;
+      if (t.cards.x3 > 0) h += `<span class="chip chip-x3">×3</span>`;
+      if (t.cards.bonus > 0) h += `<span class="chip chip-bonus">⭐×${t.cards.bonus}</span>`;
+      if (t.cards.res > 0) h += `<span class="chip chip-res">💊×${t.cards.res}</span>`;
+      if (!h) h = `<span style="font-size:10px;color:var(--text3)">ไม่มีการ์ด</span>`;
+      return h;
+    }
+
+    function renderDots() {
+      const d = document.getElementById('cycle-dots');
+      let h = '';
+      for (let c = 1; c <= 4; c++) {
+        for (let q = 0; q < 4; q++) {
+          const isEx = q === 3;
+          const gq = (c - 1) * 4 + q;
+          const cur = (G.cycle - 1) * 4 + G.qInCycle;
+          let cls = 'dot';
+          if (gq < cur) cls += ' done';
+          else if (gq === cur) cls += isEx ? ' extra current' : ' current';
+          else if (isEx) cls += ' extra';
+          h += `<div class="${cls}">${isEx ? '★' : q + 1}</div>`;
+        }
+      }
+      d.innerHTML = h;
+    }
+
+    function renderAnswerGrid() {
+      const g = document.getElementById('answer-grid');
+      g.innerHTML = TEAMS.map((t, i) => {
+        let cls = 'ans-btn';
+        if (G.first === i) cls += ' first';
+        else if (G.answered.includes(i)) cls += ' correct';
+        const label = G.first === i ? ' 🥇' : G.answered.includes(i) ? ' ✓' : '';
+        return `<button class="${cls}" onclick="markAnswer(${i})">${t.name}${label}</button>`;
+      }).join('');
+    }
+
+    function markAnswer(ti) {
+      if (G.isExtra) { markExtra(ti); return; }
+      if (G.answered.includes(ti)) return;
+      if (G.first === null) {
+        G.first = ti;
+        addScore(ti, SCORES.first);
+        addLog(`🥇 ${TEAMS[ti].name} ตอบก่อน! +${SCORES.first}`);
+        showLiveOverlay('first', ti, SCORES.first);
+      } else {
+        addScore(ti, SCORES.normal);
+        addLog(`✓ ${TEAMS[ti].name} ตอบถูก +${SCORES.normal}`);
+        showLiveOverlay('correct', ti, SCORES.normal);
+      }
+      G.answered.push(ti);
+      renderAnswerGrid(); renderTeams(); renderLiveAnswers(); renderLiveScores();
+    }
+
+    function markExtra(ti) {
+      addScore(ti, SCORES.extra);
+      addLog(`⭐ ${TEAMS[ti].name} ชนะ Extra! +${SCORES.extra}`);
+      showLiveOverlay('extra', ti, SCORES.extra);
+      openExtraCardModal(ti);
+      renderAnswerGrid(); renderTeams(); renderLiveScores();
+    }
+
+    function updateLabels() {
+      const qn = G.qInCycle + 1;
+      const gq = (G.cycle - 1) * 4 + qn;
+      const isEx = G.isExtra;
+      document.getElementById('lbl-cycle').textContent = `Cycle ${G.cycle} / 4`;
+      document.getElementById('lbl-q').textContent = `ข้อที่ ${gq} / 16`;
+      document.getElementById('lbl-qtype').textContent = isEx ? 'Extra ⭐' : 'ข้อธรรมดา';
+      document.getElementById('lbl-phase').textContent = G.phase === 'answer' ? '⏱ ตอบ' : G.phase === 'reveal' ? '📖 เฉลย' : '⚖ อุทธรณ์';
+      document.getElementById('q-title').textContent = `ข้อที่ ${gq} — ${isEx ? 'Extra ⭐' : 'ธรรมดา'}`;
+      document.getElementById('q-sub').textContent = `CYCLE ${G.cycle} | Q${isEx ? 'Extra' : qn} OF ${isEx ? 1 : 3}`;
+      ['answer', 'reveal', 'appeal'].forEach(p => {
+        document.getElementById('ph-' + p).classList.toggle('active', G.phase === p);
+      });
+    }
+
+    function setPhase(p) {
+      clearInterval(G.timerInt); G.timerOn = false;
+      G.phase = p; G.timerVal = PHASES[p]; timerMax = PHASES[p];
+      updateLabels(); updateTimer();
+      document.getElementById('btn-timer').textContent = '▶ เริ่มจับเวลา';
+      document.getElementById('live-btn-timer').textContent = '▶ เริ่ม';
+      document.getElementById('timer-lbl').textContent = p === 'answer' ? 'เวลาตอบ' : p === 'reveal' ? 'เวลาเฉลย' : 'เวลาอุทธรณ์';
+      document.getElementById('live-timer-phase').textContent = p === 'answer' ? 'ตอบ' : p === 'reveal' ? 'เฉลย' : 'อุทธรณ์';
+      updateLiveTimer(); updateLivePhase();
+    }
+
+    function updateTimer() {
+      const m = Math.floor(G.timerVal / 60), s = G.timerVal % 60;
+      const el = document.getElementById('timer');
+      el.textContent = `${m}:${String(s).padStart(2, '0')}`;
+      el.className = 'timer' + (G.timerVal <= 10 ? ' danger' : G.timerVal <= 30 ? ' warn' : '');
+      updateLiveTimer();
+    }
+
+    function updateLiveTimer() {
+      const m = Math.floor(G.timerVal / 60), s = G.timerVal % 60;
+      const lel = document.getElementById('live-timer');
+      if (!lel) return;
+      lel.textContent = `${m}:${String(s).padStart(2, '0')}`;
+      lel.className = 'live-timer' + (G.timerVal <= 10 ? ' danger' : G.timerVal <= 30 ? ' warn' : '');
+      // arc
+      const arc = document.getElementById('live-arc');
+      if (!arc) return;
+      const circ = 263.9;
+      const frac = G.timerVal / timerMax;
+      arc.style.strokeDashoffset = circ * (1 - frac);
+      arc.setAttribute('stroke', G.timerVal <= 10 ? '#ef4444' : G.timerVal <= 30 ? '#f59e0b' : '#3b82f6');
+    }
+
+    function updateLivePhase() {
+      ['answer', 'reveal', 'appeal'].forEach(p => {
+        const el = document.getElementById('live-ph-' + p);
+        if (el) el.classList.toggle('active', G.phase === p);
+      });
+    }
+
+    function toggleTimer() {
+      if (G.timerOn) {
+        clearInterval(G.timerInt); G.timerOn = false;
+        document.getElementById('btn-timer').textContent = '▶ เริ่มจับเวลา';
+        document.getElementById('live-btn-timer').textContent = '▶ เริ่ม';
+      } else {
+        G.timerOn = true;
+        document.getElementById('btn-timer').textContent = '⏸ หยุด';
+        document.getElementById('live-btn-timer').textContent = '⏸ หยุด';
+        G.timerInt = setInterval(() => {
+          if (G.timerVal > 0) { G.timerVal--; updateTimer(); }
+          else {
+            clearInterval(G.timerInt); G.timerOn = false;
+            document.getElementById('btn-timer').textContent = '▶ เริ่มจับเวลา';
+            document.getElementById('live-btn-timer').textContent = '▶ เริ่ม';
+            addLog(`⏰ หมดเวลา ${G.phase === 'answer' ? 'ตอบ' : G.phase === 'reveal' ? 'เฉลย' : 'อุทธรณ์'}`);
+            if (G.phase === 'answer') showLiveOverlay('timeout');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(G.timerInt); G.timerOn = false;
+      G.timerVal = PHASES[G.phase]; timerMax = PHASES[G.phase]; updateTimer();
+      document.getElementById('btn-timer').textContent = '▶ เริ่มจับเวลา';
+      document.getElementById('live-btn-timer').textContent = '▶ เริ่ม';
+    }
+
+    function nextQuestion() {
+      clearInterval(G.timerInt); G.timerOn = false;
+      G.first = null; G.answered = [];
+      if (!G.isExtra && G.qInCycle < 2) { G.qInCycle++; }
+      else if (!G.isExtra && G.qInCycle === 2) {
+        G.isExtra = true; G.qInCycle = 3;
+        addLog(`⭐ ข้อ Extra — Cycle ${G.cycle}`);
+        showLiveOverlay('extra_announce');
+      } else {
+        if (G.cycle < 4) {
+          G.cycle++; G.qInCycle = 0; G.isExtra = false;
+          addLog(`━━ เริ่ม Cycle ${G.cycle} ━━`);
+          showLiveOverlay('new_cycle');
+        } else {
+          addLog('🏁 จบเกม!'); showFinal(); return;
+        }
+      }
+      G.phase = 'answer'; G.timerVal = 120; timerMax = 120;
+      updateTimer(); updateLabels(); renderDots(); renderAnswerGrid();
+      document.getElementById('btn-timer').textContent = '▶ เริ่มจับเวลา';
+      document.getElementById('live-btn-timer').textContent = '▶ เริ่ม';
+      document.getElementById('q-body').textContent = G.isExtra ? '⭐ ข้อ Extra — ทีมที่ Steal เร็วที่สุดมีสิทธิ์ตอบ' : 'กด ▶ เริ่มจับเวลา เพื่อเริ่มรอบตอบ';
+      document.getElementById('q-hint').textContent = '';
+      document.getElementById('live-q-text').textContent = G.isExtra ? '⭐ ข้อ Extra — ทีมที่ Steal เร็วที่สุดมีสิทธิ์ตอบ' : 'รอโจทย์...';
+      document.getElementById('live-q-hint').textContent = '';
+      renderLive();
+    }
+
+    function addScore(ti, pts) {
+      TEAMS[ti].score += pts; renderTeams();
+      const tcard = document.getElementById('tc-' + ti);
+      if (tcard) {
+        const el = document.createElement('div');
+        el.className = 'score-float'; el.textContent = (pts > 0 ? '+' : '') + pts;
+        el.style.color = pts > 0 ? '#86efac' : '#fca5a5';
+        tcard.appendChild(el); setTimeout(() => el.remove(), 1400);
+      }
+      renderLiveScores();
+    }
+
+    function addLog(msg) {
+      const now = new Date();
+      LOG.unshift(`[${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}] ${msg}`);
+      if (LOG.length > 40) LOG.pop();
+      renderLog(); renderLiveLog();
+    }
+
+    function renderLog() {
+      const la = document.getElementById('log-area');
+      la.innerHTML = LOG.map(l => `<div class="log-item">${l}</div>`).join('');
+    }
+
+    function renderCardResolve() {
+      const el = document.getElementById('card-resolve-area');
+      if (G.atkPending.length === 0) { el.innerHTML = `<span style="color:var(--text3);font-size:10px">ยังไม่มีการ์ดรอสรุป</span>`; }
+      else { el.innerHTML = G.atkPending.map(a => `<div class="atk-item">⚔ ${TEAMS[a.from].name} → ${TEAMS[a.to].name}</div>`).join(''); }
+    }
+
+    function resolveCards() {
+      if (G.atkPending.length === 0) { addLog('ไม่มีการ์ดโจมตีรอสรุป'); return; }
+      G.atkPending.forEach(a => {
+        const def = TEAMS[a.to];
+        const shieldIdx = G.defPending.findIndex(d => d.ti === a.to);
+        if (shieldIdx >= 0) {
+          addLog(`🛡 ${def.name} ป้องกันการโจมตีจาก ${TEAMS[a.from].name}!`);
+          G.defPending.splice(shieldIdx, 1);
+          if (def.cards.def > 0) def.cards.def--;
+          showLiveOverlay('shield', a.to);
+        } else {
+          addScore(a.to, SCORES.atk);
+          addLog(`⚔ ${TEAMS[a.from].name} โจมตี ${def.name} ${SCORES.atk}`);
+          showLiveOverlay('attack', a.to, SCORES.atk);
+        }
+      });
+      G.atkPending = []; G.defPending = [];
+      renderCardResolve(); renderTeams();
+    }
+
+    /* ===== LIVE DISPLAY ===== */
+    function renderLive() {
+      renderLiveScores(); renderLiveDots(); renderLiveAnswers(); renderLiveLog(); renderLiveLabels(); updateLiveTimer(); updateLivePhase();
+    }
+
+    function renderLiveLabels() {
+      const qn = G.qInCycle + 1;
+      const gq = (G.cycle - 1) * 4 + qn;
+      const isEx = G.isExtra;
+      const el = id => document.getElementById(id);
+      if (el('live-lbl-cycle')) el('live-lbl-cycle').textContent = `Cycle ${G.cycle} / 4`;
+      if (el('live-lbl-q')) el('live-lbl-q').textContent = `ข้อที่ ${gq} / 16`;
+      if (el('live-lbl-qtype')) el('live-lbl-qtype').textContent = isEx ? 'Extra ⭐' : 'ข้อธรรมดา';
+      if (el('live-lbl-phase')) el('live-lbl-phase').textContent = G.phase === 'answer' ? '⏱ ตอบ' : G.phase === 'reveal' ? '📖 เฉลย' : '⚖ อุทธรณ์';
+      if (el('live-q-number')) el('live-q-number').textContent = `CYCLE ${G.cycle} • ข้อที่ ${isEx ? 'Extra' : qn} ${isEx ? '' : 'จาก 3'}`;
+      if (el('live-q-typebadge')) {
+        el('live-q-typebadge').innerHTML = isEx
+          ? `<span class="lq-type-badge" style="background:rgba(245,158,11,0.2);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)">⭐ Extra — Steal</span>`
+          : `<span class="lq-type-badge" style="background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.25)">ข้อธรรมดา</span>`;
+      }
+      const qtxt = document.getElementById('q-body');
+      if (qtxt && el('live-q-text') && !el('live-q-text').dataset.custom) {
+        el('live-q-text').textContent = qtxt.textContent;
+      }
+    }
+
+    function renderLiveScores() {
+      const g = document.getElementById('live-scores');
+      if (!g) return;
+      const sorted = [...TEAMS].map((t, i) => ({ ...t, idx: i })).sort((a, b) => b.score - a.score);
+      const rankMap = {}; sorted.forEach((t, r) => { rankMap[t.idx] = r + 1; });
+      const maxScore = Math.max(...TEAMS.map(t => t.score), 1);
+      g.innerHTML = TEAMS.map((t, i) => {
+        const barW = Math.max(Math.round((t.score / maxScore) * 100), 2);
+        let chips = '';
+        if (t.cards.def > 0) chips += `<span class="ls-chip chip-def">🛡×${t.cards.def}</span>`;
+        if (t.cards.atk > 0) chips += `<span class="ls-chip chip-atk">⚔×${t.cards.atk}</span>`;
+        if (t.cards.bomb > 0) chips += `<span class="ls-chip chip-bomb">💣×${t.cards.bomb}</span>`;
+        if (t.cards.x2 > 0) chips += `<span class="ls-chip chip-x2">×2</span>`;
+        if (t.cards.x3 > 0) chips += `<span class="ls-chip chip-x3">×3</span>`;
+        if (t.cards.res > 0) chips += `<span class="ls-chip chip-res">💊×${t.cards.res}</span>`;
+        return `<div class="ls-card tc-${t.color}" id="lsc-${i}">
+      <div class="ls-rank">#${rankMap[i]}</div>
+      <div class="ls-name c-${t.color}">${t.name}</div>
+      <div class="ls-score-row"><span class="ls-score" style="color:${tc(t.color)}">${t.score}</span><span class="ls-unit">pts</span></div>
+      <div class="ls-bar-wrap"><div class="ls-bar tc-${t.color}" style="width:${barW}%"></div></div>
+      <div class="ls-cards">${chips || '<span style="font-size:9px;color:var(--text3)">ไม่มีการ์ด</span>'}</div>
+    </div>`;
+      }).join('');
+    }
+
+    function renderLiveDots() {
+      const d = document.getElementById('live-dots');
+      if (!d) return;
+      let h = '';
+      for (let c = 1; c <= 4; c++) {
+        for (let q = 0; q < 4; q++) {
+          const isEx = q === 3;
+          const gq = (c - 1) * 4 + q;
+          const cur = (G.cycle - 1) * 4 + G.qInCycle;
+          let cls = 'lp-dot';
+          if (gq < cur) cls += ' done';
+          else if (gq === cur) cls += isEx ? ' ex cur' : ' cur';
+          else if (isEx) cls += ' ex';
+          h += `<div class="${cls}">${isEx ? '★' : q + 1}</div>`;
+        }
+      }
+      d.innerHTML = h;
+    }
+
+    function renderLiveAnswers() {
+      const g = document.getElementById('live-answer-grid');
+      if (!g) return;
+      g.innerHTML = TEAMS.map((t, i) => {
+        let cls = 'la-card';
+        let mark = '';
+        if (G.first === i) { cls += ' first'; mark = '🥇 ตอบก่อน!'; }
+        else if (G.answered.includes(i)) { cls += ' correct'; mark = '✓ ถูก'; }
+        return `<div class="${cls}"><div class="la-name" style="color:${tc(t.color)}">${t.name}</div><div class="la-mark">${mark}</div></div>`;
+      }).join('');
+    }
+
+    function renderLiveLog() {
+      const el = document.getElementById('live-log');
+      if (!el) return;
+      el.innerHTML = LOG.slice(0, 8).map(l => `<div class="lf-item">${l}</div>`).join('');
+    }
+
+    /* ===== LIVE OVERLAYS ===== */
+    let overlayTimer = null;
+
+    function showLiveOverlay(type, ti, pts) {
+      const el = document.getElementById('live-overlay');
+      if (!el) return;
+      clearTimeout(overlayTimer);
+      el.style.display = 'flex';
+
+      let html = '';
+      if (type === 'first' && ti !== undefined) {
+        const t = TEAMS[ti];
+        html = `<div class="live-overlay-card">
+      <span class="overlay-emoji">🥇</span>
+      <div class="overlay-title" style="color:${tc(t.color)}">${t.name}</div>
+      <div class="overlay-sub">ตอบถูกเป็นทีมแรก!</div>
+      <div class="overlay-score" style="color:#d8b4fe">+${pts}</div>
+      ${burst(6, '#d8b4fe')}
+    </div>`;
+      } else if (type === 'correct' && ti !== undefined) {
+        const t = TEAMS[ti];
+        html = `<div class="live-overlay-card">
+      <span class="overlay-emoji">✅</span>
+      <div class="overlay-title" style="color:${tc(t.color)}">${t.name}</div>
+      <div class="overlay-sub">ตอบถูก!</div>
+      <div class="overlay-score" style="color:#86efac">+${pts}</div>
+    </div>`;
+      } else if (type === 'extra' && ti !== undefined) {
+        const t = TEAMS[ti];
+        html = `<div class="live-overlay-card">
+      <span class="overlay-emoji">⭐</span>
+      <div class="overlay-title" style="color:#fcd34d">${t.name} ชนะ Extra!</div>
+      <div class="overlay-sub">รับการ์ดพิเศษ</div>
+      <div class="overlay-score" style="color:#fcd34d">+${pts}</div>
+      ${burst(8, '#fcd34d')}
+    </div>`;
+      } else if (type === 'extra_announce') {
+        html = `<div class="live-overlay-card">
+      <span class="overlay-emoji">⚡</span>
+      <div class="overlay-title" style="color:#fcd34d">ข้อ Extra!</div>
+      <div class="overlay-sub">ทีมที่ Steal เร็วที่สุดมีสิทธิ์ตอบ</div>
+      <div class="steal-ring"></div><div class="steal-ring" style="animation-delay:0.3s"></div>
+    </div>`;
+      } else if (type === 'new_cycle') {
+        html = `<div class="live-overlay-card">
+      <span class="overlay-emoji">🔄</span>
+      <div class="overlay-title">Cycle ${G.cycle}</div>
+      <div class="overlay-sub">เริ่มรอบใหม่!</div>
+    </div>`;
+      } else if (type === 'attack' && ti !== undefined) {
+        const t = TEAMS[ti];
+        html = `<div class="live-overlay-card">
+      <span class="overlay-emoji">⚔️</span>
+      <div class="overlay-title" style="color:#fca5a5">${t.name} โดนโจมตี!</div>
+      <div class="overlay-score" style="color:#fca5a5">${pts}</div>
+    </div>`;
+      } else if (type === 'shield' && ti !== undefined) {
+        const t = TEAMS[ti];
+        html = `<div class="live-overlay-card">
+      <span class="overlay-emoji">🛡</span>
+      <div class="overlay-title" style="color:#fcd34d">${t.name} ป้องกันสำเร็จ!</div>
+      <div class="overlay-sub">การ์ดป้องกันบล็อกการโจมตี</div>
+    </div>`;
+      } else if (type === 'timeout') {
+        html = `<div class="live-overlay-card">
+      <span class="overlay-emoji">⏰</span>
+      <div class="overlay-title" style="color:#fca5a5">หมดเวลา!</div>
+      <div class="overlay-sub">สิ้นสุดช่วงตอบคำถาม</div>
+    </div>`;
+      }
+
+      el.innerHTML = html;
+      const dur = type === 'extra_announce' ? 3000 : 2200;
+      overlayTimer = setTimeout(() => { el.style.display = 'none'; el.innerHTML = ''; }, dur);
+    }
+
+    function burst(n, color) {
+      let h = '';
+      for (let i = 0; i < n; i++) {
+        const angle = (i / n) * 360;
+        const r = 60 + Math.random() * 30;
+        const tx = Math.cos(angle * Math.PI / 180) * r;
+        const ty = Math.sin(angle * Math.PI / 180) * r - 40;
+        const dur = 0.8 + Math.random() * 0.4;
+        h += `<div class="particle" style="background:${color};left:calc(50% - 4px);top:calc(50% - 4px);--tx:${tx}px;--ty:${ty}px;--dur:${dur}s;animation-delay:${Math.random() * 0.2}s"></div>`;
+      }
+      return h;
+    }
+
+    /* ===== MODALS ===== */
+    function closeModal() { document.getElementById('modal-root').innerHTML = ''; }
+    function modal(html) { document.getElementById('modal-root').innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`; }
+
+    function openSetupModal() {
+      modal(`<div class="modal-title">🏁 ตั้งค่าเริ่มต้น</div>
+  <div class="hint-text">แต่ละทีมเลือกการ์ด Default 2 ใบ (โจมตี / ป้องกัน) บังคับใช้ 1 ใบตั้งแต่เริ่มเกม</div>
+  ${TEAMS.map((t, i) => `<div style="margin-bottom:10px;padding:10px;background:var(--surface2);border-radius:10px;border:1px solid var(--border)">
+    <div style="font-size:12px;font-weight:600;color:${tc(t.color)};margin-bottom:6px">${t.name}</div>
+    <div style="display:flex;gap:12px">
+      <label class="cb-row"><input type="checkbox" id="dc-${i}-atk" onchange="toggleDC(${i},'atk',this)" checked> ⚔ โจมตี</label>
+      <label class="cb-row"><input type="checkbox" id="dc-${i}-def" onchange="toggleDC(${i},'def',this)" checked> 🛡 ป้องกัน</label>
+    </div>
+  </div>`).join('')}
+  <div class="mbtns"><button class="mb primary" onclick="confirmSetup()">🚀 เริ่มเกม!</button></div>`);
+      TEAMS.forEach(t => { t.defaultCards = ['atk', 'def']; });
+    }
+
+    function toggleDC(ti, type, el) {
+      const t = TEAMS[ti];
+      if (el.checked) { if (!t.defaultCards.includes(type)) t.defaultCards.push(type); }
+      else { t.defaultCards = t.defaultCards.filter(c => c !== type); }
+    }
+
+    function confirmSetup() {
+      TEAMS.forEach(t => {
+        t.defaultCards.forEach(c => { t.cards[c]++; });
+        addLog(`${t.name}: การ์ด ${t.defaultCards.join(', ') || 'ไม่มี'}`);
+      });
+      closeModal(); renderTeams(); renderLiveScores();
+    }
+
+    function openCardModal() {
+      modal(`<div class="modal-title">🃏 ใช้การ์ด</div>
+  <select class="mselect" id="card-user">${TEAMS.map((t, i) => `<option value="${i}">${t.name} | ⚔×${t.cards.atk} 🛡×${t.cards.def} 💣×${t.cards.bomb}</option>`).join('')}</select>
+  <div class="hint-text">เลือกประเภทการ์ดที่ต้องการใช้:</div>
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <button class="mb danger full" onclick="useCard('atk')">⚔ การ์ดโจมตี (หักคะแนนเป้าหมาย -8 สรุปท้าย Cycle)</button>
+    <button class="mb amber full" onclick="useCard('def')">🛡 การ์ดป้องกัน (รอรับการโจมตี)</button>
+    <button class="mb success full" onclick="useCard('x2')">×2 เพิ่มคะแนน +50%</button>
+    <button class="mb success full" onclick="useCard('x3')">×3 เพิ่มคะแนน +100%</button>
+    <button class="mb full" style="background:var(--surface2)" onclick="useCard('bomb')">💣 ส่งระเบิดให้ทีมอื่น</button>
+  </div>
+  <div class="mbtns"><button class="mb" onclick="closeModal()">ยกเลิก</button></div>`);
+    }
+
+    function useCard(type) {
+      const ti = parseInt(document.getElementById('card-user').value);
+      const t = TEAMS[ti];
+      if (type === 'atk') {
+        if (t.cards.atk < 1) { addLog(`${t.name}: ไม่มีการ์ดโจมตี`); return; }
+        modal(`<div class="modal-title">⚔ เลือกเป้าหมาย</div>
+    <select class="mselect" id="atk-tgt">${TEAMS.map((tt, i) => i !== ti ? `<option value="${i}">${tt.name} (${tt.score} pts)</option>` : '').join('')}</select>
+    <div class="mbtns"><button class="mb danger" onclick="confirmAtk(${ti})">โจมตี!</button><button class="mb" onclick="closeModal()">ยกเลิก</button></div>`);
+      } else if (type === 'def') {
+        if (t.cards.def < 1) { addLog(`${t.name}: ไม่มีการ์ดป้องกัน`); closeModal(); return; }
+        G.defPending.push({ ti }); addLog(`🛡 ${t.name} เตรียมการ์ดป้องกัน`); closeModal(); renderCardResolve();
+      } else if (type === 'x2') {
+        if (t.cards.x2 < 1) { addLog(`${t.name}: ไม่มีการ์ด ×2`); return; }
+        const bonus = Math.max(Math.round(t.score * 0.5), 5);
+        addScore(ti, bonus); t.cards.x2--; addLog(`×2 ${t.name} +${bonus} pts`); closeModal(); renderTeams();
+      } else if (type === 'x3') {
+        if (t.cards.x3 < 1) { addLog(`${t.name}: ไม่มีการ์ด ×3`); return; }
+        const bonus = Math.max(Math.round(t.score * 1), 5);
+        addScore(ti, bonus); t.cards.x3--; addLog(`×3 ${t.name} +${bonus} pts`); closeModal(); renderTeams();
+      } else if (type === 'bomb') {
+        if (t.cards.bomb < 1) { addLog(`${t.name}: ไม่มีการ์ดระเบิด`); return; }
+        modal(`<div class="modal-title">💣 ส่งระเบิดให้ใคร?</div>
+    <select class="mselect" id="bomb-tgt">${TEAMS.map((tt, i) => i !== ti ? `<option value="${i}">${tt.name}</option>` : '').join('')}</select>
+    <div class="hint-text">ทีมนั้นต้องตอบถูกเพื่อส่งต่อ หรือโดนหัก -10 หากตอบผิด</div>
+    <div class="mbtns"><button class="mb danger" onclick="confirmBomb(${ti})">ส่งระเบิด!</button><button class="mb" onclick="closeModal()">ยกเลิก</button></div>`);
+      }
+    }
+
+    function confirmAtk(from) {
+      const to = parseInt(document.getElementById('atk-tgt').value);
+      TEAMS[from].cards.atk--; G.atkPending.push({ from, to });
+      addLog(`⚔ ${TEAMS[from].name} → ${TEAMS[to].name} (รอสรุปท้าย Cycle)`);
+      closeModal(); renderTeams(); renderCardResolve();
+    }
+
+    function confirmBomb(from) {
+      const to = parseInt(document.getElementById('bomb-tgt').value);
+      TEAMS[from].cards.bomb--; addLog(`💣 ${TEAMS[from].name} ส่งระเบิดให้ ${TEAMS[to].name}!`);
+      TEAMS[to].status = '💣 มีระเบิด!'; closeModal(); renderTeams();
+    }
+
+    function openExtraModal() {
+      modal(`<div class="modal-title">⭐ Steal — ข้อ Extra</div>
+  <div class="hint-text">เลือกทีมที่ Steal กดปุ่มเร็วที่สุด</div>
+  <div style="display:flex;flex-direction:column;gap:6px">
+    ${TEAMS.map((t, i) => `<button class="mb full" style="border-color:${tc(t.color)}40;color:${tc(t.color)}" onclick="markAnswer(${i});closeModal()">${t.name}</button>`).join('')}
+  </div>
+  <div class="mbtns"><button class="mb" onclick="closeModal()">ปิด</button></div>`);
+    }
+
+    function openExtraCardModal(ti) {
+      const t = TEAMS[ti];
+      modal(`<div class="modal-title">🎁 ${t.name} เลือกการ์ดพิเศษ</div>
+  <div class="hint-text">รับ 1 การ์ดพิเศษ ใช้ได้ใน 3 ข้อธรรมดาของ Cycle ถัดไป</div>
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <button class="mb danger full" onclick="giveCard(${ti},'bomb')">💣 การ์ดระเบิด</button>
+    <button class="mb success full" onclick="giveCard(${ti},'x2')">×2 การ์ดบวกคะแนน ×2</button>
+    <button class="mb success full" onclick="giveCard(${ti},'x3')">×3 การ์ดบวกคะแนน ×3</button>
+    <button class="mb purple full" onclick="giveCard(${ti},'bonus')">⭐ การ์ดโบนัสคะแนน</button>
+    <button class="mb teal full" onclick="giveCard(${ti},'res')">💊 การ์ด Resurrection</button>
+    <button class="mb amber full" onclick="giveCard(${ti},'atk')">⚔ การ์ดโจมตี</button>
+  </div>`);
+    }
+
+    function giveCard(ti, type) {
+      TEAMS[ti].cards[type]++; addLog(`🎁 ${TEAMS[ti].name} ได้การ์ด ${type}`);
+      closeModal(); renderTeams(); renderLiveScores();
+    }
+
+    function openResurrection() {
+      modal(`<div class="modal-title">💊 Resurrection</div>
+  <div class="hint-text">ใช้การ์ด Resurrection ฟื้นฟูคะแนนจากติดลบกลับเป็น 0</div>
+  <select class="mselect" id="res-team">${TEAMS.map((t, i) => `<option value="${i}">${t.name} | ${t.score} pts (💊×${t.cards.res})</option>`).join('')}</select>
+  <div class="mbtns"><button class="mb teal" onclick="useResurrection()">💊 ฟื้นฟู!</button><button class="mb" onclick="closeModal()">ยกเลิก</button></div>`);
+    }
+
+    function useResurrection() {
+      const ti = parseInt(document.getElementById('res-team').value);
+      const t = TEAMS[ti];
+      if (t.cards.res < 1) { addLog(`${t.name}: ไม่มีการ์ด Resurrection`); return; }
+      t.cards.res--; t.eliminated = false;
+      const old = t.score; if (t.score < 0) t.score = 0;
+      t.status = '💚 ฟื้นฟูแล้ว'; addLog(`💊 ${t.name} Resurrection! ${old} → ${t.score} pts`);
+      showLiveOverlay('shield', ti);
+      closeModal(); renderTeams(); renderLiveScores();
+    }
+
+    function showFinal() {
+      const sorted = [...TEAMS].map((t, i) => ({ ...t, _i: i })).sort((a, b) => b.score - a.score);
+      const icons = ['🥇', '🥈', '🥉', '4️⃣'];
+      modal(`<div class="final-card">
+  <div class="final-title">🏆 ผลการแข่งขัน</div>
+  ${sorted.map((t, r) => `<div class="rank-row">
+    <div class="rank-icon">${icons[r]}</div>
+    <div class="rank-name" style="color:${tc(t.color)}">${t.name}</div>
+    <div class="rank-score" style="color:${tc(t.color)}">${t.score}</div>
+  </div>`).join('')}
+  <div class="mbtns" style="margin-top:16px"><button class="mb primary" onclick="resetGame()">🔄 เล่นใหม่</button></div>
+  </div>`);
+    }
+
+    function editName(ti) {
+      const n = prompt(`ชื่อทีม ${TEAMS[ti].name}:`, TEAMS[ti].name);
+      if (n && n.trim()) { TEAMS[ti].name = n.trim(); renderTeams(); renderAnswerGrid(); renderLiveScores(); }
+    }
+
+    function resetGame() { closeModal(); init(); }
+
+    /* ===== PAGE SWITCHING ===== */
+    function showPage(id) {
+      const pages = ['game', 'live', 'guide', 'questions'];
+      pages.forEach(p => {
+        const el = document.getElementById('page-' + p);
+        if (el) el.classList.toggle('active', p === id);
+      });
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', pages[i] === id);
+      });
+      if (id === 'questions') renderQuestions();
+      if (id === 'live') renderLive();
+    }
+
+    init();
+  </script>
 </body>
+
 </html>
